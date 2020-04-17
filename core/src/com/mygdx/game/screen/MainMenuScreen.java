@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -8,7 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.controller.MenuController;
+import com.mygdx.game.scene.MenuStage;
+import com.mygdx.game.VeluxPurGame;
 
+
+/**
+ * The type Main menu screen.
+ */
 public class MainMenuScreen implements Screen {
 
     private VeluxPurGame manager;
@@ -17,8 +24,12 @@ public class MainMenuScreen implements Screen {
     private Container container;
     private Skin skin;
 
-
-    public MainMenuScreen(VeluxPurGame manager) {
+    /**
+     * Instantiates a new Main menu screen.
+     *
+     * @param manager the main class who manage all screen
+     */
+    public MainMenuScreen(final VeluxPurGame manager) {
         this.manager = manager;
 
         skin = new Skin();
@@ -43,7 +54,6 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-
         buttonGroup = new VerticalGroup();
         buttonGroup.addActor(playButton);
         buttonGroup.addActor(settingsButton);
@@ -60,13 +70,9 @@ public class MainMenuScreen implements Screen {
         stage.setKeyboardFocus(buttonGroup);
         stage.addActor(container);
 
-
-
         Gdx.input.setInputProcessor(stage);
         stage.act();
     }
-
-
 
     @Override
     public void show() {
