@@ -18,110 +18,132 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
+import com.mygdx.game.classesatrier.FloorLayout.Floor;
+
+import java.util.ArrayList;
 
 public class TestFenetreRaph extends ApplicationAdapter {
 
-	public CameraInputController camController;
-	PerspectiveCamera cam;
-	Environment environment;
-	Array<ModelInstance> instances =new Array<ModelInstance>();
-	Array<InGameObject> objectsInstances = new Array<InGameObject>();
-	ModelBatch modelBatch;
-	Model model;
-	AssetManager assets;
-	boolean loading;
+    public CameraInputController camController;
+    PerspectiveCamera cam;
+    Environment environment;
+    Array<ModelInstance> instances = new Array<ModelInstance>();
+    Array<InGameObject> objectsInstances = new Array<InGameObject>();
+    ModelBatch modelBatch;
+    Model model;
+    AssetManager assets;
+    boolean loading;
 
 
-	@Override
-	public void create () {
-		Bullet.init();
-		modelBatch = new ModelBatch();
-		assets = new AssetManager();
+    @Override
+    public void create() {
+        Bullet.init();
+        modelBatch = new ModelBatch();
+        assets = new AssetManager();
 
-		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-		environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-		/**
-		 * gestion de la camera
-		 */
+        /**
+         * gestion de la camera
+         */
 
-		cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.position.set(3f, 7f, 10f);
-		cam.lookAt(0, 4f, 0);
-		cam.near = 1f;
-		cam.far = 300f;
-		cam.update();
+        cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.position.set(3f, 7f, 10f);
+        cam.lookAt(0, 4f, 0);
+        cam.near = 1f;
+        cam.far = 300f;
+        cam.update();
 
-		camController = new CameraInputController(cam);
-		Gdx.input.setInputProcessor(camController);
-/**
- * on creer les objets ici
- */
-		ModelBuilder mb = new ModelBuilder();
-		mb.begin();
-		mb.node().id = "ground";
-		mb.part("ground", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED)))
-				.box(5f, 1f, 5f);
-		/*mb.node().id = "sphere";
-		mb.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
+        camController = new CameraInputController(cam);
+        Gdx.input.setInputProcessor(camController);
+
+        /**
+         * on creer les objets ici
+         */
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        modelBuilder.node().id = "ground";
+        modelBuilder.part("ground", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED)))
+                .box(5f, 1f, 5f);
+		/*modelBuilder.node().id = "sphere";
+		modelBuilder.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
 				.sphere(1f, 1f, 1f, 10, 10);*/
-		mb.node().id = "box";
-		mb.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE)))
-				.box(1f, 1f, 1f);
-		/*mb.node().id = "cone";
-		mb.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
+        modelBuilder.node().id = "box";
+        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE)))
+                .box(1f, 1f, 1f);
+		/*modelBuilder.node().id = "cone";
+		modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
 				.cone(1f, 2f, 1f, 10);
-		mb.node().id = "capsule";
-		mb.part("capsule", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
+		modelBuilder.node().id = "capsule";
+		modelBuilder.part("capsule", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
 				.capsule(0.5f, 2f, 10);
-		mb.node().id = "cylinder";
-		mb.part("cylinder", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
+		modelBuilder.node().id = "cylinder";
+		modelBuilder.part("cylinder", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
 				new Material(ColorAttribute.createDiffuse(Color.MAGENTA))).cylinder(1f, 2f, 1f, 10);*/
-		model = mb.end();
 
-/**
- * on creer entité voulu
- */
-		EntityObjects box = new EntityObjects("box","dd",0,0,0);
-		/**
-		 * on instancie l'objet
-		 */
-		InGameObject boxInstancie = box.createObjectFromModel("box",model,new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)));
+        model = modelBuilder.end();
+        generateFloor();
+    }
 
-		/***
-		 * on deplace l'objet
-		 */
-		boxInstancie.transform.trn(0f,2,0f);
+    /**
+     * method that procedurally generates the floor in 3D
+     */
 
-		objectsInstances.add(boxInstancie);
+    public void generateFloor() {
+        Floor floor = new Floor(30, 6, 3, 7);
+        floor.generateFloor();
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        EntityObjects box = new EntityObjects("box", "dd", 0, 0, 0);
+        for (int i = 0; i < floor.getLayout().length; i++) {
+            for (int j = 0; j < floor.getLayout().length; j++) {
+                if (floor.getLayout()[i][j] == ' ') {
+                    objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
+                    objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
+                    if (i == 0 || j == 0) {
+                        objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
+                    }
+                }
+                y = y + 1;
 
-	}
+            }
+            x = x + 1;
+            y = 0;
 
-	private void doneLoading() {
-		Model model = assets.get("block.obj", Model.class);
-		ModelInstance block = new ModelInstance(model);
-		instances.add(block);
-		loading = false;
-	}
+        }
+
+    }
 
 
-	@Override
-	public void render () {
+    private void doneLoading() {
+        Model model = assets.get("block.obj", Model.class);
+        ModelInstance block = new ModelInstance(model);
+        instances.add(block);
+        loading = false;
+    }
 
-		camController.update();
 
-		Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		modelBatch.begin(cam);
-		modelBatch.render(objectsInstances, environment);
-		modelBatch.end();
-	}
+    @Override
+    public void render() {
 
-	@Override
-	public void dispose () {
-		modelBatch.dispose();
-		instances.clear();
-		assets.dispose();
-	}
+        camController.update();
+
+        Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        modelBatch.begin(cam);
+        modelBatch.render(objectsInstances, environment);
+        modelBatch.end();
+    }
+
+    @Override
+    public void dispose() {
+        modelBatch.dispose();
+        instances.clear();
+        assets.dispose();
+    }
 }
