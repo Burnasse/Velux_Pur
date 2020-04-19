@@ -12,10 +12,14 @@ public class Floor {
     int maxRoomSize = 10;
     char[][] layout;
 
-    public char[][] getLayout() {
-        return layout;
-    }
-
+    /**
+     * method that creates the rooms and corridors connecting them in a 2D grid
+     *
+     * @param maxRoomSize : the biggest the width/height of the room can get
+     * @param minRoomSize : the smallest the width/height of the room can get
+     * @param sizeOfFloor : the number of cases we have in a floor
+     * @param numberOfRooms : the number of rooms in a floor
+     */
     public Floor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
@@ -75,6 +79,10 @@ public class Floor {
         return sizeOfFloor;
     }
 
+    /**
+     * method that generates the floor in a 2D grid
+     */
+
     public void generateFloor() {
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
@@ -90,6 +98,10 @@ public class Floor {
         }
     }
 
+    /**
+     * method that renders the floor in the console
+     */
+
     public void printFloor() {
 
         for (int i = 0; i < sizeOfFloor; i++) {
@@ -101,12 +113,24 @@ public class Floor {
         }
     }
 
+    public char[][] getLayout() {
+        return layout;
+    }
+
+
+    /**
+     * horizontal corridor between the center of two rooms
+     */
+
     public void hCorridor(int x1, int x2, int y) {
         for (int i = Math.min(x1, x2); i < Math.max(x1, x2); i++) {
             layout[i][y] = ' ';
         }
     }
 
+    /**
+     * vertical corridor between the center of two rooms
+     */
     public void vCorridor(int y1, int y2, int x) {
         for (int i = Math.min(y1, y2); i < Math.max(y1, y2); i++) {
             layout[x][i] = ' ';

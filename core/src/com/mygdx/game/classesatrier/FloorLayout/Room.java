@@ -2,18 +2,25 @@ package com.mygdx.game.classesatrier.FloorLayout;
 
 public class Room {
 
-    //Coordonnées des points en haut à droite et en bas à gauche de la pièce
+
     private int x1;
     private int y1;
     private int x2;
     private int y2;
 
-    //Le centre
     private Point center;
 
     public Point getCenter() {
         return center;
     }
+
+    /**
+     * generate a room
+     * @param x1 x coordinate of the first point
+     * @param y1 y coordinate of the first point
+     * @param x2 x coordinate of the second point
+     * @param y2 y coordinate of the second point
+     */
 
     public Room(int x1, int y1, int x2, int y2) {
         this.x1 = x1;
@@ -22,6 +29,10 @@ public class Room {
         this.y2 = y2;
         center = new Point((x1 + x2) / 2, (y1 + y2) / 2);
     }
+
+    /**
+     * Checks if this room intersects with the room in parameter
+     */
 
     public boolean intersects(Room room) {
         return (x1 <= room.x2 && x2 >= room.x1 &&

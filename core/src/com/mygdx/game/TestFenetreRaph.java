@@ -138,7 +138,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
             x = x + 1;
             y = 0;
         }
-        floor.generateFloor();
+        floor.printFloor();
     }
 
 
