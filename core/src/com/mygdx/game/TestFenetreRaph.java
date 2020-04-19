@@ -17,21 +17,33 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
+import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
 import com.mygdx.game.classesatrier.FloorLayout.Floor;
 
-import java.util.ArrayList;
 
+/**
+ * The type Test fenetre raph.
+ */
 public class TestFenetreRaph extends ApplicationAdapter {
 
+
     public CameraInputController camController;
+
     PerspectiveCamera cam;
+
     Environment environment;
+
     Array<ModelInstance> instances = new Array<ModelInstance>();
+
     Array<InGameObject> objectsInstances = new Array<InGameObject>();
+
     ModelBatch modelBatch;
+
     Model model;
+
     AssetManager assets;
+
     boolean loading;
 
 
@@ -50,8 +62,8 @@ public class TestFenetreRaph extends ApplicationAdapter {
          */
 
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(3f, 7f, 10f);
-        cam.lookAt(0, 4f, 0);
+        cam.position.set(20f, 10f, 20f);
+        cam.lookAt(0, 0f, 0);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
@@ -65,14 +77,11 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
-        modelBuilder.node().id = "ground";
-        modelBuilder.part("ground", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(5f, 1f, 5f);
 		/*modelBuilder.node().id = "sphere";
 		modelBuilder.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
 				.sphere(1f, 1f, 1f, 10, 10);*/
         modelBuilder.node().id = "box";
-        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE)))
+        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)))
                 .box(1f, 1f, 1f);
 		/*modelBuilder.node().id = "cone";
 		modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
@@ -86,46 +95,50 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
         model = modelBuilder.end();
         generateFloor();
+
+        EntityPlayer vaisseau = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(0.5f, 0.5f, 1f)),1,2,3);
+        objectsInstances.add(vaisseau.getInGameObject());
+
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
-
     public void generateFloor() {
-        Floor floor = new Floor(30, 6, 3, 7);
+        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
+        Floor floor = new Floor(30, 5, 3, 7);
         floor.generateFloor();
         int x = 0;
         int y = 0;
         int z = 0;
-        EntityObjects box = new EntityObjects("box", "dd", 0, 0, 0);
+        EntityObjects box = new EntityObjects("box",model,shape, 0, 0, 0);
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j] == ' ') {
-                    objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
+                    objectsInstances.add(box.getInGameObject());
                     objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
 
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                        objectsInstances.add(box.getInGameObject());
                         objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
                     } else {
                         if (floor.getLayout()[i - 1][j] == 'a') {
-                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.add(box.getInGameObject());
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y, z + 1);
                         }
 
                         if (floor.getLayout()[i + 1][j] == 'a') {
-                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.add(box.getInGameObject());
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y, z + 1);
                         }
 
                         if (floor.getLayout()[i][j - 1] == 'a') {
-                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.add(box.getInGameObject());
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y - 1, z + 1);
                         }
 
                         if (floor.getLayout()[i][j + 1] == 'a') {
-                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.add(box.getInGameObject());
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
                         }
                     }
@@ -141,7 +154,9 @@ public class TestFenetreRaph extends ApplicationAdapter {
         floor.printFloor();
     }
 
-
+    /**
+     * pour l'instant totalement inutile
+     */
     private void doneLoading() {
         Model model = assets.get("block.obj", Model.class);
         ModelInstance block = new ModelInstance(model);
@@ -159,6 +174,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         modelBatch.begin(cam);
         modelBatch.render(objectsInstances, environment);
+        modelBatch.render(instances);
         modelBatch.end();
     }
 
