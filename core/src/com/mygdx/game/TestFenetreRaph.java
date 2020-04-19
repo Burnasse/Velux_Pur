@@ -104,19 +104,41 @@ public class TestFenetreRaph extends ApplicationAdapter {
                 if (floor.getLayout()[i][j] == ' ') {
                     objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
                     objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
-                    if (i == 0 || j == 0) {
+
+                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
                         objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                         objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
+                    } else {
+                        if (floor.getLayout()[i - 1][j] == 'a') {
+                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y, z + 1);
+                        }
+
+                        if (floor.getLayout()[i + 1][j] == 'a') {
+                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y, z + 1);
+                        }
+
+                        if (floor.getLayout()[i][j - 1] == 'a') {
+                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y - 1, z + 1);
+                        }
+
+                        if (floor.getLayout()[i][j + 1] == 'a') {
+                            objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
+                        }
                     }
+
+
                 }
                 y = y + 1;
 
             }
             x = x + 1;
             y = 0;
-
         }
-
+        floor.generateFloor();
     }
 
 

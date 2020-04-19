@@ -71,6 +71,10 @@ public class Floor {
 
     }
 
+    public int getSizeOfFloor() {
+        return sizeOfFloor;
+    }
+
     public void generateFloor() {
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
