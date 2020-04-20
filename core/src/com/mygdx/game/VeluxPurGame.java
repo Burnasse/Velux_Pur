@@ -16,6 +16,8 @@ public class VeluxPurGame extends Game {
     @Override
     public void create() {
         menuScreen = new MainMenuScreen(this);
+        PreferencesManager pref = new PreferencesManager();
+        pref.initializePrefs();
         backToMenu();
     }
 
@@ -45,5 +47,7 @@ public class VeluxPurGame extends Game {
      */
     public void backToMenu(){
         setScreen(menuScreen);
+        menuScreen.setInputProcessor();
     }
+
 }

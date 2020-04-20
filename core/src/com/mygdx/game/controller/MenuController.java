@@ -49,16 +49,21 @@ public class MenuController {
         InputEvent event1 = new InputEvent();
         event1.setType(InputEvent.Type.touchDown);
         buttonGroup.get(currentButton).fire(event1);
+        buttonGroup.get(currentButton).getClickListener().cancel();
     }
 
     /**
      * Select the currentButton button.
      */
-    public void selectButton(){
-        for(TextButton currentButton : buttonGroup)
-            currentButton.setChecked(false);
-
+    private void selectButton(){
+        deselectAll();
         buttonGroup.get(currentButton).setChecked(true);
+    }
+
+    private void deselectAll(){
+        for(TextButton currentButton : buttonGroup){
+            currentButton.setChecked(false);
+        }
     }
 
 }
