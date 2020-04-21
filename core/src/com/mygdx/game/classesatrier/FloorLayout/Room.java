@@ -16,6 +16,7 @@ public class Room {
 
     /**
      * generate a room
+     *
      * @param x1 x coordinate of the first point
      * @param y1 y coordinate of the first point
      * @param x2 x coordinate of the second point
@@ -54,7 +55,6 @@ public class Room {
     public int getY2() {
         return y2;
     }
-
 
 
 }

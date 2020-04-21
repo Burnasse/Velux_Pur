@@ -2,10 +2,8 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -14,21 +12,20 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
-import com.mygdx.game.classesatrier.FloorLayout.Floor;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.Floor;
+import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
+import com.sun.tools.javac.comp.Todo;
 
-import java.util.ArrayList;
-
-public class TestFenetreRaph extends ApplicationAdapter {
+public class TestGenerationLabyrinthe extends ApplicationAdapter {
 
     public CameraInputController camController;
     PerspectiveCamera cam;
     Environment environment;
-    Array<ModelInstance> instances = new Array<ModelInstance>();
-    Array<InGameObject> objectsInstances = new Array<InGameObject>();
+    Array<ModelInstance> instances = new Array<>();
+    Array<InGameObject> objectsInstances = new Array<>();
     ModelBatch modelBatch;
     Model model;
     AssetManager assets;
@@ -50,8 +47,8 @@ public class TestFenetreRaph extends ApplicationAdapter {
          */
 
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(3f, 7f, 10f);
-        cam.lookAt(0, 4f, 0);
+        cam.position.set(0, 0, 0);
+        cam.lookAt(0, 0, 0);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
@@ -59,39 +56,20 @@ public class TestFenetreRaph extends ApplicationAdapter {
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
 
-        /**
-         * on creer les objets ici
-         */
-
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
-        modelBuilder.node().id = "ground";
-        modelBuilder.part("ground", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(5f, 1f, 5f);
-		/*modelBuilder.node().id = "sphere";
-		modelBuilder.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-				.sphere(1f, 1f, 1f, 10, 10);*/
         modelBuilder.node().id = "box";
-        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLUE)))
+        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.WHITE)))
                 .box(1f, 1f, 1f);
-		/*modelBuilder.node().id = "cone";
-		modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
-				.cone(1f, 2f, 1f, 10);
-		modelBuilder.node().id = "capsule";
-		modelBuilder.part("capsule", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
-				.capsule(0.5f, 2f, 10);
-		modelBuilder.node().id = "cylinder";
-		modelBuilder.part("cylinder", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.MAGENTA))).cylinder(1f, 2f, 1f, 10);*/
 
         model = modelBuilder.end();
+
         generateFloor();
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
-
     public void generateFloor() {
         Floor floor = new Floor(30, 6, 3, 7);
         floor.generateFloor();
@@ -105,7 +83,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
                     objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
                     objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
 
-                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
+                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor() - 1) {
                         objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                         objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
                     } else {

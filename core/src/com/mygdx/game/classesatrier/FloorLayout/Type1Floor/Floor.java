@@ -1,4 +1,7 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
+
+import com.mygdx.game.classesatrier.FloorLayout.Point;
+import com.mygdx.game.classesatrier.FloorLayout.Room;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -6,20 +9,21 @@ import java.util.Random;
 public class Floor {
 
     ArrayList<Room> rooms = new ArrayList<>();
-    int sizeOfFloor = 30;
-    int numberOfRooms = 6;
-    int minRoomSize = 3;
-    int maxRoomSize = 10;
+    int sizeOfFloor;
+    int numberOfRooms;
+    int minRoomSize;
+    int maxRoomSize;
     char[][] layout;
 
     /**
      * method that creates the rooms and corridors connecting them in a 2D grid
      *
-     * @param maxRoomSize : the biggest the width/height of the room can get
-     * @param minRoomSize : the smallest the width/height of the room can get
-     * @param sizeOfFloor : the number of cases we have in a floor
+     * @param maxRoomSize   : the biggest the width/height of the room can get
+     * @param minRoomSize   : the smallest the width/height of the room can get
+     * @param sizeOfFloor   : the number of cases we have in a floor
      * @param numberOfRooms : the number of rooms in a floor
      */
+
     public Floor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
@@ -49,7 +53,7 @@ public class Floor {
                 for (Room room : rooms) {
                     if (newRoom.intersects(room)) {
                         intersects = true;
-                        if (i == 30){
+                        if (i == 30) {
                             i = 0;
                             rooms.clear();
                         }
@@ -61,12 +65,11 @@ public class Floor {
                     rooms.add(newRoom);
                     Point center = rooms.get(rooms.size() - 1).getCenter();
                     if (rand.nextInt(1) == 0) {
-                        hCorridor(prevCenter.x, center.x, prevCenter.y);
-                        vCorridor(prevCenter.y, center.y, center.x);
-                    }
-                    else{
-                        vCorridor(prevCenter.y, center.y, prevCenter.x);
-                        hCorridor(prevCenter.x, center.x, center.y);
+                        hCorridor(prevCenter.getX(), center.getX(), prevCenter.getY());
+                        vCorridor(prevCenter.getY(), center.getY(), center.getX());
+                    } else {
+                        vCorridor(prevCenter.getY(), center.getY(), prevCenter.getX());
+                        hCorridor(prevCenter.getX(), center.getX(), center.getY());
                     }
                 }
             } else
