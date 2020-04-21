@@ -34,6 +34,7 @@ public class Labyrinth {
         int endingCaseY = rand.nextInt(sizeOfFloor);
 
         layout[startingCaseX][startingCaseY].setContent(' ');
+
         checkForWalls(startingCaseX, startingCaseY);
 
         visited.add(layout[startingCaseX][startingCaseY]);
@@ -46,7 +47,7 @@ public class Labyrinth {
             int x = walls.get(currentWall).getX();
             int y = walls.get(currentWall).getY();
 
-            if (x == 0)
+            if (x == 0)         //to avoid an OutOfBounds exception
                 x = x + 1;
             if (x == sizeOfFloor - 1)
                 x = x - 1;
@@ -58,21 +59,18 @@ public class Labyrinth {
             int direction = rand.nextInt(2);
             if (direction == 0) {
 
-
                 if (!(visited.contains(layout[x - 1][y])) && (visited.contains(layout[x + 1][y]))) {
-                    System.out.println("a");
                     layout[x][y].setContent(' ');
                     layout[x - 1][y].setContent(' ');
-                    visited.add(layout[x][y]);
+
                     visited.add(layout[x - 1][y]);
                     checkForWalls(x - 1, y);
 
                 }
                 if ((visited.contains(layout[x - 1][y])) && !(visited.contains(layout[x + 1][y]))) {
-                    System.out.println("a");
                     layout[x][y].setContent(' ');
                     layout[x + 1][y].setContent(' ');
-                    visited.add(layout[x][y]);
+
                     visited.add(layout[x + 1][y]);
                     checkForWalls(x + 1, y);
 
@@ -81,18 +79,19 @@ public class Labyrinth {
                 if (!(visited.contains(layout[x][y - 1])) && visited.contains(layout[x][y + 1])) {
                     layout[x][y].setContent(' ');
                     layout[x][y - 1].setContent(' ');
-                    visited.add(layout[x][y]);
+
                     visited.add(layout[x][y - 1]);
                     checkForWalls(x, y - 1);
                 }
                 if (visited.contains(layout[x][y - 1]) && !(visited.contains(layout[x][y + 1]))) {
                     layout[x][y].setContent(' ');
                     layout[x][y + 1].setContent(' ');
-                    visited.add(layout[x][y]);
+
                     visited.add(layout[x][y + 1]);
                     checkForWalls(x, y + 1);
                 }
             }
+
             if (layout[endingCaseX][endingCaseY].getContent() == ' ') {
                 System.out.println("normalement c'est fini");
                 break;
@@ -119,7 +118,7 @@ public class Labyrinth {
         for (int i = x1; i < x2; i++) {
             for (int j = y1; j < y2; j++) {
                 if (layout[i][j].getContent() == 'a')
-                    walls.add(new Point(i, j));
+                    walls.add(layout[i][j]);
             }
         }
     }
@@ -133,5 +132,10 @@ public class Labyrinth {
             }
             System.out.println(floor);
         }
+    }
+
+    public static void main(String[] args) {
+        Labyrinth labyrinth = new Labyrinth(30);
+        labyrinth.printFloor();
     }
 }
