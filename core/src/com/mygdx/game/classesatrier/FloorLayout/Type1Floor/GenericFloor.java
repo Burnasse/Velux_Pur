@@ -1,19 +1,13 @@
 package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
 
+import com.mygdx.game.classesatrier.FloorLayout.Floor;
 import com.mygdx.game.classesatrier.FloorLayout.Point;
 import com.mygdx.game.classesatrier.FloorLayout.Room;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Floor {
-
-    ArrayList<Room> rooms = new ArrayList<>();
-    int sizeOfFloor;
-    int numberOfRooms;
-    int minRoomSize;
-    int maxRoomSize;
-    char[][] layout;
+public class GenericFloor extends Floor {
 
     /**
      * method that creates the rooms and corridors connecting them in a 2D grid
@@ -24,22 +18,26 @@ public class Floor {
      * @param numberOfRooms : the number of rooms in a floor
      */
 
-    public Floor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
+    public GenericFloor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
-        this.numberOfRooms = numberOfRooms;
-        this.minRoomSize = minRoomSize;
-        this.maxRoomSize = maxRoomSize;
-        layout = new char[sizeOfFloor][sizeOfFloor];
+        layout = new Point[sizeOfFloor][sizeOfFloor];
+
+        for (int i = 0; i < sizeOfFloor; i++) {
+            for (int j = 0; j < sizeOfFloor; j++) {
+                layout[i][j] = new Point(i, j);
+            }
+        }
 
         int width;
         int height;
         int x;
         int y;
         Random rand = new Random();
-        int i = 0;
+        int count = 0;
+        ArrayList<Room> rooms = new ArrayList<>();
         while (rooms.size() < numberOfRooms) {
-            i++;
+            count = count + 1;
             width = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
             height = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
 
@@ -53,8 +51,8 @@ public class Floor {
                 for (Room room : rooms) {
                     if (newRoom.intersects(room)) {
                         intersects = true;
-                        if (i == 30) {
-                            i = 0;
+                        if (count == 30) {
+                            count = 0;
                             rooms.clear();
                         }
                         break;
@@ -76,50 +74,20 @@ public class Floor {
                 rooms.add(newRoom);
         }
 
-    }
-
-    public int getSizeOfFloor() {
-        return sizeOfFloor;
-    }
-
-    /**
-     * method that generates the floor in a 2D grid
-     */
-
-    public void generateFloor() {
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
-                if (layout[i][j] != ' ')
-                    layout[i][j] = 'a';
+                if (layout[i][j].getContent() != ' ')
+                    layout[i][j].setContent('a');
             }
         }
         for (Room room : rooms) {
             for (int i = room.getX1(); i < room.getX2(); i++) {
                 for (int j = room.getY1(); j < room.getY2(); j++)
-                    layout[i][j] = ' ';
+                    layout[i][j].setContent(' ');
             }
         }
+
     }
-
-    /**
-     * method that renders the floor in the console
-     */
-
-    public void printFloor() {
-
-        for (int i = 0; i < sizeOfFloor; i++) {
-            String floor = "";
-            for (int j = 0; j < sizeOfFloor; j++) {
-                floor = (floor + "  " + layout[i][j]);
-            }
-            System.out.println(floor);
-        }
-    }
-
-    public char[][] getLayout() {
-        return layout;
-    }
-
 
     /**
      * horizontal corridor between the center of two rooms
@@ -127,16 +95,17 @@ public class Floor {
 
     public void hCorridor(int x1, int x2, int y) {
         for (int i = Math.min(x1, x2); i < Math.max(x1, x2); i++) {
-            layout[i][y] = ' ';
+            layout[i][y].setContent(' ');
         }
     }
 
     /**
      * vertical corridor between the center of two rooms
      */
+
     public void vCorridor(int y1, int y2, int x) {
         for (int i = Math.min(y1, y2); i < Math.max(y1, y2); i++) {
-            layout[x][i] = ' ';
+            layout[x][i].setContent(' ');
         }
     }
 }

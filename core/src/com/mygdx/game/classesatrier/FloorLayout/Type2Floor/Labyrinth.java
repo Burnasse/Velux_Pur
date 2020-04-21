@@ -1,20 +1,14 @@
 package com.mygdx.game.classesatrier.FloorLayout.Type2Floor;
 
+import com.mygdx.game.classesatrier.FloorLayout.Floor;
 import com.mygdx.game.classesatrier.FloorLayout.Point;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Labyrinth {
-    private Point[][] layout;
-    private int sizeOfFloor;
-    private ArrayList<Point> visited = new ArrayList<>();
-    private ArrayList<Point> walls = new ArrayList<>();
-
-    //Trop lourd pour ce que c'est, à optimiser
+public class Labyrinth extends Floor {
 
     public Labyrinth(int sizeOfFloor) {
-
         Random rand = new Random();
 
         this.sizeOfFloor = sizeOfFloor;
@@ -23,23 +17,20 @@ public class Labyrinth {
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
                 layout[i][j] = new Point(i, j, 'a');
-
             }
         }
 
         int startingCaseX = rand.nextInt(sizeOfFloor);
         int startingCaseY = rand.nextInt(sizeOfFloor);
 
-        int endingCaseX = rand.nextInt(sizeOfFloor);
-        int endingCaseY = rand.nextInt(sizeOfFloor);
-
         layout[startingCaseX][startingCaseY].setContent(' ');
 
-        checkForWalls(startingCaseX, startingCaseY);
+        ArrayList<Point> walls = new ArrayList<>();
+        checkForWalls(startingCaseX, startingCaseY, walls);
 
+        ArrayList<Point> visited = new ArrayList<>();
         visited.add(layout[startingCaseX][startingCaseY]);
 
-        //très sale en-dessous de ce commentaire, à nettoyer
         while (!walls.isEmpty()) {
 
             int currentWall = rand.nextInt(walls.size());
@@ -56,50 +47,39 @@ public class Labyrinth {
             if (y == sizeOfFloor - 1)
                 y = y - 1;
 
-            int direction = rand.nextInt(2);
-            if (direction == 0) {
+            if (!(visited.contains(layout[x - 1][y])) && (visited.contains(layout[x + 1][y]))) {
+                layout[x][y].setContent(' ');
+                layout[x - 1][y].setContent(' ');
 
-                if (!(visited.contains(layout[x - 1][y])) && (visited.contains(layout[x + 1][y]))) {
-                    layout[x][y].setContent(' ');
-                    layout[x - 1][y].setContent(' ');
-
-                    visited.add(layout[x - 1][y]);
-                    checkForWalls(x - 1, y);
-
-                }
-                if ((visited.contains(layout[x - 1][y])) && !(visited.contains(layout[x + 1][y]))) {
-                    layout[x][y].setContent(' ');
-                    layout[x + 1][y].setContent(' ');
-
-                    visited.add(layout[x + 1][y]);
-                    checkForWalls(x + 1, y);
-
-                }
-            } else {
-                if (!(visited.contains(layout[x][y - 1])) && visited.contains(layout[x][y + 1])) {
-                    layout[x][y].setContent(' ');
-                    layout[x][y - 1].setContent(' ');
-
-                    visited.add(layout[x][y - 1]);
-                    checkForWalls(x, y - 1);
-                }
-                if (visited.contains(layout[x][y - 1]) && !(visited.contains(layout[x][y + 1]))) {
-                    layout[x][y].setContent(' ');
-                    layout[x][y + 1].setContent(' ');
-
-                    visited.add(layout[x][y + 1]);
-                    checkForWalls(x, y + 1);
-                }
+                visited.add(layout[x - 1][y]);
+                checkForWalls(x - 1, y, walls);
             }
+            if ((visited.contains(layout[x - 1][y])) && !(visited.contains(layout[x + 1][y]))) {
+                layout[x][y].setContent(' ');
+                layout[x + 1][y].setContent(' ');
 
-            if (layout[endingCaseX][endingCaseY].getContent() == ' ') {
-                System.out.println("normalement c'est fini");
-                break;
+                visited.add(layout[x + 1][y]);
+                checkForWalls(x + 1, y, walls);
             }
+            if (!(visited.contains(layout[x][y - 1])) && visited.contains(layout[x][y + 1])) {
+                layout[x][y].setContent(' ');
+                layout[x][y - 1].setContent(' ');
+
+                visited.add(layout[x][y - 1]);
+                checkForWalls(x, y - 1, walls);
+            }
+            if (visited.contains(layout[x][y - 1]) && !(visited.contains(layout[x][y + 1]))) {
+                layout[x][y].setContent(' ');
+                layout[x][y + 1].setContent(' ');
+
+                visited.add(layout[x][y + 1]);
+                checkForWalls(x, y + 1, walls);
+            }
+            walls.remove(currentWall);
         }
     }
 
-    private void checkForWalls(int x, int y) {
+    private void checkForWalls(int x, int y,ArrayList<Point> walls) {
         int x1 = x - 1;
         int x2 = x + 2;
         int y1 = y - 1;
@@ -120,17 +100,6 @@ public class Labyrinth {
                 if (layout[i][j].getContent() == 'a')
                     walls.add(layout[i][j]);
             }
-        }
-    }
-
-    public void printFloor() {
-
-        for (int i = 0; i < sizeOfFloor; i++) {
-            String floor = "";
-            for (int j = 0; j < sizeOfFloor; j++) {
-                floor = (floor + "  " + layout[i][j].getContent());
-            }
-            System.out.println(floor);
         }
     }
 

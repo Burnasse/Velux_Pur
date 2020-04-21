@@ -15,11 +15,10 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
-import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.Floor;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
-import com.sun.tools.javac.comp.Todo;
 
-public class TestGenerationLabyrinthe extends ApplicationAdapter {
+public class TestGenerationEtage extends ApplicationAdapter {
 
     public CameraInputController camController;
     PerspectiveCamera cam;
@@ -61,48 +60,48 @@ public class TestGenerationLabyrinthe extends ApplicationAdapter {
         modelBuilder.node().id = "box";
         modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.WHITE)))
                 .box(1f, 1f, 1f);
-
         model = modelBuilder.end();
 
-        generateFloor();
+        generateFloor(30);
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
-    public void generateFloor() {
-        Floor floor = new Floor(30, 6, 3, 7);
-        floor.generateFloor();
+
+    public void generateFloor(int sizeOfFloor) {
+        Labyrinth labyrinth = new Labyrinth(sizeOfFloor);
+        labyrinth.printFloor();
         int x = 0;
         int y = 0;
         int z = 0;
         EntityObjects box = new EntityObjects("box", "dd", 0, 0, 0);
-        for (int i = 0; i < floor.getLayout().length; i++) {
-            for (int j = 0; j < floor.getLayout().length; j++) {
-                if (floor.getLayout()[i][j] == ' ') {
+        for (int i = 0; i < labyrinth.getLayout().length; i++) {
+            for (int j = 0; j < labyrinth.getLayout().length; j++) {
+                if (labyrinth.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
                     objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
 
-                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor() - 1) {
+                    if (i == 0 || j == 0 || i == labyrinth.getSizeOfFloor() - 1 || j == labyrinth.getSizeOfFloor() - 1) {
                         objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                         objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
                     } else {
-                        if (floor.getLayout()[i - 1][j] == 'a') {
+                        if (labyrinth.getLayout()[i - 1][j].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y, z + 1);
                         }
 
-                        if (floor.getLayout()[i + 1][j] == 'a') {
+                        if (labyrinth.getLayout()[i + 1][j].getContent() =='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y, z + 1);
                         }
 
-                        if (floor.getLayout()[i][j - 1] == 'a') {
+                        if (labyrinth.getLayout()[i][j - 1].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y - 1, z + 1);
                         }
 
-                        if (floor.getLayout()[i][j + 1] == 'a') {
+                        if (labyrinth.getLayout()[i][j + 1].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
                         }
@@ -116,7 +115,7 @@ public class TestGenerationLabyrinthe extends ApplicationAdapter {
             x = x + 1;
             y = 0;
         }
-        floor.printFloor();
+        labyrinth.printFloor();
     }
 
 
