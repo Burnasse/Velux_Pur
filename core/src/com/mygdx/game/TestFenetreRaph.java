@@ -15,8 +15,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.EntityPlayer;
@@ -30,6 +29,14 @@ import com.mygdx.game.classesatrier.FloorLayout.Floor;
  */
 public class TestFenetreRaph extends ApplicationAdapter {
 
+    class MyContactListener extends ContactListener {
+        @Override
+        public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
+            objectsInstances.get(userValue0).moving = false;
+            objectsInstances.get(userValue1).moving = false;
+            return true;
+        }
+    }
 
     public CameraInputController camController;
 
@@ -50,6 +57,12 @@ public class TestFenetreRaph extends ApplicationAdapter {
     boolean loading;
 
     InGameObject vaisseau;
+
+    btCollisionConfiguration collisionConfig;
+    btDispatcher dispatcher;
+    MyContactListener contactListener;
+    btBroadphaseInterface broadphase;
+    btCollisionWorld collisionWorld;
 
 
     @Override
@@ -74,8 +87,8 @@ public class TestFenetreRaph extends ApplicationAdapter {
         cam.far = 300f;
         cam.update();
 
-        /*camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);*/
+        camController = new CameraInputController(cam);
+        Gdx.input.setInputProcessor(camController);
 
         /**
          * on creer les objets ici
@@ -102,9 +115,20 @@ public class TestFenetreRaph extends ApplicationAdapter {
         model = modelBuilder.end();
         generateFloor();
 
-        EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(0.5f, 0.5f, 1f)),0,0,0);
+        collisionConfig = new btDefaultCollisionConfiguration();
+        dispatcher = new btCollisionDispatcher(collisionConfig);
+        broadphase = new btDbvtBroadphase();
+        collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
+        contactListener = new MyContactListener();
+
+        for (InGameObject obj: objectsInstances){
+            collisionWorld.addCollisionObject(obj.body);
+        }
+
+        EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
         this.vaisseau = ship.getInGameObject();
         objectsInstances.add(this.vaisseau);
+        collisionWorld.addCollisionObject(vaisseau.body);
     }
 
     /**
@@ -161,29 +185,28 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
     @Override
     public void render() {
-       /* camController.update();*/
+        camController.update();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
         }
-
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
         }
-
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, 0.1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(0f, -0.1f, 0f));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, 0.1f, 0f));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 0.1f));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.M)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -0.1f));
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, 0f));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, 0.1f));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, -0.1f));
-        }
+        collisionWorld.performDiscreteCollisionDetection();
 
         Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
