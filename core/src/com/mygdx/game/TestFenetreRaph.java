@@ -32,8 +32,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
     class MyContactListener extends ContactListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            objectsInstances.get(userValue0).moving = false;
-            objectsInstances.get(userValue1).moving = false;
+            System.out.println("eeeeeeee");
             return true;
         }
     }
