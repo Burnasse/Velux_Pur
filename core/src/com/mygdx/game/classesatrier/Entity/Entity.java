@@ -44,7 +44,11 @@ public class Entity {
      * @return the in game object
      */
     public InGameObject getInGameObject() {
-        return outGameEntity.createEntityInstance();
+        return outGameEntity.createEntityInstance(this.position);
+    }
+
+    public InGameObject getInGameObject(EntityPosition position) {
+        return outGameEntity.createEntityInstance(position);
     }
 
     /**
@@ -53,4 +57,7 @@ public class Entity {
     public void dispose() {
 
     }
+
+
+
 }

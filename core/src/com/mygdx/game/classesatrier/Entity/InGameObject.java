@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.utils.Disposable;
+import com.mygdx.game.classesatrier.EntityPosition;
 
 /**
  * The type In game object.
@@ -14,13 +15,11 @@ public class InGameObject extends ModelInstance implements Disposable {
      * the constructor is used so we can create only one constructor to instanciate in a game a multitude of entity with the same model and hitbox.
      */
     static class Constructor implements Disposable {
-
-        private final Model model;
         /**
          * the node is the id of the model we want, its set at "a12345a" to recognize if a change has been made to the node attribute
          */
         private String node = "a12345a";
-
+        private final Model model;
         private final btCollisionShape shape;
 
         /**
@@ -106,6 +105,10 @@ public class InGameObject extends ModelInstance implements Disposable {
         @Override
         public void dispose () {
             body.dispose();
+        }
+
+        public void mooveEntity(EntityPosition pos){
+            super.transform.trn(pos);
         }
     }
 

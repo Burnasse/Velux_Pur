@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.mygdx.game.classesatrier.EntityPosition;
 
 /**
  * this lass represents an entity that has not been instanciated in the game yet.
@@ -15,8 +16,12 @@ public class OutGameEntity {
 
     public btCollisionShape shape;
 
+
+
+    private InGameObject.Constructor constructor ;
+
     /**
-     * Instantiates a new Out game entity from an outside .obj or .g3db ( which is the best).
+     * Instantiates a new Out game entity from an outside .obj or .g3db ( which is the best).Create the constructor to instanciate the entity.
      *
      * @param filename the filename
      * @param shape    the shape
@@ -27,6 +32,7 @@ public class OutGameEntity {
         assets.finishLoading();
         this.model = assets.get(filename,Model.class);
         this.shape = shape;
+        this.constructor = new InGameObject.Constructor(this.model,this.shape);
     }
 
     /**
@@ -38,6 +44,8 @@ public class OutGameEntity {
     public OutGameEntity(Model model,btCollisionShape shape){
         this.model = model;
         this.shape = shape;
+        this.constructor = new InGameObject.Constructor(this.model,this.shape);
+
     }
 
     /**
@@ -46,7 +54,12 @@ public class OutGameEntity {
      * @return the in game object
      */
     public InGameObject createEntityInstance(){
-        InGameObject.Constructor constructor = new InGameObject.Constructor(this.model,this.shape);
-        return constructor.construct();
+        return this.constructor.construct();
+    }
+
+    public InGameObject createEntityInstance(EntityPosition position){
+        InGameObject instanciatedEntity = this.constructor.construct();
+        instanciatedEntity.mooveEntity(position);
+        return instanciatedEntity;
     }
 }

@@ -2,6 +2,8 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
+import com.mygdx.game.classesatrier.EntityPosition;
 import com.mygdx.game.classesatrier.FloorLayout.Floor;
 
 
@@ -46,10 +49,13 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
     boolean loading;
 
+    InGameObject vaisseau;
+
 
     @Override
     public void create() {
         Bullet.init();
+
         modelBatch = new ModelBatch();
         assets = new AssetManager();
 
@@ -62,14 +68,14 @@ public class TestFenetreRaph extends ApplicationAdapter {
          */
 
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(20f, 10f, 20f);
-        cam.lookAt(0, 0f, 0);
+        cam.position.set(0f, 0f, /**/0f);
+        cam.lookAt(10, 10f, 10);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
 
-        camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
+        /*camController = new CameraInputController(cam);
+        Gdx.input.setInputProcessor(camController);*/
 
         /**
          * on creer les objets ici
@@ -96,9 +102,9 @@ public class TestFenetreRaph extends ApplicationAdapter {
         model = modelBuilder.end();
         generateFloor();
 
-        EntityPlayer vaisseau = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(0.5f, 0.5f, 1f)),1,2,3);
-        objectsInstances.add(vaisseau.getInGameObject());
-
+        EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(0.5f, 0.5f, 1f)),0,0,0);
+        this.vaisseau = ship.getInGameObject();
+        objectsInstances.add(this.vaisseau);
     }
 
     /**
@@ -115,38 +121,26 @@ public class TestFenetreRaph extends ApplicationAdapter {
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j] == ' ') {
-                    objectsInstances.add(box.getInGameObject());
-                    objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
-
+                    objectsInstances.add(box.getInGameObject(new EntityPosition(x,y,z)));
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(box.getInGameObject());
-                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
+                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y, z + 1)));
                     } else {
                         if (floor.getLayout()[i - 1][j] == 'a') {
-                            objectsInstances.add(box.getInGameObject());
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y, z + 1);
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y, z + 1)));
                         }
-
                         if (floor.getLayout()[i + 1][j] == 'a') {
-                            objectsInstances.add(box.getInGameObject());
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y, z + 1);
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y, z + 1)));
                         }
-
                         if (floor.getLayout()[i][j - 1] == 'a') {
-                            objectsInstances.add(box.getInGameObject());
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y - 1, z + 1);
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y - 1, z + 1)));
                         }
-
                         if (floor.getLayout()[i][j + 1] == 'a') {
-                            objectsInstances.add(box.getInGameObject());
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
                         }
+
                     }
-
-
                 }
                 y = y + 1;
-
             }
             x = x + 1;
             y = 0;
@@ -167,8 +161,29 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
     @Override
     public void render() {
+       /* camController.update();*/
 
-        camController.update();
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            vaisseau.mooveEntity(new EntityPosition(0f, 0.1f, 0f));
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, 0f));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, 0.1f));
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0.1f, -0.1f));
+        }
 
         Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
