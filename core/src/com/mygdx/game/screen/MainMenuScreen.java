@@ -3,26 +3,21 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.scene.MenuStage;
 import com.mygdx.game.VeluxPurGame;
+import com.mygdx.game.scene.menu.*;
 
 
 /**
  * The type Main menu screen.
  */
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, StageManager {
 
     private VeluxPurGame manager;
-    private MenuStage stage;
-    private VerticalGroup buttonGroup;
-    private Container container;
-    private Skin skin;
+    private Stage stage;
+    private ScreenViewport viewport = new ScreenViewport();
+    private MenuManager stageManager;
 
     /**
      * Instantiates a new Main menu screen.
@@ -32,46 +27,14 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(final VeluxPurGame manager) {
         this.manager = manager;
 
-        skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("ButtonAssets/ui.atlas")));
-        skin.load(Gdx.files.internal("ButtonAssets/ui.json"));
+        this.stage = new MainMenu(this, viewport, false).getStage();
 
-        TextButton playButton = new TextButton("Play", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
-        TextButton quitButton = new TextButton("Quit", skin);
-
-        playButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.changeScreen(new GameScreen(manager));
-                return true;
-            }
-        });
-
-        quitButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                Gdx.app.exit();
-                return true;
-            }
-        });
-
-        buttonGroup = new VerticalGroup();
-        buttonGroup.addActor(playButton);
-        buttonGroup.addActor(settingsButton);
-        buttonGroup.addActor(quitButton);
-        buttonGroup.space(10);
-
-        container = new Container<VerticalGroup>();
-        container.setActor(buttonGroup);
-        container.setFillParent(true);
-
-        MenuController menuController = new MenuController(playButton, settingsButton, quitButton);
-
-        stage = new MenuStage(new ScreenViewport(), menuController);
-        stage.setKeyboardFocus(buttonGroup);
-        stage.addActor(container);
-
-        Gdx.input.setInputProcessor(stage);
-        stage.act();
+        stageManager = new MenuManager();
+        stageManager.addStage("Main", stage);
+        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
+        stageManager.addStage("Audio", new AudioMenu(this).getStage());
+        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
+        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
     }
 
     @Override
@@ -82,7 +45,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 1, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);
@@ -112,6 +75,17 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+    }
 
+    public void setInputProcessor() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    public void show(String stageName) {
+        stage = stageManager.changeStage(stageName, viewport);
+    }
+
+    public void startGame() {
+        manager.changeScreen(new GameScreen(manager));
     }
 }

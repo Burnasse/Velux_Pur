@@ -19,7 +19,7 @@ public class MenuController {
      *
      * @param buttons the buttons
      */
-    public MenuController(TextButton ...buttons) {
+    public MenuController(TextButton... buttons) {
         Collections.addAll(buttonGroup, buttons);
         buttonGroup.get(0).setChecked(true);
     }
@@ -27,8 +27,8 @@ public class MenuController {
     /**
      * Increment currentButton and Select the button on new currentButton index
      */
-    public void downKeyPressed(){
-        if(currentButton < buttonGroup.size()-1)
+    public void downKeyPressed() {
+        if (currentButton < buttonGroup.size() - 1)
             currentButton++;
         selectButton();
     }
@@ -36,8 +36,8 @@ public class MenuController {
     /**
      * Decrement currentButton and Select the button on new currentButton index
      */
-    public void upKeyPressed(){
-        if(currentButton > 0)
+    public void upKeyPressed() {
+        if (currentButton > 0)
             currentButton--;
         selectButton();
     }
@@ -45,20 +45,25 @@ public class MenuController {
     /**
      * Use the selected button
      */
-    public void enterKeyPressed(){
+    public void enterKeyPressed() {
         InputEvent event1 = new InputEvent();
         event1.setType(InputEvent.Type.touchDown);
         buttonGroup.get(currentButton).fire(event1);
+        buttonGroup.get(currentButton).getClickListener().cancel();
     }
 
     /**
      * Select the currentButton button.
      */
-    public void selectButton(){
-        for(TextButton currentButton : buttonGroup)
-            currentButton.setChecked(false);
-
+    private void selectButton() {
+        deselectAll();
         buttonGroup.get(currentButton).setChecked(true);
+    }
+
+    private void deselectAll() {
+        for (TextButton currentButton : buttonGroup) {
+            currentButton.setChecked(false);
+        }
     }
 
 }
