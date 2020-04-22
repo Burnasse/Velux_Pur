@@ -1,9 +1,7 @@
-package com.mygdx.game.screen;
+package com.mygdx.game.scene.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,14 +12,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.PreferencesManager;
-import com.mygdx.game.VeluxPurGame;
+import com.mygdx.game.screen.StageManager;
 
-public class AdvancedScreen implements Screen {
+/**
+ * The type Advanced menu initialize all elements in the advanced menu.
+ */
+public class AdvancedMenu implements MenuStage {
 
     private Stage stage;
 
-    public AdvancedScreen(final VeluxPurGame manager){
+    /**
+     * Instantiates a new Advanced menu.
+     *
+     * @param manager the manager
+     */
+    public AdvancedMenu(final StageManager manager) {
         final PreferencesManager prefs = new PreferencesManager();
+
         stage = new Stage(new ScreenViewport());
 
         Skin skin = new Skin();
@@ -30,13 +37,13 @@ public class AdvancedScreen implements Screen {
 
         CheckBox checkBox = new CheckBox("Fullscreen", skin);
 
-        if(Gdx.graphics.isFullscreen())
+        if (prefs.getPreferences().getBoolean("isFullscreen"))
             checkBox.setChecked(true);
 
         checkBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if(Gdx.graphics.isFullscreen())
+                if (Gdx.graphics.isFullscreen())
                     prefs.setWindowed();
                 else
                     prefs.setFullscreen();
@@ -45,16 +52,14 @@ public class AdvancedScreen implements Screen {
 
         final SelectBox<String> selectBox = new SelectBox<>(skin);
         Array<String> list = new Array<>();
-        for(Graphics.DisplayMode mode : Gdx.graphics.getDisplayModes()){
-            if(!list.contains(mode.width + "x" + mode.height, false))
+        for (Graphics.DisplayMode mode : Gdx.graphics.getDisplayModes()) {
+            if (!list.contains(mode.width + "x" + mode.height, false))
                 list.add(mode.width + "x" + mode.height);
         }
 
         selectBox.setItems(list);
         String select = prefs.getPreferences().getInteger("width") + "x" + prefs.getPreferences().getInteger("height");
         selectBox.setSelected(select);
-
-
 
         selectBox.addListener(new ChangeListener() {
             @Override
@@ -66,9 +71,9 @@ public class AdvancedScreen implements Screen {
 
         TextButton backButton = new TextButton("Back", skin);
 
-        backButton.addListener(new InputListener(){
+        backButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.changeScreen(new SettingsScreen(manager));
+                manager.show("Settings");
                 return true;
             }
         });
@@ -83,46 +88,10 @@ public class AdvancedScreen implements Screen {
         container.setFillParent(true);
 
         stage.addActor(container);
-        Gdx.input.setInputProcessor(stage);
         stage.act();
     }
 
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(delta);
-        stage.draw();
-    }
-
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
+    public Stage getStage() {
+        return stage;
     }
 }

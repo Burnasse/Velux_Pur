@@ -1,51 +1,67 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 
+/**
+ * The type Preferences manager.
+ */
 public class PreferencesManager {
-    Preferences preferences = Gdx.app.getPreferences("veluxgamePrefs");;
+    /**
+     * The Preferences get the veluxgamePrefs file in the .prefs folder (C://Users/USER_NAME/.prefs in windows).
+     */
+    Preferences preferences = Gdx.app.getPreferences("veluxgamePrefs");
 
-    public void initializePrefs(){
+    /**
+     * Initialize prefs.
+     * This method must be used in launch.
+     */
+    public void initializePrefs() {
         preferences = Gdx.app.getPreferences("veluxgamePrefs");
 
-        if(!preferences.getBoolean("isInit")){
-            initKey();
+        if (!preferences.getBoolean("isInit")) {
             initSound();
             preferences.putBoolean("isInit", true);
         }
 
-
-        if(preferences.contains("isFullscreen")){
-            if(preferences.getBoolean("isFullscreen"))
+        if (preferences.contains("isFullscreen")) {
+            if (preferences.getBoolean("isFullscreen"))
                 setFullscreen();
             else
                 setWindowed();
-        }
-        else{
+        } else {
             preferences.putBoolean("isFullscreen", true).flush();
             setFullscreen();
         }
     }
 
-    private int getDisplayIndex(int width, int height){
+    /**
+     * Retrieve the correct display index.
+     *
+     * @param width  the width
+     * @param height the height
+     * @return the index of the display width x height
+     */
+    private int getDisplayIndex(int width, int height) {
         int length = Gdx.graphics.getDisplayModes().length;
         for (int i = 0; i < length; i++) {
-            if(width == Gdx.graphics.getDisplayModes()[i].width && height == Gdx.graphics.getDisplayModes()[i].height)
+            if (width == Gdx.graphics.getDisplayModes()[i].width && height == Gdx.graphics.getDisplayModes()[i].height)
                 return i;
         }
 
         return 0;
     }
 
-    public void setFullscreen(){
-        if(preferences.contains("width") && preferences.contains("height")){
+    /**
+     * Set fullscreen.
+     */
+    public void setFullscreen() {
+        if (preferences.contains("width") && preferences.contains("height")) {
             int width = preferences.getInteger("width");
             int height = preferences.getInteger("height");
             int index = getDisplayIndex(width, height);
             Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayModes()[index]);
-        }else{
+        } else {
             preferences.putInteger("width", Gdx.graphics.getDisplayMode().width);
             preferences.putInteger("height", Gdx.graphics.getDisplayMode().height);
             preferences.flush();
@@ -56,7 +72,10 @@ public class PreferencesManager {
         preferences.putBoolean("isFullscreen", true).flush();
     }
 
-    public void setWindowed(){
+    /**
+     * Set windowed.
+     */
+    public void setWindowed() {
         int width = preferences.getInteger("width");
         int height = preferences.getInteger("height");
         Gdx.graphics.setWindowedMode(width, height);
@@ -64,40 +83,39 @@ public class PreferencesManager {
         preferences.putBoolean("isFullscreen", false).flush();
     }
 
-    public void setResolution(int width, int height){
+    /**
+     * Set resolution.
+     *
+     * @param width  the width
+     * @param height the height
+     */
+    public void setResolution(int width, int height) {
         preferences.putInteger("width", width);
         preferences.putInteger("height", height);
         preferences.flush();
 
-        if(Gdx.graphics.isFullscreen()){
+        if (Gdx.graphics.isFullscreen()) {
             int index = getDisplayIndex(width, height);
             Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayModes()[index]);
-        }
-        else{
+        } else {
             Gdx.graphics.setWindowedMode(width, height);
         }
 
     }
 
+    /**
+     * Gets preferences.
+     *
+     * @return the preferences
+     */
     public Preferences getPreferences() {
         return preferences;
     }
 
-    private void initKey(){
-        preferences.putInteger("UP_ARR", Input.Keys.UP);
-        preferences.putInteger("DOWN_ARR", Input.Keys.DOWN);
-        preferences.putInteger("LEFT_ARR", Input.Keys.LEFT);
-        preferences.putInteger("RIGHT_ARR", Input.Keys.RIGHT);
-
-        preferences.putInteger("UP_KEY", Input.Keys.Z);
-        preferences.putInteger("DOWN_KEY", Input.Keys.S);
-        preferences.putInteger("LEFT_KEY", Input.Keys.Q);
-        preferences.putInteger("RIGHT_KEY", Input.Keys.D);
-
-        preferences.flush();
-    }
-
-    private void initSound(){
+    /**
+     * init sound (used in the first launch)
+     */
+    private void initSound() {
         preferences.putInteger("volume", 100);
         preferences.flush();
     }
