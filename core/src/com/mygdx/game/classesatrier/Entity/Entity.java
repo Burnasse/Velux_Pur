@@ -12,6 +12,7 @@ public interface Entity {
      de creer des boites de collisions plus ou moins precise suivant l'objet) de creer un objet qui est normalement
      directement instanciable en jeux.
       */
+
      void loadObject(String fileName,btCollisionShape shape);
 
      InGameObject createObjectFromModel(String node,Model model,btCollisionShape shape);

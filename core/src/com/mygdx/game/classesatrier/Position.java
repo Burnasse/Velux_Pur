@@ -1,6 +1,6 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.classesatrier;
 
-public class Point {
+public class Position {
     private int x;
     private int y;
     private char content;
@@ -13,12 +13,12 @@ public class Point {
         return y;
     }
 
-    public Point(int x, int y) {
+    public Position(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point(int x, int y, char character) {
+    public Position(int x, int y, char character) {
         this.x = x;
         this.y = y;
         content = character;

@@ -1,8 +1,10 @@
 package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
 
 import com.mygdx.game.classesatrier.FloorLayout.Floor;
-import com.mygdx.game.classesatrier.FloorLayout.Point;
-import com.mygdx.game.classesatrier.FloorLayout.Room;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
+import com.mygdx.game.classesatrier.Position;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -21,59 +23,29 @@ public class GenericFloor extends Floor {
     public GenericFloor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
-        layout = new Point[sizeOfFloor][sizeOfFloor];
+        layout = new Position[sizeOfFloor][sizeOfFloor];
 
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
-                layout[i][j] = new Point(i, j);
+                layout[i][j] = new Position(i, j);
             }
         }
 
-        int width;
-        int height;
-        int x;
-        int y;
+        GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
+
         Random rand = new Random();
-        int count = 0;
-        ArrayList<Room> rooms = new ArrayList<>();
-        while (rooms.size() < numberOfRooms) {
-            count = count + 1;
-            width = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
-            height = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
 
-            x = rand.nextInt(sizeOfFloor - maxRoomSize + 1);
-            y = rand.nextInt(sizeOfFloor - maxRoomSize + 1);
-
-            Room newRoom = new Room(x, y, x + width, y + height);
-
-            if (!rooms.isEmpty()) {
-                boolean intersects = false;
-                for (Room room : rooms) {
-                    if (newRoom.intersects(room)) {
-                        intersects = true;
-                        if (count == 30) {
-                            count = 0;
-                            rooms.clear();
-                        }
-                        break;
-                    }
-                }
-                if (!intersects) {
-                    Point prevCenter = rooms.get(rooms.size() - 1).getCenter();
-                    rooms.add(newRoom);
-                    Point center = rooms.get(rooms.size() - 1).getCenter();
-                    if (rand.nextInt(1) == 0) {
-                        hCorridor(prevCenter.getX(), center.getX(), prevCenter.getY());
-                        vCorridor(prevCenter.getY(), center.getY(), center.getX());
-                    } else {
-                        vCorridor(prevCenter.getY(), center.getY(), prevCenter.getX());
-                        hCorridor(prevCenter.getX(), center.getX(), center.getY());
-                    }
-                }
-            } else
-                rooms.add(newRoom);
+        for (int i = 1; i < numberOfRooms; i++) {
+            Position prevCenter = rooms.get(i - 1).getCenter();
+            Position center = rooms.get(i).getCenter();
+            if (rand.nextInt(1) == 0) {
+                hCorridor(prevCenter.getX(), center.getX(), prevCenter.getY());
+                vCorridor(prevCenter.getY(), center.getY(), center.getX());
+            } else {
+                vCorridor(prevCenter.getY(), center.getY(), prevCenter.getX());
+                hCorridor(prevCenter.getX(), center.getX(), center.getY());
+            }
         }
-
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
                 if (layout[i][j].getContent() != ' ')
@@ -86,7 +58,6 @@ public class GenericFloor extends Floor {
                     layout[i][j].setContent(' ');
             }
         }
-
     }
 
     /**

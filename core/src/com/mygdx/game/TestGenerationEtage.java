@@ -15,7 +15,6 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
-import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 
 public class TestGenerationEtage extends ApplicationAdapter {
@@ -62,7 +61,7 @@ public class TestGenerationEtage extends ApplicationAdapter {
                 .box(1f, 1f, 1f);
         model = modelBuilder.end();
 
-        generateFloor(30);
+        generateFloor(15);
     }
 
     /**
@@ -117,16 +116,7 @@ public class TestGenerationEtage extends ApplicationAdapter {
         }
         labyrinth.printFloor();
     }
-
-
-    private void doneLoading() {
-        Model model = assets.get("block.obj", Model.class);
-        ModelInstance block = new ModelInstance(model);
-        instances.add(block);
-        loading = false;
-    }
-
-
+    
     @Override
     public void render() {
 

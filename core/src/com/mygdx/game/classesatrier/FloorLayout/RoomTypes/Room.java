@@ -1,6 +1,8 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.classesatrier.FloorLayout.RoomTypes;
 
-public class Room {
+import com.mygdx.game.classesatrier.Position;
+
+public abstract class Room {
 
 
     private int x1;
@@ -8,9 +10,9 @@ public class Room {
     private int x2;
     private int y2;
 
-    private Point center;
+    private Position center;
 
-    public Point getCenter() {
+    public Position getCenter() {
         return center;
     }
 
@@ -28,7 +30,7 @@ public class Room {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        center = new Point((x1 + x2) / 2, (y1 + y2) / 2);
+        center = new Position((x1 + x2) / 2, (y1 + y2) / 2);
     }
 
     /**

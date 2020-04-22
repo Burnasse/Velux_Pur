@@ -4,23 +4,28 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.classesatrier.EntityPosition;
+import com.mygdx.game.classesatrier.Position;
+
 /* Commentaires d'expliquation dans l'interface */
 public class EntityPlayer implements Entity {
 
     private String playerName;
     private CharacteristicMonster characteristics;
-    private EntityPosition position;
+    private Position position;
     public boolean loading;
     private Model model;
     private OutGameEntity outGameEntity;
 
 
-    public EntityPlayer(int attackDamage, int health, String playerName, float initialX, float initialY, float initialZ, String fileName){
+    public EntityPlayer(int attackDamage, int health, String playerName, int initialX, int initialY, String fileName){
         this.playerName = playerName;
         this.characteristics = new CharacteristicMonster(attackDamage,health);
-        this.position = new EntityPosition(initialX,initialY,initialZ);
+        this.position = new Position(initialX,initialY);
     }
 
+    public void setPosition(int x, int y) {
+        position = new Position(x,y);
+    }
 
     @Override
     public void loadObject(String fileName, btCollisionShape shape) {
