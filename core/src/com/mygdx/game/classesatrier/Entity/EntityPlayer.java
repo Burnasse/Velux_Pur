@@ -17,14 +17,14 @@ public class EntityPlayer implements Entity {
     private OutGameEntity outGameEntity;
 
 
-    public EntityPlayer(int attackDamage, int health, String playerName, int initialX, int initialY, String fileName){
+    public EntityPlayer(int attackDamage, int health, String playerName, int initialX, int initialY, String fileName) {
         this.playerName = playerName;
-        this.characteristics = new CharacteristicMonster(attackDamage,health);
-        this.position = new Position(initialX,initialY);
+        this.characteristics = new CharacteristicMonster(attackDamage, health);
+        this.position = new Position(initialX, initialY);
     }
 
-    public void setPosition(int x, int y) {
-        position = new Position(x,y);
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class EntityPlayer implements Entity {
     }
 
     @Override
-    public InGameObject createObjectFromModel(String node,Model model,btCollisionShape shape){
+    public InGameObject createObjectFromModel(String node, Model model, btCollisionShape shape) {
         return null;
     }
 
@@ -41,7 +41,9 @@ public class EntityPlayer implements Entity {
         return null;
     }
 
-    public Model getModel(){return model;}
+    public Model getModel() {
+        return model;
+    }
 
     @Override
     public void dispose() {

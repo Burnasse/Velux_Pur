@@ -3,6 +3,7 @@ package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
 import com.mygdx.game.classesatrier.FloorLayout.Floor;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
+import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 import com.mygdx.game.classesatrier.Position;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 
@@ -30,8 +31,9 @@ public class GenericFloor extends Floor {
                 layout[i][j] = new Position(i, j);
             }
         }
-
+        System.out.println("aa");
         GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
+        System.out.println("aaaa");
 
         Random rand = new Random();
 
@@ -78,5 +80,10 @@ public class GenericFloor extends Floor {
         for (int i = Math.min(y1, y2); i < Math.max(y1, y2); i++) {
             layout[x][i].setContent(' ');
         }
+    }
+
+    public static void main(String[] args) {
+        GenericFloor floor = new GenericFloor(50,8,1,5);
+        floor.printFloor();
     }
 }

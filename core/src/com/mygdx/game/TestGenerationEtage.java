@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 
 public class TestGenerationEtage extends ApplicationAdapter {
@@ -69,38 +70,38 @@ public class TestGenerationEtage extends ApplicationAdapter {
      */
 
     public void generateFloor(int sizeOfFloor) {
-        Labyrinth labyrinth = new Labyrinth(sizeOfFloor);
-        labyrinth.printFloor();
+        Labyrinth genericFloor = new Labyrinth(40);
+        genericFloor.printFloor();
         int x = 0;
         int y = 0;
         int z = 0;
         EntityObjects box = new EntityObjects("box", "dd", 0, 0, 0);
-        for (int i = 0; i < labyrinth.getLayout().length; i++) {
-            for (int j = 0; j < labyrinth.getLayout().length; j++) {
-                if (labyrinth.getLayout()[i][j].getContent() == ' ') {
+        for (int i = 0; i < genericFloor.getLayout().length; i++) {
+            for (int j = 0; j < genericFloor.getLayout().length; j++) {
+                if (genericFloor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 1f))));
                     objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z);
 
-                    if (i == 0 || j == 0 || i == labyrinth.getSizeOfFloor() - 1 || j == labyrinth.getSizeOfFloor() - 1) {
+                    if (i == 0 || j == 0 || i == genericFloor.getSizeOfFloor() - 1 || j == genericFloor.getSizeOfFloor() - 1) {
                         objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y, z + 1);
+                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y+1, z );
                     } else {
-                        if (labyrinth.getLayout()[i - 1][j].getContent()=='a') {
+                        if (genericFloor.getLayout()[i - 1][j].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y, z + 1);
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y+1, z );
                         }
 
-                        if (labyrinth.getLayout()[i + 1][j].getContent() =='a') {
+                        if (genericFloor.getLayout()[i + 1][j].getContent() =='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y, z + 1);
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y+1, z );
                         }
 
-                        if (labyrinth.getLayout()[i][j - 1].getContent()=='a') {
+                        if (genericFloor.getLayout()[i][j - 1].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y - 1, z + 1);
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y +1, z - 1);
                         }
 
-                        if (labyrinth.getLayout()[i][j + 1].getContent()=='a') {
+                        if (genericFloor.getLayout()[i][j + 1].getContent()=='a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
                         }
@@ -108,13 +109,13 @@ public class TestGenerationEtage extends ApplicationAdapter {
 
 
                 }
-                y = y + 1;
+                z = z + 1;
 
             }
             x = x + 1;
-            y = 0;
+            z = 0;
         }
-        labyrinth.printFloor();
+        genericFloor.printFloor();
     }
     
     @Override

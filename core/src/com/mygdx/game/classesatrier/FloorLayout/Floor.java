@@ -31,7 +31,7 @@ public abstract class Floor {
         return layout;
     }
 
-    public void GenerateRooms(int numberOfRooms, int maxRoomSize, int minRoomSize) {
+    public void GenerateRooms(int numberOfRooms, int minRoomSize, int maxRoomSize) {
         int width;
         int height;
         int x;
@@ -40,6 +40,7 @@ public abstract class Floor {
         int count = 0;
 
         while (rooms.size() < numberOfRooms) {
+
             width = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
             height = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
 
@@ -49,7 +50,7 @@ public abstract class Floor {
             if (rooms.isEmpty())
                 rooms.add(new SpawnRoom(x, y, x + width, y + height));
 
-            else {
+            if (!rooms.isEmpty()) {
                 Room newRoom = new EnemyRoom(x, y, x + width, y + height, 2);
                 for (Room room : rooms) {
                     if (newRoom.intersects(room)) {
@@ -61,6 +62,7 @@ public abstract class Floor {
                         break;
                     }
                 }
+                rooms.add(newRoom);
             }
         }
     }
