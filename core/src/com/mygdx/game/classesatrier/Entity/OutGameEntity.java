@@ -21,7 +21,7 @@ public class OutGameEntity {
     private InGameObject.Constructor constructor ;
 
     /**
-     * Instantiates a new Out game entity from an outside .obj or .g3db ( which is the best).Create the constructor to instanciate the entity.
+     * create a new Out game entity from an outside .obj or .g3db ( which is the best).Create the constructor to instanciate the entity.
      *
      * @param filename the filename
      * @param shape    the shape
@@ -36,7 +36,7 @@ public class OutGameEntity {
     }
 
     /**
-     * Instantiates a new Out game entity from an already existing Model.
+     * createsa new Out game entity from an already existing Model.
      *
      * @param model the model
      * @param shape the shape

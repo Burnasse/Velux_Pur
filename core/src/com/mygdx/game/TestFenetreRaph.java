@@ -58,11 +58,18 @@ public class TestFenetreRaph extends ApplicationAdapter {
     InGameObject vaisseau;
 
     btCollisionConfiguration collisionConfig;
+
     btDispatcher dispatcher;
+
     MyContactListener contactListener;
+
     btBroadphaseInterface broadphase;
+
     btCollisionWorld collisionWorld;
 
+    private boolean playerPov =true;
+
+    private int clock;
 
     @Override
     public void create() {
@@ -80,7 +87,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
          */
 
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 0f, /**/0f);
+        cam.position.set(14f, 6f, /**/20f);
         cam.lookAt(10, 10f, 10);
         cam.near = 1f;
         cam.far = 300f;
@@ -120,9 +127,9 @@ public class TestFenetreRaph extends ApplicationAdapter {
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
         contactListener = new MyContactListener();
 
-        for (InGameObject obj: objectsInstances){
+        /*for (InGameObject obj: objectsInstances){
             collisionWorld.addCollisionObject(obj.body);
-        }
+        }*/
 
         EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
         this.vaisseau = ship.getInGameObject();
@@ -181,16 +188,25 @@ public class TestFenetreRaph extends ApplicationAdapter {
         loading = false;
     }
 
+    /**
+     * position the cam behind the player
+     */
+    private void camFollowPlayer(){
+        cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
+        float champdevision[] = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
+        cam.view.set(champdevision);
+        cam.direction.set(-0.047802035f,-0.36853015f,0.9283842f);
+    }
 
-    @Override
-    public void render() {
-        camController.update();
-
+    /**
+     * everything is said in the methode title
+     */
+    private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             vaisseau.mooveEntity(new EntityPosition(0f, -0.1f, 0f));
@@ -204,6 +220,42 @@ public class TestFenetreRaph extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
             vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -0.1f));
         }
+
+    }
+
+    @Override
+    public void render() {
+
+        playerDeplacment();
+
+        clock += 1; // add the time since the last frame
+
+        if (clock > 10) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+                if (playerPov)
+                    playerPov = false;
+                else
+                    playerPov = true;
+            }
+            clock = 0; // reset your variable to 0
+        }
+
+        if (playerPov){
+            camFollowPlayer();
+            cam.update();
+        }
+        else{
+            camController.update();
+        }
+
+        /**
+         * cam info
+         *
+        System.out.println("cam pos :" +cam.position);
+        System.out.println("cam look at :" + cam.view);
+        System.out.println("X : "+vaisseau.transform.getValues()[12] + "Y = "+ vaisseau.transform.getValues()[13]+ "Z = "+vaisseau.transform.getValues()[14]);
+        System.out.println("cam look at :" + cam.direction);
+**/
 
         collisionWorld.performDiscreteCollisionDetection();
 

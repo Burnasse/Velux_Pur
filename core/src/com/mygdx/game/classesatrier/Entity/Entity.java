@@ -14,7 +14,7 @@ public class Entity {
     private String fileName;
 
     /**
-     * Instantiates a new Entity with a file.
+     * creates a new Entity with a file.
      *
      * @param fileName    the file name
      * @param shape       the shape
@@ -27,7 +27,7 @@ public class Entity {
     }
 
     /**
-     * Instantiates a new Entity with a model
+     * creates a new Entity with a model
      *
      * @param model       the model
      * @param shape       the shape
