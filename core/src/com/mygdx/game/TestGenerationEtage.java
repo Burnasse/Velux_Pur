@@ -149,16 +149,16 @@ public class TestGenerationEtage extends ApplicationAdapter {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(box.getInGameObject(new EntityPosition(x,y,z)));
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y, z + 1)));
+                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z)));
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y, z + 1)));
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y + 1, z)));
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y, z + 1)));
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y+ 1, z )));
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y - 1, z + 1)));
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y +1, z -1)));
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
@@ -166,10 +166,10 @@ public class TestGenerationEtage extends ApplicationAdapter {
 
                     }
                 }
-                y = y + 1;
+                z = z + 1;
             }
             x = x + 1;
-            y = 0;
+            z = 0;
         }
         floor.printFloor();
     }
