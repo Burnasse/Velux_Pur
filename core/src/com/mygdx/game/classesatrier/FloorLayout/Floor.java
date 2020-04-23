@@ -6,7 +6,7 @@ import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
 import com.mygdx.game.classesatrier.Position;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Floor {
     protected Position[][] layout;
@@ -36,33 +36,40 @@ public abstract class Floor {
         int height;
         int x;
         int y;
-        Random rand = new Random();
+        boolean intersect = false;
         int count = 0;
 
         while (rooms.size() < numberOfRooms) {
 
-            width = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
-            height = rand.nextInt(maxRoomSize - minRoomSize + 1) + minRoomSize;
+            width = ThreadLocalRandom.current().nextInt(minRoomSize, maxRoomSize);
+            height = ThreadLocalRandom.current().nextInt(minRoomSize, maxRoomSize);
 
-            x = rand.nextInt(sizeOfFloor - maxRoomSize + 1);
-            y = rand.nextInt(sizeOfFloor - maxRoomSize + 1);
-
-            if (rooms.isEmpty())
-                rooms.add(new SpawnRoom(x, y, x + width, y + height));
+            x = ThreadLocalRandom.current().nextInt(0, sizeOfFloor - width + 1);
+            y = ThreadLocalRandom.current().nextInt(0, sizeOfFloor - height + 1);
 
             if (!rooms.isEmpty()) {
                 Room newRoom = new EnemyRoom(x, y, x + width, y + height, 2);
                 for (Room room : rooms) {
                     if (newRoom.intersects(room)) {
                         count = count + 1;
-                        if (count == 30) {
-                            count = 0;
-                            rooms.clear();
-                        }
+                        intersect = true;
                         break;
                     }
                 }
-                rooms.add(newRoom);
+                if (!intersect) rooms.add(newRoom);
+
+            } else {
+                rooms.add(new SpawnRoom(x, y, x + width, y + height));
+            }
+            if(count == 3000) rooms.clear();
+        }
+
+        for (Room room : rooms) {
+
+
+            for (int i = room.getX1(); i < room.getX2(); i++) {
+                for (int j = room.getY1(); j < room.getY2(); j++)
+                    layout[i][j].setContent(' ');
             }
         }
     }

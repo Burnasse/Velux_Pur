@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class Labyrinth extends Floor {
 
-    public Labyrinth(int sizeOfFloor) {
+    public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
         Random rand = new Random();
 
         this.sizeOfFloor = sizeOfFloor;
@@ -77,9 +77,11 @@ public class Labyrinth extends Floor {
             }
             walls.remove(currentWall);
         }
+        GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
     }
 
-    private void checkForWalls(int x, int y,ArrayList<Position> walls) {
+
+    private void checkForWalls(int x, int y, ArrayList<Position> walls) {
         int x1 = x - 1;
         int x2 = x + 2;
         int y1 = y - 1;
@@ -104,7 +106,7 @@ public class Labyrinth extends Floor {
     }
 
     public static void main(String[] args) {
-        Labyrinth labyrinth = new Labyrinth(30);
+        Labyrinth labyrinth = new Labyrinth(40,3,4,6);
         labyrinth.printFloor();
     }
 }

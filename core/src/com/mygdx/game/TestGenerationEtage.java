@@ -62,15 +62,15 @@ public class TestGenerationEtage extends ApplicationAdapter {
                 .box(1f, 1f, 1f);
         model = modelBuilder.end();
 
-        generateFloor(15);
+        generateFloor(40, 3, 3, 5);
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
 
-    public void generateFloor(int sizeOfFloor) {
-        Labyrinth genericFloor = new Labyrinth(40);
+    public void generateFloor(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
+        Labyrinth genericFloor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         genericFloor.printFloor();
         int x = 0;
         int y = 0;
@@ -84,24 +84,24 @@ public class TestGenerationEtage extends ApplicationAdapter {
 
                     if (i == 0 || j == 0 || i == genericFloor.getSizeOfFloor() - 1 || j == genericFloor.getSizeOfFloor() - 1) {
                         objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y+1, z );
+                        objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z);
                     } else {
-                        if (genericFloor.getLayout()[i - 1][j].getContent()=='a') {
+                        if (genericFloor.getLayout()[i - 1][j].getContent() == 'a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y+1, z );
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x - 1, y + 1, z);
                         }
 
-                        if (genericFloor.getLayout()[i + 1][j].getContent() =='a') {
+                        if (genericFloor.getLayout()[i + 1][j].getContent() == 'a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y+1, z );
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x + 1, y + 1, z);
                         }
 
-                        if (genericFloor.getLayout()[i][j - 1].getContent()=='a') {
+                        if (genericFloor.getLayout()[i][j - 1].getContent() == 'a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
-                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y +1, z - 1);
+                            objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z - 1);
                         }
 
-                        if (genericFloor.getLayout()[i][j + 1].getContent()=='a') {
+                        if (genericFloor.getLayout()[i][j + 1].getContent() == 'a') {
                             objectsInstances.add(box.createObjectFromModel("box", model, new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f))));
                             objectsInstances.get(objectsInstances.size - 1).transform.trn(x, y + 1, z + 1);
                         }
@@ -117,7 +117,7 @@ public class TestGenerationEtage extends ApplicationAdapter {
         }
         genericFloor.printFloor();
     }
-    
+
     @Override
     public void render() {
 

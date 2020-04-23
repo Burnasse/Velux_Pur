@@ -31,9 +31,8 @@ public class GenericFloor extends Floor {
                 layout[i][j] = new Position(i, j);
             }
         }
-        System.out.println("aa");
+
         GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
-        System.out.println("aaaa");
 
         Random rand = new Random();
 
@@ -54,12 +53,7 @@ public class GenericFloor extends Floor {
                     layout[i][j].setContent('a');
             }
         }
-        for (Room room : rooms) {
-            for (int i = room.getX1(); i < room.getX2(); i++) {
-                for (int j = room.getY1(); j < room.getY2(); j++)
-                    layout[i][j].setContent(' ');
-            }
-        }
+
     }
 
     /**
@@ -67,7 +61,7 @@ public class GenericFloor extends Floor {
      */
 
     public void hCorridor(int x1, int x2, int y) {
-        for (int i = Math.min(x1, x2); i < Math.max(x1, x2); i++) {
+        for (int i = Math.min(x1, x2); i < Math.max(x1, x2) + 1; i++) {
             layout[i][y].setContent(' ');
         }
     }
@@ -77,13 +71,13 @@ public class GenericFloor extends Floor {
      */
 
     public void vCorridor(int y1, int y2, int x) {
-        for (int i = Math.min(y1, y2); i < Math.max(y1, y2); i++) {
+        for (int i = Math.min(y1, y2); i < Math.max(y1, y2) + 1; i++) {
             layout[x][i].setContent(' ');
         }
     }
 
     public static void main(String[] args) {
-        GenericFloor floor = new GenericFloor(50,8,1,5);
+        GenericFloor floor = new GenericFloor(40,4,2,5);
         floor.printFloor();
     }
 }

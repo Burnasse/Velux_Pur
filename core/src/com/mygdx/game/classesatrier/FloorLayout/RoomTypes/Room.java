@@ -38,8 +38,16 @@ public abstract class Room {
      */
 
     public boolean intersects(Room room) {
-        return (x1 <= room.x2 && x2 >= room.x1 &&
-                y1 <= room.y2 && room.y2 >= room.y1);
+
+        if (x1 >= room.getX2() || room.getX1() >= x2) {
+            return false;
+        }
+
+        if (y1 <= room.getY2() || room.getY1() <= y2) {
+            return false;
+        }
+
+        return true;
     }
 
     public int getX1() {
