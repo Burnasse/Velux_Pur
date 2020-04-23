@@ -1,5 +1,5 @@
 package com.mygdx.game.classesatrier.Entity;
 
-public interface Item {
+public interface ItemDistance {
 
 }

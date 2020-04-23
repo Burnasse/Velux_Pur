@@ -1,43 +1,62 @@
 package com.mygdx.game.classesatrier.Entity;
 
-
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.classesatrier.EntityPosition;
 
+/**
+ * The type Entity objects.
+ */
 /* Commentaires d'expliquation dans l'interface */
-public class EntityObjects implements Entity {
+public class EntityObjects implements EntityInterface {
 
     private String objectName;
     private CharacteristicMonster characteristics;
-    private EntityPosition position;
-    public AssetManager assets;
-    public boolean loading;
-    private Model model;
-    private OutGameEntity outGameEntity;
+    private Entity entity;
+    private Item item;
 
-
-    public EntityObjects(String objName, String fileName, float initialX, float initialY, float initialZ) {
+    /**
+     * Instantiates a new Entity objects with an outside file.
+     *
+     * @param objName  the obj name
+     * @param fileName the file name
+     * @param shape    the shape
+     * @param initialX the initial x
+     * @param initialY the initial y
+     * @param initialZ the initial z
+     */
+    public EntityObjects(String objName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
         this.objectName = objName;
-        this.characteristics = new CharacteristicMonster(0, 1);
-        this.position = new EntityPosition(initialX, initialY, initialZ);
+        this.characteristics = new CharacteristicMonster(0,1);
+        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
+        this.entity = new Entity(fileName,shape,position);
+    }
 
+    /**
+     * Instantiates a new Entity objects with a model.
+     *
+     * @param objName  the obj name
+     * @param model    the model
+     * @param shape    the shape
+     * @param initialX the initial x
+     * @param initialY the initial y
+     * @param initialZ the initial z
+     */
+    public EntityObjects(String objName,Model model,btCollisionShape shape,float initialX,float initialY,float initialZ){
+        this.objectName = objName;
+        this.characteristics = new CharacteristicMonster(0,1);
+        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
+        this.entity = new Entity(model,shape,position);
     }
 
     @Override
-    public void loadObject(String fileName, btCollisionShape shape) {
-    }
-
-
-    public InGameObject createObjectFromModel(String node, Model model, btCollisionShape shape) {
-        InGameObject.Constructor constructor = new InGameObject.Constructor(model, node, shape);
-        return constructor.construct();
+    public InGameObject getInGameObject(){
+        return entity.getInGameObject();
     }
 
     @Override
-    public InGameObject getInGameObject() {
-        return null;
+    public InGameObject getInGameObject(EntityPosition position){
+        return entity.getInGameObject(position);
     }
 
     @Override

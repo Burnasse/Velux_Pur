@@ -2,32 +2,62 @@ package com.mygdx.game.classesatrier.Entity;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.mygdx.game.classesatrier.EntityPosition;
 
-public interface Entity {
+/**
+ * The type Entity.
+ */
+public class Entity {
+
+    private EntityPosition position;
+    private OutGameEntity outGameEntity;
+    private String fileName;
+
+    /**
+     * creates a new Entity with a file.
+     *
+     * @param fileName    the file name
+     * @param shape       the shape
+     * @param spawningPos the spawning pos
+     */
+    public Entity( String fileName, btCollisionShape shape,EntityPosition spawningPos){
+        this.position = spawningPos;
+        this.fileName = fileName;
+        this.outGameEntity = new OutGameEntity(this.fileName,shape);
+    }
+
+    /**
+     * creates a new Entity with a model
+     *
+     * @param model       the model
+     * @param shape       the shape
+     * @param spawningPos the spawning pos
+     */
+    public Entity(Model model, btCollisionShape shape,EntityPosition spawningPos){
+        this.position = spawningPos;
+        this.outGameEntity = new OutGameEntity(model,shape);
+    }
+
+    /**
+     * Gets in game object.
+     *
+     * @return the in game object
+     */
+    public InGameObject getInGameObject() {
+        return outGameEntity.createEntityInstance(this.position);
+    }
+
+    public InGameObject getInGameObject(EntityPosition position) {
+        return outGameEntity.createEntityInstance(position);
+    }
+
+    /**
+     * Dispose.
+     */
+    public void dispose() {
+
+    }
 
 
-     /*
-     fonction permettant avec le path du fichier g3db ( c'est le meilleurs pour
-     chargé des models ) et une hitbox ( btCollisionShape est une class permettant
-     de creer des boites de collisions plus ou moins precise suivant l'objet) de creer un objet qui est normalement
-     directement instanciable en jeux.
-      */
-
-     void loadObject(String fileName,btCollisionShape shape);
-
-     InGameObject createObjectFromModel(String node,Model model,btCollisionShape shape);
-
-
-     /*
-     getter de l'objet instanciable
-      */
-     InGameObject getInGameObject();
-
-
-     /*
-     permet de vider la memoire de la hitbox (a faire obligatoirement
-     quand on a finis d'utiliser l'objet car pas automatique )
-      */
-     void dispose();
 
 }
