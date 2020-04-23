@@ -1,14 +1,10 @@
 package com.mygdx.game.classesatrier;
 
-public class EntityPosition {
+import com.badlogic.gdx.math.Vector3;
 
-    private float posX;
-    private float posY;
-    private float posZ;
+public class EntityPosition extends Vector3 {
 
     public EntityPosition(float x, float y, float z) {
-        posX = x;
-        posY = y;
-        posZ = z;
+        super(x,y,z);
     }
 }

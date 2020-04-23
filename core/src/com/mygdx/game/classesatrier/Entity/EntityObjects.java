@@ -55,6 +55,11 @@ public class EntityObjects implements EntityInterface {
     }
 
     @Override
+    public InGameObject getInGameObject(EntityPosition position){
+        return entity.getInGameObject(position);
+    }
+
+    @Override
     public void dispose() {
 
     }
