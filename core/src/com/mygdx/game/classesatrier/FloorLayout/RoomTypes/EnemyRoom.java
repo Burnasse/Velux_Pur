@@ -1,5 +1,6 @@
 package com.mygdx.game.classesatrier.FloorLayout.RoomTypes;
 
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.mygdx.game.classesatrier.Entity.EntityMonster;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 
@@ -24,10 +25,11 @@ public class EnemyRoom extends Room {
         Random rand = new Random();
         int currentMonsterXPosition;
         int currentMonsterYPosition;
-        for (int i = 0; i < numberOfMonsters ; i++) {
+        Model model = new Model();
+        for (int i = 0; i < numberOfMonsters; i++) {
             currentMonsterXPosition = rand.nextInt(x2 - x1 + 1) + x1;
             currentMonsterYPosition = rand.nextInt(y2 - y1 + 1) + y1;
-            enemies.add(new EntityMonster(1,5,"Machin",currentMonsterXPosition,currentMonsterYPosition));
+            enemies.add(new EntityMonster("e", ));
         }
     }
 

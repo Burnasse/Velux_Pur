@@ -20,7 +20,7 @@ public class Entity {
      * @param shape       the shape
      * @param spawningPos the spawning pos
      */
-    public Entity( String fileName, btCollisionShape shape,EntityPosition spawningPos){
+    public Entity(String fileName, btCollisionShape shape,EntityPosition spawningPos){
         this.position = spawningPos;
         this.fileName = fileName;
         this.outGameEntity = new OutGameEntity(this.fileName,shape);

@@ -25,6 +25,7 @@ public class EntityMonster implements EntityInterface {
      * @param initialY the initial y
      * @param initialZ the initial z
      */
+
     public EntityMonster(String monsterName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0,1);

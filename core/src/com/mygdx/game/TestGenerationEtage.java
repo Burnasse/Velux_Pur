@@ -3,11 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -21,13 +18,13 @@ import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
 import com.mygdx.game.classesatrier.EntityPosition;
-import com.mygdx.game.classesatrier.FloorLayout.Floor;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 
 
 /**
  * The type Test fenetre raph.
  */
-public class TestFenetreRaph extends ApplicationAdapter {
+public class TestGenerationEtage extends ApplicationAdapter {
 
     class MyContactListener extends ContactListener {
         @Override
@@ -142,29 +139,28 @@ public class TestFenetreRaph extends ApplicationAdapter {
      */
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
-        Floor floor = new Floor(30, 5, 3, 7);
-        floor.generateFloor();
+        GenericFloor floor = new GenericFloor(30, 5, 3, 7);
         int x = 0;
         int y = 0;
         int z = 0;
         EntityObjects box = new EntityObjects("box",model,shape, 0, 0, 0);
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
-                if (floor.getLayout()[i][j] == ' ') {
+                if (floor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(box.getInGameObject(new EntityPosition(x,y,z)));
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
                         objectsInstances.add(box.getInGameObject(new EntityPosition(x, y, z + 1)));
                     } else {
-                        if (floor.getLayout()[i - 1][j] == 'a') {
+                        if (floor.getLayout()[i - 1][j].getContent() == 'a') {
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y, z + 1)));
                         }
-                        if (floor.getLayout()[i + 1][j] == 'a') {
+                        if (floor.getLayout()[i + 1][j].getContent() == 'a') {
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y, z + 1)));
                         }
-                        if (floor.getLayout()[i][j - 1] == 'a') {
+                        if (floor.getLayout()[i][j - 1].getContent() == 'a') {
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y - 1, z + 1)));
                         }
-                        if (floor.getLayout()[i][j + 1] == 'a') {
+                        if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
                         }
 

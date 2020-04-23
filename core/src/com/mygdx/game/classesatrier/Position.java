@@ -1,8 +1,10 @@
 package com.mygdx.game.classesatrier;
 
 public class Position {
+
     private int x;
     private int y;
+
     private char content;
 
     public int getX() {
