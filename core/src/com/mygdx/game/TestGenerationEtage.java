@@ -14,11 +14,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.classesatrier.Entity.EntityMonster;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
 import com.mygdx.game.classesatrier.EntityPosition;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
 import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
+import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 
 
 /**
@@ -99,21 +104,9 @@ public class TestGenerationEtage extends ApplicationAdapter {
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
-		/*modelBuilder.node().id = "sphere";
-		modelBuilder.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-				.sphere(1f, 1f, 1f, 10, 10);*/
         modelBuilder.node().id = "box";
         modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)))
                 .box(1f, 1f, 1f);
-		/*modelBuilder.node().id = "cone";
-		modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
-				.cone(1f, 2f, 1f, 10);
-		modelBuilder.node().id = "capsule";
-		modelBuilder.part("capsule", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
-				.capsule(0.5f, 2f, 10);
-		modelBuilder.node().id = "cylinder";
-		modelBuilder.part("cylinder", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.MAGENTA))).cylinder(1f, 2f, 1f, 10);*/
 
         model = modelBuilder.end();
         generateFloor();
@@ -124,10 +117,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
         contactListener = new MyContactListener();
 
-        /*for (InGameObject obj: objectsInstances){
-            collisionWorld.addCollisionObject(obj.body);
-        }*/
-
         EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
         this.vaisseau = ship.getInGameObject();
         objectsInstances.add(this.vaisseau);
@@ -137,13 +126,22 @@ public class TestGenerationEtage extends ApplicationAdapter {
     /**
      * method that procedurally generates the floor in 3D
      */
+
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
-        GenericFloor floor = new GenericFloor(30, 5, 3, 7);
+        GenericFloor floor = new GenericFloor(100, 8, 4, 9);
         int x = 0;
         int y = 0;
         int z = 0;
         EntityObjects box = new EntityObjects("box",model,shape, 0, 0, 0);
+        for (Room room : floor.getRooms()) {
+            if (room instanceof EnemyRoom) {
+                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
+                    objectsInstances.add(enemy.getInGameObject());
+            }
+            if(room instanceof SpawnRoom)
+                objectsInstances.add(((SpawnRoom) room).getPlayer().getInGameObject());
+        }
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
@@ -152,18 +150,21 @@ public class TestGenerationEtage extends ApplicationAdapter {
                         objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z)));
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
+                            floor.getLayout()[i - 1][j].setContent('m');
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y + 1, z)));
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
+                            floor.getLayout()[i + 1][j].setContent('m');
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y+ 1, z )));
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
+                            floor.getLayout()[i][j-1].setContent('m');
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y +1, z -1)));
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
+                            floor.getLayout()[i][j + 1].setContent('m');
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
                         }
-
                     }
                 }
                 z = z + 1;
@@ -177,6 +178,7 @@ public class TestGenerationEtage extends ApplicationAdapter {
     /**
      * pour l'instant totalement inutile
      */
+
     private void doneLoading() {
         Model model = assets.get("block.obj", Model.class);
         ModelInstance block = new ModelInstance(model);

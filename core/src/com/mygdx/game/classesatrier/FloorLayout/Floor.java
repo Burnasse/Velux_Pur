@@ -27,6 +27,10 @@ public abstract class Floor {
         return sizeOfFloor;
     }
 
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
     public Position[][] getLayout() {
         return layout;
     }

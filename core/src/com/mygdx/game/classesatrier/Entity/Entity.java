@@ -47,6 +47,12 @@ public class Entity {
         return outGameEntity.createEntityInstance(this.position);
     }
 
+    /**
+     * Gets in game object.
+     *
+     * @param position the position
+     * @return the in game object
+     */
     public InGameObject getInGameObject(EntityPosition position) {
         return outGameEntity.createEntityInstance(position);
     }

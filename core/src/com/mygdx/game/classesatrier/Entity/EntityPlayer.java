@@ -16,13 +16,14 @@ public class EntityPlayer implements EntityInterface {
     /**
      * Instantiates a new Entity player. with a file as entry
      *
-     * @param playerName  the player name
-     * @param fileName the file name
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param playerName the player name
+     * @param fileName   the file name
+     * @param shape      the shape
+     * @param initialX   the initial x
+     * @param initialY   the initial y
+     * @param initialZ   the initial z
      */
+
     public EntityPlayer(String playerName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
         this.playerName = playerName;
         this.characteristics = new CharacteristicPlayer(0,1);
@@ -33,12 +34,12 @@ public class EntityPlayer implements EntityInterface {
     /**
      * Instantiates a new Entity player. with a model as entry
      *
-     * @param playerName  the player name
-     * @param model    the model
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param playerName the player name
+     * @param model      the model
+     * @param shape      the shape
+     * @param initialX   the initial x
+     * @param initialY   the initial y
+     * @param initialZ   the initial z
      */
     public EntityPlayer(String playerName,Model model,btCollisionShape shape,float initialX,float initialY,float initialZ){
         this.playerName = playerName;

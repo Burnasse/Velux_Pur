@@ -26,8 +26,8 @@ public class InGameObject extends ModelInstance implements Disposable {
          * Instantiates a new Constructor with a model which has more than 1 model inside
          *
          * @param models the model
-         * @param node  the node of the item that we wants
-         * @param shape the shape
+         * @param node   the node of the item that we wants
+         * @param shape  the shape
          */
         public Constructor(Model models, String node, btCollisionShape shape) {
             this.model = models;
@@ -68,6 +68,9 @@ public class InGameObject extends ModelInstance implements Disposable {
         }
 
 
+    /**
+     * The Body.
+     */
     public final btCollisionObject body;
     /**
      * object is moving or not
@@ -107,7 +110,12 @@ public class InGameObject extends ModelInstance implements Disposable {
             body.dispose();
         }
 
-        public void mooveEntity(EntityPosition pos){
+    /**
+     * Moove entity.
+     *
+     * @param pos the pos
+     */
+    public void mooveEntity(EntityPosition pos){
             super.transform.trn(pos);
         }
     }
