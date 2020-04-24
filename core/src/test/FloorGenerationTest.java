@@ -46,9 +46,9 @@ public class FloorGenerationTest extends ApplicationAdapter {
 
     Environment environment;
 
-    Array<ModelInstance> instances = new Array<ModelInstance>();
+    Array<ModelInstance> instances = new Array<>();
 
-    Array<InGameObject> objectsInstances = new Array<InGameObject>();
+    Array<InGameObject> objectsInstances = new Array<>();
 
     ModelBatch modelBatch;
 
