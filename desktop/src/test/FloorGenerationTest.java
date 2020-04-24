@@ -1,13 +1,12 @@
-package com.mygdx.game;
+package test;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.ai.btree.leaf.Wait;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -17,25 +16,22 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.classesatrier.Entity.EntityMonster;
 import com.mygdx.game.classesatrier.Entity.EntityObjects;
 import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.Entity.InGameObject;
 import com.mygdx.game.classesatrier.EntityPosition;
-import com.mygdx.game.classesatrier.FloorLayout.Floor;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 
 
 /**
- * The type Test fenetre raph.
+ * Just a test to see if the floor is nicely generated
  */
-public class TestFenetreRaph extends ApplicationAdapter {
 
-    class MyContactListener extends ContactListener {
-        @Override
-        public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            System.out.println("eeeeeeee");
-            return true;
-        }
-    }
+public class FloorGenerationTest extends ApplicationAdapter {
 
     public CameraInputController camController;
 
@@ -43,9 +39,9 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
     Environment environment;
 
-    Array<ModelInstance> instances = new Array<ModelInstance>();
+    Array<ModelInstance> instances = new Array<>();
 
-    Array<InGameObject> objectsInstances = new Array<InGameObject>();
+    Array<InGameObject> objectsInstances = new Array<>();
 
     ModelBatch modelBatch;
 
@@ -53,15 +49,11 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
     AssetManager assets;
 
-    boolean loading;
-
     InGameObject vaisseau;
 
     btCollisionConfiguration collisionConfig;
 
     btDispatcher dispatcher;
-
-    MyContactListener contactListener;
 
     btBroadphaseInterface broadphase;
 
@@ -82,10 +74,6 @@ public class TestFenetreRaph extends ApplicationAdapter {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        /**
-         * gestion de la camera
-         */
-
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(14f, 6f, /**/20f);
         cam.lookAt(10, 10f, 10);
@@ -96,129 +84,112 @@ public class TestFenetreRaph extends ApplicationAdapter {
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
 
-        /**
-         * on creer les objets ici
-         */
-
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
-		/*modelBuilder.node().id = "sphere";
-		modelBuilder.part("sphere", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-				.sphere(1f, 1f, 1f, 10, 10);*/
         modelBuilder.node().id = "box";
         modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)))
                 .box(1f, 1f, 1f);
-		/*modelBuilder.node().id = "cone";
-		modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.YELLOW)))
-				.cone(1f, 2f, 1f, 10);
-		modelBuilder.node().id = "capsule";
-		modelBuilder.part("capsule", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.CYAN)))
-				.capsule(0.5f, 2f, 10);
-		modelBuilder.node().id = "cylinder";
-		modelBuilder.part("cylinder", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal,
-				new Material(ColorAttribute.createDiffuse(Color.MAGENTA))).cylinder(1f, 2f, 1f, 10);*/
 
         model = modelBuilder.end();
-        generateFloor();
 
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
-        contactListener = new MyContactListener();
-
-        /*for (InGameObject obj: objectsInstances){
-            collisionWorld.addCollisionObject(obj.body);
-        }*/
 
         EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
         this.vaisseau = ship.getInGameObject();
         objectsInstances.add(this.vaisseau);
         collisionWorld.addCollisionObject(vaisseau.body);
+
+        generateFloor();
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
+
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
-        Floor floor = new Floor(30, 5, 3, 7);
-        floor.generateFloor();
+        GenericFloor floor = new GenericFloor(100, 8, 4, 9);
         int x = 0;
         int y = 0;
         int z = 0;
         EntityObjects box = new EntityObjects("box",model,shape, 0, 0, 0);
+        for (Room room : floor.getRooms()) {
+            if (room instanceof EnemyRoom) {
+                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
+                    objectsInstances.add(enemy.getInGameObject());
+            }
+            if(room instanceof SpawnRoom)
+                objectsInstances.add(((SpawnRoom) room).getPlayer().getInGameObject());
+        }
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
-                if (floor.getLayout()[i][j] == ' ') {
+                if (floor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(box.getInGameObject(new EntityPosition(x,y,z)));
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y, z + 1)));
+                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z)));
                     } else {
-                        if (floor.getLayout()[i - 1][j] == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y, z + 1)));
+                        if (floor.getLayout()[i - 1][j].getContent() == 'a') {
+                            floor.getLayout()[i - 1][j].setContent('m');
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y + 1, z)));
                         }
-                        if (floor.getLayout()[i + 1][j] == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y, z + 1)));
+                        if (floor.getLayout()[i + 1][j].getContent() == 'a') {
+                            floor.getLayout()[i + 1][j].setContent('m');
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y+ 1, z )));
                         }
-                        if (floor.getLayout()[i][j - 1] == 'a') {
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y - 1, z + 1)));
+                        if (floor.getLayout()[i][j - 1].getContent() == 'a') {
+                            floor.getLayout()[i][j-1].setContent('m');
+                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y +1, z -1)));
                         }
-                        if (floor.getLayout()[i][j + 1] == 'a') {
+                        if (floor.getLayout()[i][j + 1].getContent() == 'a') {
+                            floor.getLayout()[i][j + 1].setContent('m');
                             objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
                         }
-
                     }
                 }
-                y = y + 1;
+                z = z + 1;
             }
             x = x + 1;
-            y = 0;
+            z = 0;
         }
         floor.printFloor();
     }
 
     /**
-     * pour l'instant totalement inutile
+     * make it so the camera constantly follows the player
      */
-    private void doneLoading() {
-        Model model = assets.get("block.obj", Model.class);
-        ModelInstance block = new ModelInstance(model);
-        instances.add(block);
-        loading = false;
-    }
 
-    /**
-     * position the cam behind the player
-     */
     private void camFollowPlayer(){
         cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
-        float champdevision[] = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
-        cam.view.set(champdevision);
+        float[] fov = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
+        cam.view.set(fov);
         cam.direction.set(-0.047802035f,-0.36853015f,0.9283842f);
     }
 
     /**
-     * everything is said in the methode title
+     * make the model assigned to the player character moves with the key pressed
      */
+
     private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(+1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, -0.1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(0f, -1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, 0.1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, 1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 0.1f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 1f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -0.1f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -1f));
         }
 
     }
@@ -232,10 +203,7 @@ public class TestFenetreRaph extends ApplicationAdapter {
 
         if (clock > 10) {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                if (playerPov)
-                    playerPov = false;
-                else
-                    playerPov = true;
+                playerPov = !playerPov;
             }
             clock = 0; // reset your variable to 0
         }
@@ -247,15 +215,6 @@ public class TestFenetreRaph extends ApplicationAdapter {
         else{
             camController.update();
         }
-
-        /**
-         * cam info
-         *
-        System.out.println("cam pos :" +cam.position);
-        System.out.println("cam look at :" + cam.view);
-        System.out.println("X : "+vaisseau.transform.getValues()[12] + "Y = "+ vaisseau.transform.getValues()[13]+ "Z = "+vaisseau.transform.getValues()[14]);
-        System.out.println("cam look at :" + cam.direction);
-**/
 
         collisionWorld.performDiscreteCollisionDetection();
 
@@ -272,5 +231,10 @@ public class TestFenetreRaph extends ApplicationAdapter {
         modelBatch.dispose();
         instances.clear();
         assets.dispose();
+    }
+
+    public static void main(String[] arg) {
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        new LwjglApplication(new FloorGenerationTest(), config);
     }
 }

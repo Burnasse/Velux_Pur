@@ -12,8 +12,14 @@ import com.mygdx.game.classesatrier.EntityPosition;
 public class OutGameEntity {
 
 
+    /**
+     * The Model.
+     */
     public Model model;
 
+    /**
+     * The Shape.
+     */
     public btCollisionShape shape;
 
 
@@ -57,6 +63,12 @@ public class OutGameEntity {
         return this.constructor.construct();
     }
 
+    /**
+     * Create entity instance in game object.
+     *
+     * @param position the position
+     * @return the in game object
+     */
     public InGameObject createEntityInstance(EntityPosition position){
         InGameObject instanciatedEntity = this.constructor.construct();
         instanciatedEntity.mooveEntity(position);

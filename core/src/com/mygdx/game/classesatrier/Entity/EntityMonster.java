@@ -14,16 +14,15 @@ public class EntityMonster implements EntityInterface {
     private CharacteristicMonster characteristics;
     private Entity entity;
 
-
     /**
      * Instantiates a new Entity monster with an outside file
      *
-     * @param monsterName  the obj name
-     * @param fileName the file name
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param monsterName the obj name
+     * @param fileName    the file name
+     * @param shape       the shape
+     * @param initialX    the initial x
+     * @param initialY    the initial y
+     * @param initialZ    the initial z
      */
     public EntityMonster(String monsterName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
         this.monsterName = monsterName;
@@ -35,12 +34,12 @@ public class EntityMonster implements EntityInterface {
     /**
      * Instantiates a new Entity monster with a model
      *
-     * @param monsterName  the obj name
-     * @param model    the model
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param monsterName the obj name
+     * @param model       the model
+     * @param shape       the shape
+     * @param initialX    the initial x
+     * @param initialY    the initial y
+     * @param initialZ    the initial z
      */
     public EntityMonster(String monsterName, Model model, btCollisionShape shape, float initialX, float initialY, float initialZ){
         this.monsterName = monsterName;

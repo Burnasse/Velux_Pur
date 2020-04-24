@@ -1,6 +1,8 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.classesatrier.FloorLayout.RoomTypes;
 
-public class Room {
+import com.mygdx.game.classesatrier.FloorLayout.Position;
+
+public abstract class Room {
 
 
     private int x1;
@@ -8,14 +10,15 @@ public class Room {
     private int x2;
     private int y2;
 
-    private Point center;
+    private Position center;
 
-    public Point getCenter() {
+    public Position getCenter() {
         return center;
     }
 
     /**
      * generate a room
+     *
      * @param x1 x coordinate of the first point
      * @param y1 y coordinate of the first point
      * @param x2 x coordinate of the second point
@@ -27,7 +30,7 @@ public class Room {
         this.y1 = y1;
         this.x2 = x2;
         this.y2 = y2;
-        center = new Point((x1 + x2) / 2, (y1 + y2) / 2);
+        center = new Position((x1 + x2) / 2, (y1 + y2) / 2);
     }
 
     /**
@@ -35,8 +38,16 @@ public class Room {
      */
 
     public boolean intersects(Room room) {
-        return (x1 <= room.x2 && x2 >= room.x1 &&
-                y1 <= room.y2 && room.y2 >= room.y1);
+
+        if (x1 >= room.getX2() || room.getX1() >= x2) {
+            return false;
+        }
+
+        if (y1 <= room.getY2() || room.getY1() <= y2) {
+            return false;
+        }
+
+        return true;
     }
 
     public int getX1() {
@@ -54,7 +65,6 @@ public class Room {
     public int getY2() {
         return y2;
     }
-
 
 
 }
