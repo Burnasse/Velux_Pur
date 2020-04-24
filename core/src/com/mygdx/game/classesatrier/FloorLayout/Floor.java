@@ -3,7 +3,6 @@ package com.mygdx.game.classesatrier.FloorLayout;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
-import com.mygdx.game.classesatrier.Position;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;

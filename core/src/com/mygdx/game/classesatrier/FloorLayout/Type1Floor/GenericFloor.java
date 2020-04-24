@@ -1,13 +1,8 @@
 package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
 
 import com.mygdx.game.classesatrier.FloorLayout.Floor;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
-import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
-import com.mygdx.game.classesatrier.Position;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.classesatrier.FloorLayout.Position;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class GenericFloor extends Floor {
