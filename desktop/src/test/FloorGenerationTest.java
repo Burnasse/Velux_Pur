@@ -33,13 +33,6 @@ import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 
 public class FloorGenerationTest extends ApplicationAdapter {
 
-    static class MyContactListener extends ContactListener {
-        @Override
-        public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            return true;
-        }
-    }
-
     public CameraInputController camController;
 
     PerspectiveCamera cam;
@@ -61,8 +54,6 @@ public class FloorGenerationTest extends ApplicationAdapter {
     btCollisionConfiguration collisionConfig;
 
     btDispatcher dispatcher;
-
-    MyContactListener contactListener;
 
     btBroadphaseInterface broadphase;
 
@@ -105,7 +96,6 @@ public class FloorGenerationTest extends ApplicationAdapter {
         dispatcher = new btCollisionDispatcher(collisionConfig);
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
-        contactListener = new MyContactListener();
 
         EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
         this.vaisseau = ship.getInGameObject();
