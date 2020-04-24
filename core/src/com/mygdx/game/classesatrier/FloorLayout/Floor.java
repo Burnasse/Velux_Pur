@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Floor {
+
     protected Position[][] layout;
     protected int sizeOfFloor;
     protected ArrayList<Room> rooms = new ArrayList<>();
+
+    /**
+     * to print the floor layout in the console
+     */
 
     public void printFloor() {
         for (int i = 0; i < sizeOfFloor; i++) {
@@ -34,6 +39,14 @@ public abstract class Floor {
     public Position[][] getLayout() {
         return layout;
     }
+
+    /**
+     * put rooms in a floor
+     *
+     * @param numberOfRooms the number of rooms in the floor
+     * @param minRoomSize the minimum size of the width/height of the rooms
+     * @param maxRoomSize the maximum size of the width/height of the rooms
+     */
 
     public void GenerateRooms(int numberOfRooms, int minRoomSize, int maxRoomSize) {
         int width;

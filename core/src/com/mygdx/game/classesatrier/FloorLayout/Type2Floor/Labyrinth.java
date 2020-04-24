@@ -4,9 +4,19 @@ import com.mygdx.game.classesatrier.FloorLayout.Floor;
 import com.mygdx.game.classesatrier.Position;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class Labyrinth extends Floor {
+
+    /**
+     * generate this floor as a labyrinth made following Prim's algorithm
+     *
+     * @param sizeOfFloor size of the grid
+     * @param numberOfRooms number of rooms we will put in our labyrinth
+     * @param maxRoomSize the biggest the width/height of the room can get
+     * @param minRoomSize the smallest the width/height of the room can get
+     */
 
     public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
         Random rand = new Random();
@@ -28,7 +38,7 @@ public class Labyrinth extends Floor {
         ArrayList<Position> walls = new ArrayList<>();
         checkForWalls(startingCaseX, startingCaseY, walls);
 
-        ArrayList<Position> visited = new ArrayList<>();
+        HashSet<Position> visited = new HashSet<>();
         visited.add(layout[startingCaseX][startingCaseY]);
 
         while (!walls.isEmpty()) {
@@ -80,6 +90,12 @@ public class Labyrinth extends Floor {
         GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
     }
 
+    /**
+     * checks the point in position x y for walls around it
+     * @param x x coordinate of our point
+     * @param y y coordinate of our point
+     * @param walls the list we will fill with the walls
+     */
 
     private void checkForWalls(int x, int y, ArrayList<Position> walls) {
         int x1 = x - 1;
@@ -103,10 +119,5 @@ public class Labyrinth extends Floor {
                     walls.add(layout[i][j]);
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Labyrinth labyrinth = new Labyrinth(40,3,4,6);
-        labyrinth.printFloor();
     }
 }

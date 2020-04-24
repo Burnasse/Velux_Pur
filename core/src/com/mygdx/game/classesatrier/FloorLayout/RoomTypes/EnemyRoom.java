@@ -21,17 +21,17 @@ public class EnemyRoom extends Room {
     private ArrayList<EntityMonster> enemies = new ArrayList<>();
 
     /**
-     * generate a room
+     * generate a room with monsters
      *
      * @param x1 x coordinate of the first point
      * @param y1 y coordinate of the first point
      * @param x2 x coordinate of the second point
      * @param y2 y coordinate of the second point
+     * @param numberOfMonsters number of Monsters in the room
      */
 
     public EnemyRoom(int x1, int y1, int x2, int y2, int numberOfMonsters) {
         super(x1, y1, x2, y2);
-        Random rand = new Random();
 
         int currentMonsterXPosition;
         int currentMonsterZPosition;
@@ -51,7 +51,7 @@ public class EnemyRoom extends Room {
             currentMonsterXPosition = ThreadLocalRandom.current().nextInt(x1, x2);
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
 
-            enemies.add(new EntityMonster("vilain", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
+            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
         }
     }
 

@@ -23,18 +23,17 @@ import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
 import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
-import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 
 
 /**
- * The type Test fenetre raph.
+ * Just a test to see if the floor is nicely generated
  */
-public class TestGenerationEtage extends ApplicationAdapter {
 
-    class MyContactListener extends ContactListener {
+public class FloorGenerationTest extends ApplicationAdapter {
+
+    static class MyContactListener extends ContactListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, int userValue1, int partId1, int index1) {
-            System.out.println("eeeeeeee");
             return true;
         }
     }
@@ -54,8 +53,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
     Model model;
 
     AssetManager assets;
-
-    boolean loading;
 
     InGameObject vaisseau;
 
@@ -84,10 +81,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        /**
-         * gestion de la camera
-         */
-
         cam = new PerspectiveCamera(120, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(14f, 6f, /**/20f);
         cam.lookAt(10, 10f, 10);
@@ -98,10 +91,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
 
-        /**
-         * on creer les objets ici
-         */
-
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
         modelBuilder.node().id = "box";
@@ -109,7 +98,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
                 .box(1f, 1f, 1f);
 
         model = modelBuilder.end();
-        generateFloor();
 
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -121,6 +109,8 @@ public class TestGenerationEtage extends ApplicationAdapter {
         this.vaisseau = ship.getInGameObject();
         objectsInstances.add(this.vaisseau);
         collisionWorld.addCollisionObject(vaisseau.body);
+
+        generateFloor();
     }
 
     /**
@@ -176,19 +166,9 @@ public class TestGenerationEtage extends ApplicationAdapter {
     }
 
     /**
-     * pour l'instant totalement inutile
+     * make it so the camera constantly follows the player
      */
 
-    private void doneLoading() {
-        Model model = assets.get("block.obj", Model.class);
-        ModelInstance block = new ModelInstance(model);
-        instances.add(block);
-        loading = false;
-    }
-
-    /**
-     * position the cam behind the player
-     */
     private void camFollowPlayer(){
         cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
         float champdevision[] = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
@@ -197,26 +177,27 @@ public class TestGenerationEtage extends ApplicationAdapter {
     }
 
     /**
-     * everything is said in the methode title
+     * make the model assigned to the player character moves with the key pressed
      */
+
     private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.mooveEntity(new EntityPosition(+0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(+1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.mooveEntity(new EntityPosition(-0.1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, -0.1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(0f, -1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, 0.1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, 1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 0.1f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 1f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -0.1f));
+            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -1f));
         }
 
     }
@@ -230,10 +211,7 @@ public class TestGenerationEtage extends ApplicationAdapter {
 
         if (clock > 10) {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                if (playerPov)
-                    playerPov = false;
-                else
-                    playerPov = true;
+                playerPov = !playerPov;
             }
             clock = 0; // reset your variable to 0
         }
@@ -245,15 +223,6 @@ public class TestGenerationEtage extends ApplicationAdapter {
         else{
             camController.update();
         }
-
-        /**
-         * cam info
-         *
-        System.out.println("cam pos :" +cam.position);
-        System.out.println("cam look at :" + cam.view);
-        System.out.println("X : "+vaisseau.transform.getValues()[12] + "Y = "+ vaisseau.transform.getValues()[13]+ "Z = "+vaisseau.transform.getValues()[14]);
-        System.out.println("cam look at :" + cam.direction);
-**/
 
         collisionWorld.performDiscreteCollisionDetection();
 

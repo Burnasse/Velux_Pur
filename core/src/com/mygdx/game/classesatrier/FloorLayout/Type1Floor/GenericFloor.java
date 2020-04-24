@@ -75,9 +75,4 @@ public class GenericFloor extends Floor {
             layout[x][i].setContent(' ');
         }
     }
-
-    public static void main(String[] args) {
-        GenericFloor floor = new GenericFloor(40,4,2,5);
-        floor.printFloor();
-    }
 }
