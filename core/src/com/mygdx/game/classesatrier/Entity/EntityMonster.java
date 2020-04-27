@@ -3,6 +3,7 @@ package com.mygdx.game.classesatrier.Entity;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.classesatrier.EntityPosition;
+import com.mygdx.game.classesatrier.FloorGeneration.NewInGameObject;
 
 /**
  * The type Entity monster.
@@ -13,6 +14,13 @@ public class EntityMonster implements EntityInterface {
     private String monsterName;
     private CharacteristicMonster characteristics;
     private Entity entity;
+
+    public EntityMonster(String monsterName,Model model, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
+        this.monsterName = monsterName;
+        this.characteristics = new CharacteristicMonster(0,1);
+        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
+        entity = new Entity(model,shape,mass,position);
+    }
 
     /**
      * Instantiates a new Entity monster with an outside file
@@ -60,5 +68,13 @@ public class EntityMonster implements EntityInterface {
 
     @Override
     public void dispose() {
+    }
+
+    public NewInGameObject getGameObject(){
+        return entity.getGameObject();
+    }
+
+    public NewInGameObject getGameObject(EntityPosition position){
+        return entity.getGameObject(position);
     }
 }

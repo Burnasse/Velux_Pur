@@ -1,8 +1,10 @@
 package com.mygdx.game.classesatrier.Entity;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.classesatrier.EntityPosition;
+import com.mygdx.game.classesatrier.FloorGeneration.NewInGameObject;
 
 /**
  * The type Entity.
@@ -12,6 +14,22 @@ public class Entity {
     private EntityPosition position;
     private OutGameEntity outGameEntity;
     private String fileName;
+    private NewInGameObject gameObject;
+
+
+    public Entity(Model model, btCollisionShape shape, float mass, EntityPosition position){
+        this.position = position;
+        gameObject = new NewInGameObject("box", model, shape, mass, position);
+    }
+
+    public Entity(String fileName, btCollisionShape shape, float mass, EntityPosition position){
+        this.position = position;
+        AssetManager assets = new AssetManager();
+        assets.load(fileName,Model.class);
+        assets.finishLoading();
+        Model model = assets.get(fileName,Model.class);
+        gameObject = new NewInGameObject("box", model, shape, mass, position);
+    }
 
     /**
      * creates a new Entity with a file.
@@ -64,6 +82,13 @@ public class Entity {
 
     }
 
+    public NewInGameObject getGameObject() {
+        return gameObject;
+    }
 
-
+    public NewInGameObject getGameObject(EntityPosition position) {
+        gameObject.move(position);
+        return gameObject;
+    }
 }
+

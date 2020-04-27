@@ -40,7 +40,8 @@ public class SpawnRoom extends Room {
         Bullet.init();
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.3f,0.3f,0.3f));
 
-        player = new EntityPlayer("Velux", model, btBoxShape, xPosition, 1,zPosition );
+        //player = new EntityPlayer("Velux", model, btBoxShape, xPosition, 1,zPosition );
+        player = new EntityPlayer("Velux", model, btBoxShape, 1f, xPosition, 1, zPosition);
     }
 
     public SpawnRoom(int x1, int y1, int x2, int y2, EntityPlayer player){

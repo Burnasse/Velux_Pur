@@ -3,6 +3,7 @@ package com.mygdx.game.classesatrier.Entity;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.classesatrier.EntityPosition;
+import com.mygdx.game.classesatrier.FloorGeneration.NewInGameObject;
 
 /**
  * Player class
@@ -12,6 +13,21 @@ public class EntityPlayer implements EntityInterface {
     private String playerName;
     private CharacteristicPlayer characteristics;
     private Entity entity;
+
+    public EntityPlayer(String monsterName,Model model, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
+        this.playerName = monsterName;
+        this.characteristics = new CharacteristicPlayer(0,1);
+        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
+        entity = new Entity(model,shape,mass,position);
+    }
+
+    public EntityPlayer(String monsterName, String fileName, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
+        this.playerName = monsterName;
+        this.characteristics = new CharacteristicPlayer(0,1);
+        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
+        entity = new Entity(fileName,shape,mass,position);
+    }
+
 
     /**
      * Instantiates a new Entity player. with a file as entry
@@ -61,5 +77,13 @@ public class EntityPlayer implements EntityInterface {
     @Override
     public void dispose() {
 
+    }
+
+    public NewInGameObject getGameObject(){
+        return entity.getGameObject();
+    }
+
+    public NewInGameObject getGameObject(EntityPosition position){
+        return entity.getGameObject(position);
     }
 }

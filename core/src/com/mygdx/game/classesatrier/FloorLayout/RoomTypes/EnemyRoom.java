@@ -51,7 +51,8 @@ public class EnemyRoom extends Room {
             currentMonsterXPosition = ThreadLocalRandom.current().nextInt(x1, x2);
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
 
-            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
+            //enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
+            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, 1f, currentMonsterXPosition, 1 , currentMonsterZPosition));
         }
     }
 
