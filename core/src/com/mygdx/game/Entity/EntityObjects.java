@@ -1,8 +1,7 @@
-package com.mygdx.game.classesatrier.Entity;
+package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.mygdx.game.classesatrier.EntityPosition;
 
 /**
  * The type Entity objects.
@@ -13,7 +12,7 @@ public class EntityObjects implements EntityInterface {
     private String objectName;
     private CharacteristicMonster characteristics;
     private Entity entity;
-    private Item item;
+
 
     /**
      * Instantiates a new Entity objects with an outside file.

@@ -1,4 +1,4 @@
-package com.mygdx.game.classesatrier.FloorLayout.RoomTypes;
+package com.mygdx.game.FloorLayout.RoomTypes;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,11 +9,10 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.mygdx.game.classesatrier.Entity.EntityMonster;
+import com.mygdx.game.Entity.EntityMonster;
 import com.badlogic.gdx.physics.bullet.collision.*;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EnemyRoom extends Room {

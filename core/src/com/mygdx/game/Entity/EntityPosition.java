@@ -1,4 +1,4 @@
-package com.mygdx.game.classesatrier;
+package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.math.Vector3;
 

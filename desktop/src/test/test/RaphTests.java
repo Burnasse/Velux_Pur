@@ -6,7 +6,10 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -16,23 +19,17 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.classesatrier.Entity.EntityMonster;
-import com.mygdx.game.classesatrier.Entity.EntityObjects;
-import com.mygdx.game.classesatrier.Entity.EntityPlayer;
-import com.mygdx.game.classesatrier.Entity.InGameObject;
-import com.mygdx.game.classesatrier.EntityPosition;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
-import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 
+import com.mygdx.game.Entity.EntityMonster;
+import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.Entity.InGameObject;
+import com.mygdx.game.Entity.EntityPosition;
+import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
 
-/**
- * Just a test to see if the floor is nicely generated
- */
-
-public class FloorGenerationTest extends ApplicationAdapter {
-
+public class RaphTests extends ApplicationAdapter{
     public CameraInputController camController;
 
     PerspectiveCamera cam;
@@ -49,7 +46,18 @@ public class FloorGenerationTest extends ApplicationAdapter {
 
     AssetManager assets;
 
+    /**
+     * the player
+     */
+    EntityPlayer player;
+    /**
+     * player instance
+     */
     InGameObject vaisseau;
+    /**
+     *weapon instance
+     */
+    InGameObject weapon;
 
     btCollisionConfiguration collisionConfig;
 
@@ -59,9 +67,11 @@ public class FloorGenerationTest extends ApplicationAdapter {
 
     btCollisionWorld collisionWorld;
 
-    private boolean playerPov =true;
+    private boolean playerPov = true;
 
     private int clock;
+
+
 
     @Override
     public void create() {
@@ -97,12 +107,17 @@ public class FloorGenerationTest extends ApplicationAdapter {
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
 
-        EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
-        this.vaisseau = ship.getInGameObject();
+        this.player = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
+        this.vaisseau = player.getInGameObject();
         objectsInstances.add(this.vaisseau);
         collisionWorld.addCollisionObject(vaisseau.body);
 
+        weapon = player.getInGameObjectWeapon();
+        weapon.mooveEntity(new EntityPosition(0f,0.2f,0.3f));
+        objectsInstances.add(this.weapon);
         generateFloor();
+
+
     }
 
     /**
@@ -121,8 +136,6 @@ public class FloorGenerationTest extends ApplicationAdapter {
                 for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
                     objectsInstances.add(enemy.getInGameObject());
             }
-            if(room instanceof SpawnRoom)
-                objectsInstances.add(((SpawnRoom) room).getPlayer().getInGameObject());
         }
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
@@ -155,13 +168,15 @@ public class FloorGenerationTest extends ApplicationAdapter {
             z = 0;
         }
         floor.printFloor();
+        vaisseau.mooveEntity(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY()));
+        weapon.mooveEntity(new EntityPosition(floor.getRooms().get(0).getCenter().getX()+0.2f,1.2f,floor.getRooms().get(0).getCenter().getY()+0.2f));
     }
 
     /**
      * make it so the camera constantly follows the player
      */
 
-    private void camFollowPlayer(){
+    private void playerPov(){
         cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
         float[] fov = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
         cam.view.set(fov);
@@ -174,22 +189,28 @@ public class FloorGenerationTest extends ApplicationAdapter {
 
     private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.mooveEntity(new EntityPosition(+1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(+0.2f, 0f, 0f));
+            weapon.mooveEntity(new EntityPosition(+0.2f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.mooveEntity(new EntityPosition(-1f, 0f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(-0.2f, 0f, 0f));
+            weapon.mooveEntity(new EntityPosition(-0.2f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, -1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(0f, -0f, -0.2f));
+            weapon.mooveEntity(new EntityPosition(0f, -0f, -0.2f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, 1f, 0f));
+            vaisseau.mooveEntity(new EntityPosition(0f, 0f, +0.2f));
+            weapon.mooveEntity(new EntityPosition(0f, 0f, +0.2f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, 1f));
+            vaisseau.mooveEntity(new EntityPosition(0f, +0.2f, 0f));
+            weapon.mooveEntity(new EntityPosition(0f, +0.2f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            vaisseau.mooveEntity(new EntityPosition(-0f, -0f, -1f));
+            vaisseau.mooveEntity(new EntityPosition(0f, -0.2f, 0f));
+            weapon.mooveEntity(new EntityPosition(0f, -0.2f, 0f));
         }
 
     }
@@ -200,16 +221,10 @@ public class FloorGenerationTest extends ApplicationAdapter {
         playerDeplacment();
 
         clock += 1; // add the time since the last frame
-
-        if (clock > 10) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
-                playerPov = !playerPov;
-            }
-            clock = 0; // reset your variable to 0
-        }
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F7))
+            playerPov=!playerPov;
         if (playerPov){
-            camFollowPlayer();
+            playerPov();
             cam.update();
         }
         else{
@@ -235,6 +250,6 @@ public class FloorGenerationTest extends ApplicationAdapter {
 
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        new LwjglApplication(new FloorGenerationTest(), config);
+        new LwjglApplication(new RaphTests(), config);
     }
 }
