@@ -108,7 +108,6 @@ public class FloorGenerationTest extends ApplicationAdapter {
     /**
      * method that procedurally generates the floor in 3D
      */
-
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
         GenericFloor floor = new GenericFloor(100, 8, 4, 9);

@@ -14,15 +14,15 @@ public class EntityPlayer implements EntityInterface {
     private CharacteristicPlayer characteristics;
     private Entity entity;
 
-    public EntityPlayer(String monsterName,Model model, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
-        this.playerName = monsterName;
+    public EntityPlayer(String playerName,Model model, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
+        this.playerName = playerName;
         this.characteristics = new CharacteristicPlayer(0,1);
         EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
         entity = new Entity(model,shape,mass,position);
     }
 
-    public EntityPlayer(String monsterName, String fileName, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
-        this.playerName = monsterName;
+    public EntityPlayer(String playerName, String fileName, btCollisionShape shape, float mass, float initialX,float initialY,float initialZ){
+        this.playerName = playerName;
         this.characteristics = new CharacteristicPlayer(0,1);
         EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
         entity = new Entity(fileName,shape,mass,position);

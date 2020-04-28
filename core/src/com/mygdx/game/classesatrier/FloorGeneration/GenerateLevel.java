@@ -1,6 +1,5 @@
 package com.mygdx.game.classesatrier.FloorGeneration;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -49,13 +48,14 @@ public class GenerateLevel implements ApplicationListener {
     Vector3 characterDirection = new Vector3();
     Vector3 walkDirection = new Vector3();
 
-    private DynamicWorld dynamicWorld;
+    private DynamicWorld world;
 
     NewInGameObject vaisseau;
 
     Array<NewInGameObject> objectsInstances = new Array<>();
 
     Model model;
+    Model modelPlayer;
 
     private boolean playerPov =true;
 
@@ -65,7 +65,7 @@ public class GenerateLevel implements ApplicationListener {
     public void create() {
         Bullet.init();
 
-        dynamicWorld = new DynamicWorld();
+        world = new DynamicWorld();
 
         modelBatch = new ModelBatch();
 
@@ -89,19 +89,25 @@ public class GenerateLevel implements ApplicationListener {
         MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
         BoxShapeBuilder.build(builder,1f,1f,1f);
+
         model = modelBuilder.end();
+
+        Model modelPlayer = modelBuilder.createBox(.5f,.5f,.5f, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal);
+        EntityPlayer ship = new EntityPlayer("player",modelPlayer,new btBoxShape(new Vector3(0.25f, 0.25f, 0.25f)),0f,10f,4,50f);
+        this.vaisseau = ship.getGameObject();
+
+        generateFloor();
+
+
 
         //contactListener = new MyContactListener();
 
-        //EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),1f,10f,3,50f);
-        EntityPlayer ship = new EntityPlayer("ship",model,new btBoxShape(new Vector3(1f, 1f, 1f)),1f,10f,3,50f);
-        this.vaisseau = ship.getGameObject();
+        //EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(.5f, .5f, .5f)),10f,10f,3,50f);
+
 
         objectsInstances.add(vaisseau);
-
-        dynamicWorld.addRigidBody(vaisseau.body);
-
-        generateFloor();
+        world.addRigidBody(vaisseau.body);
 
         characterTransform = vaisseau.transform;
         ghostObject = new btPairCachingGhostObject();
@@ -111,16 +117,18 @@ public class GenerateLevel implements ApplicationListener {
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
         characterController = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
 
-        dynamicWorld.getDynamicsWorld().addCollisionObject(ghostObject,
+
+        world.getDynamicsWorld().addCollisionObject(ghostObject,
                 (short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,
                 (short)(btBroadphaseProxy.CollisionFilterGroups.StaticFilter | btBroadphaseProxy.CollisionFilterGroups.DefaultFilter));
-        ((dynamicWorld.getDynamicsWorld())).addAction(characterController);
+        ((world.getDynamicsWorld())).addAction(characterController);
+
 
     }
 
     public void generateFloor() {
-        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
-        Labyrinth floor = new Labyrinth(100, 8, 4, 9);
+        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
+        Labyrinth floor = new Labyrinth(100, 30, 4, 9);
         int x = 0;
         int y = 0;
         int z = 0;
@@ -131,13 +139,13 @@ public class GenerateLevel implements ApplicationListener {
                     objectsInstances.add(enemy.getGameObject());
             }
             if(room instanceof SpawnRoom)
-                objectsInstances.add(((SpawnRoom) room).getPlayer().getGameObject());
+                vaisseau.transform.set(((SpawnRoom) room).getPlayer().getGameObject().transform);//objectsInstances.add(((SpawnRoom) room).getPlayer().getGameObject());
         }
 
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",model,shape,0f,x,y,z).getGameObject());
+                    objectsInstances.add(new EntityObjects("box",model,new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)),0f,x,y,z).getGameObject());
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
                         objectsInstances.add(new EntityObjects("box",model,shape,0f,x, y + 1, z).getGameObject());
                         //objectsInstances.add(box.getGameObject(new EntityPosition(x, y + 1, z)));
@@ -171,7 +179,7 @@ public class GenerateLevel implements ApplicationListener {
             z = 0;
         }
         for(NewInGameObject obj : objectsInstances){
-            dynamicWorld.addRigidBody(obj.body);
+            world.addRigidBody(obj.body);
         }
         //floor.printFloor();
     }
@@ -219,7 +227,7 @@ public class GenerateLevel implements ApplicationListener {
     public void render() {
         final float delta = Math.min(1f/30f, Gdx.graphics.getDeltaTime());
 
-        dynamicWorld.getDynamicsWorld().stepSimulation(delta, 5, 1f/60f);
+        world.getDynamicsWorld().stepSimulation(delta, 5, 1f/60f);
 
         playerDeplacment();
 
@@ -232,8 +240,14 @@ public class GenerateLevel implements ApplicationListener {
             clock = 0; // reset your variable to 0
         }
 
-
+        if (playerPov){
+            camFollowPlayer();
+            cam.update();
+        }
+        else{
             camController.update();
+        }
+
 
 
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
@@ -242,6 +256,8 @@ public class GenerateLevel implements ApplicationListener {
         modelBatch.begin(cam);
         modelBatch.render(objectsInstances, environment);
         modelBatch.end();
+
+        ghostObject.getWorldTransform(characterTransform);
     }
 
     @Override
@@ -267,7 +283,7 @@ public class GenerateLevel implements ApplicationListener {
         //ballObject.dispose();
         //ballShape.dispose();
 
-        dynamicWorld.dispose();
+        world.dispose();
         //contactListener.dispose();
 
         modelBatch.dispose();
