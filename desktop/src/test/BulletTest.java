@@ -46,8 +46,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 
-/** @see https://xoppa.github.io/blog/using-the-libgdx-3d-physics-bullet-wrapper-part2/
- * @author Xoppa */
+
 public class BulletTest implements ApplicationListener {
     final static short GROUND_FLAG = 1 << 8;
     final static short OBJECT_FLAG = 1 << 9;

@@ -7,10 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
@@ -29,6 +26,7 @@ import com.mygdx.game.classesatrier.Entity.EntityPlayer;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
+import com.mygdx.game.classesatrier.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.classesatrier.FloorLayout.Type2Floor.Labyrinth;
 
 public class GenerateLevel implements ApplicationListener {
@@ -57,6 +55,8 @@ public class GenerateLevel implements ApplicationListener {
     Model model;
     Model modelPlayer;
 
+    ModelComponent modelComponent;
+
     private boolean playerPov =true;
 
     private int clock;
@@ -65,7 +65,8 @@ public class GenerateLevel implements ApplicationListener {
     public void create() {
         Bullet.init();
 
-        world = new DynamicWorld();
+        ghostPairCallback = new btGhostPairCallback();
+        world = new DynamicWorld(ghostPairCallback);
 
         modelBatch = new ModelBatch();
 
@@ -91,13 +92,13 @@ public class GenerateLevel implements ApplicationListener {
         BoxShapeBuilder.build(builder,1f,1f,1f);
 
         model = modelBuilder.end();
-
+/*
         Model modelPlayer = modelBuilder.createBox(.5f,.5f,.5f, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal);
         EntityPlayer ship = new EntityPlayer("player",modelPlayer,new btBoxShape(new Vector3(0.25f, 0.25f, 0.25f)),0f,10f,4,50f);
         this.vaisseau = ship.getGameObject();
+*/
 
-        generateFloor();
 
 
 
@@ -105,30 +106,39 @@ public class GenerateLevel implements ApplicationListener {
 
         //EntityPlayer ship = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(.5f, .5f, .5f)),10f,10f,3,50f);
 
-
+/*
         objectsInstances.add(vaisseau);
         world.addRigidBody(vaisseau.body);
+*/
+        //characterTransform = vaisseau.transform;
+        ModelBuilder modelBuilder1 = new ModelBuilder();
+        Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
-        characterTransform = vaisseau.transform;
+        modelComponent = new ModelComponent(model1, 10,10,10);
+        modelComponent.transform.rotate(Vector3.X, 90);
         ghostObject = new btPairCachingGhostObject();
-        ghostObject.setWorldTransform(characterTransform);
-        ghostShape = new btCapsuleShape(2f, 2f);
+        ghostObject.setWorldTransform(modelComponent.transform);
+        ghostShape = new btCapsuleShape(0.1f, .5f);
         ghostObject.setCollisionShape(ghostShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
         characterController = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
 
-
+/*
         world.getDynamicsWorld().addCollisionObject(ghostObject,
                 (short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,
                 (short)(btBroadphaseProxy.CollisionFilterGroups.StaticFilter | btBroadphaseProxy.CollisionFilterGroups.DefaultFilter));
         ((world.getDynamicsWorld())).addAction(characterController);
+*/
 
+        world.getDynamicsWorld().addCollisionObject(ghostObject,(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+        world.getDynamicsWorld().addAction(characterController);
+        generateFloor();
 
     }
 
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
-        Labyrinth floor = new Labyrinth(100, 30, 4, 9);
+        GenericFloor floor = new GenericFloor(20, 3, 4, 10);
         int x = 0;
         int y = 0;
         int z = 0;
@@ -138,8 +148,7 @@ public class GenerateLevel implements ApplicationListener {
                 for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
                     objectsInstances.add(enemy.getGameObject());
             }
-            if(room instanceof SpawnRoom)
-                vaisseau.transform.set(((SpawnRoom) room).getPlayer().getGameObject().transform);//objectsInstances.add(((SpawnRoom) room).getPlayer().getGameObject());
+            if(room instanceof SpawnRoom) modelComponent.transform.set(((SpawnRoom) room).getPlayer().getGameObject().transform);//objectsInstances.add(((SpawnRoom) room).getPlayer().getGameObject());
         }
 
         for (int i = 0; i < floor.getLayout().length; i++) {
@@ -185,7 +194,7 @@ public class GenerateLevel implements ApplicationListener {
     }
 
     private void camFollowPlayer(){
-        cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
+        cam.position.set(new Vector3(modelComponent.transform.getValues()[12]+0.4531824f,modelComponent.transform.getValues()[13]+5.767706f,modelComponent.transform.getValues()[14]+-5.032133f));
         float[] fov = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
         cam.view.set(fov);
         cam.direction.set(-0.047802035f,-0.36853015f,0.9283842f);
@@ -196,16 +205,17 @@ public class GenerateLevel implements ApplicationListener {
      */
 
     private void playerDeplacment(){
+
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            characterTransform.rotate(0, 1, 0, 5f);
-            ghostObject.setWorldTransform(characterTransform);
+            modelComponent.transform.rotate(0, 1, 0, 5f);
+            ghostObject.setWorldTransform(modelComponent.transform);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            characterTransform.rotate(0, 1, 0, -5f);
-            ghostObject.setWorldTransform(characterTransform);
+            modelComponent.transform.rotate(0, 1, 0, -5f);
+            ghostObject.setWorldTransform(modelComponent.transform);
         }
         // Fetch which direction the character is facing now
-        characterDirection.set(-1,0,0).rot(characterTransform).nor();
+        characterDirection.set(-1,0,0).rot(modelComponent.transform).nor();
         // Set the walking direction accordingly (either forward or backward)
         walkDirection.set(0,0,0);
         if (Gdx.input.isKeyPressed(Input.Keys.UP))
@@ -255,9 +265,27 @@ public class GenerateLevel implements ApplicationListener {
 
         modelBatch.begin(cam);
         modelBatch.render(objectsInstances, environment);
+        modelBatch.render(modelComponent);
         modelBatch.end();
 
-        ghostObject.getWorldTransform(characterTransform);
+        ghostObject.getWorldTransform(modelComponent.transform);
+    }
+    private final Vector3 tmp = new Vector3();
+    public void updateMove(){
+        float deltaX = -Gdx.input.getDeltaX() * .5f;
+        float deltaY = -Gdx.input.getDeltaY() * .5f;
+        tmp.set(0,0,0);
+        cam.rotate(cam.up, deltaX);
+        tmp.set(cam.direction).crs(cam.up).nor();
+        cam.direction.rotate(tmp,deltaY);
+        //Move
+        Matrix4 ghost = new Matrix4();
+        Vector3 translation = new Vector3();
+        ghostObject.getWorldTransform(ghost);
+        ghost.getTranslation(translation);
+        modelComponent.transform.set(translation.x,translation.y,translation.z, cam.direction.x, cam.direction.y, cam.direction.z,0);
+        cam.position.set(translation.x,translation.y,translation.z);
+        cam.update(true);
     }
 
     @Override

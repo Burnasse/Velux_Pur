@@ -11,13 +11,17 @@ public class DynamicWorld {
     private btBroadphaseInterface broadphase;
     private btConstraintSolver constraintSolver;
     private btDynamicsWorld dynamicsWorld;
+    private btGhostPairCallback ghostPairCallback;;
 
-    public DynamicWorld(){
+    public DynamicWorld(btGhostPairCallback pairCallback){
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
         broadphase = new btDbvtBroadphase();
+        btAxisSweep3 sweep = new btAxisSweep3(new Vector3(-1000, -1000, -1000), new Vector3(1000, 1000, 1000));
         constraintSolver = new btSequentialImpulseConstraintSolver();
-        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase,constraintSolver, collisionConfig);
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, sweep,constraintSolver, collisionConfig);
+        ghostPairCallback = new btGhostPairCallback();
+        sweep.getOverlappingPairCache().setInternalGhostPairCallback(ghostPairCallback);
         dynamicsWorld.setGravity(new Vector3(0, -10f,0));
     }
 
