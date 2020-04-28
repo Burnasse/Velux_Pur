@@ -1,4 +1,7 @@
-package com.mygdx.game.classesatrier.Entity;
+package com.mygdx.game.Entity;
+
+
+import com.mygdx.game.item.Inventory;
 
 import java.util.ArrayList;
 
@@ -9,7 +12,6 @@ public class CharacteristicPlayer implements Characteristic{
 
     private int attackDamage;
     private int health;
-    private ArrayList<Item> inventory;
 
     /**
      * Instantiates a new Characteristic player.

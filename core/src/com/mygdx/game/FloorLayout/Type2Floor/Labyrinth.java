@@ -1,7 +1,7 @@
-package com.mygdx.game.classesatrier.FloorLayout.Type2Floor;
+package com.mygdx.game.FloorLayout.Type2Floor;
 
-import com.mygdx.game.classesatrier.FloorLayout.Floor;
-import com.mygdx.game.classesatrier.FloorLayout.Position;
+import com.mygdx.game.FloorLayout.Floor;
+import com.mygdx.game.FloorLayout.Position;
 
 import java.util.ArrayList;
 import java.util.HashSet;

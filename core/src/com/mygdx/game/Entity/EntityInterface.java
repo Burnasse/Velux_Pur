@@ -1,8 +1,4 @@
-package com.mygdx.game.classesatrier.Entity;
-
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.mygdx.game.classesatrier.EntityPosition;
+package com.mygdx.game.Entity;
 
 /**
  * The interface EntityiInterface.

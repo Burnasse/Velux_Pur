@@ -1,4 +1,4 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.FloorLayout;
 
 public class Position {
 

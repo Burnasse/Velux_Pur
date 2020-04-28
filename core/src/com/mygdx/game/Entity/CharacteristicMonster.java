@@ -1,4 +1,4 @@
-package com.mygdx.game.classesatrier.Entity;
+package com.mygdx.game.Entity;
 
 /**
  * The type Characteristic monster.

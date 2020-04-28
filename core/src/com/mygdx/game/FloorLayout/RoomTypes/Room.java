@@ -1,6 +1,6 @@
-package com.mygdx.game.classesatrier.FloorLayout.RoomTypes;
+package com.mygdx.game.FloorLayout.RoomTypes;
 
-import com.mygdx.game.classesatrier.FloorLayout.Position;
+import com.mygdx.game.FloorLayout.Position;
 
 public abstract class Room {
 

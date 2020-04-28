@@ -1,11 +1,11 @@
-package com.mygdx.game.classesatrier.Entity;
+package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
-import com.mygdx.game.classesatrier.EntityPosition;
 
 /**
  * The type In game object.
@@ -88,7 +88,7 @@ public class InGameObject extends ModelInstance implements Disposable {
             super(model, node);
             body = new btCollisionObject();
             body.setCollisionShape(shape);
-        }
+    }
 
     /**
      * Instantiates a new In game object with a single model.

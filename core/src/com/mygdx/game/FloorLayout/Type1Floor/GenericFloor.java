@@ -1,7 +1,7 @@
-package com.mygdx.game.classesatrier.FloorLayout.Type1Floor;
+package com.mygdx.game.FloorLayout.Type1Floor;
 
-import com.mygdx.game.classesatrier.FloorLayout.Floor;
-import com.mygdx.game.classesatrier.FloorLayout.Position;
+import com.mygdx.game.FloorLayout.Floor;
+import com.mygdx.game.FloorLayout.Position;
 
 import java.util.Random;
 

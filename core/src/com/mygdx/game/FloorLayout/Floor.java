@@ -1,8 +1,8 @@
-package com.mygdx.game.classesatrier.FloorLayout;
+package com.mygdx.game.FloorLayout;
 
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.EnemyRoom;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.Room;
-import com.mygdx.game.classesatrier.FloorLayout.RoomTypes.SpawnRoom;
+import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.FloorLayout.RoomTypes.SpawnRoom;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
