@@ -1,16 +1,19 @@
-package com.mygdx.game.FloorGeneration;
+package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
-import com.mygdx.game.Entity.EntityPosition;
 
-public class NewInGameObject extends ModelInstance implements Disposable {
+/**
+ * The type Entity.
+ */
+public class EntityInstance extends ModelInstance implements Disposable, Entity {
 
     static class MyMotionState extends btMotionState {
         Matrix4 transform;
@@ -24,19 +27,17 @@ public class NewInGameObject extends ModelInstance implements Disposable {
         }
     }
 
-
-    public String node;
-    public final btRigidBody body;
-    public final MyMotionState motionState;
-    public final Model model;
-    public final btCollisionShape shape;
+    private final btRigidBody body;
+    private final MyMotionState motionState;
+    private final btCollisionShape shape;
     private static Vector3 localInertia = new Vector3();
-    public final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+    private final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+    private float mass;
 
-    public NewInGameObject(String node, Model model, btCollisionShape shape, float mass, EntityPosition position){
+
+    public EntityInstance(Model model, btCollisionShape shape, float mass, EntityPosition position){
         super(model);
-        this.model = model;
-        this.node = node;
+        this.mass = mass;
         this.shape = shape;
         if (mass > 0f)
             shape.calculateLocalInertia(mass, localInertia);
@@ -52,7 +53,6 @@ public class NewInGameObject extends ModelInstance implements Disposable {
         move(position);
     }
 
-
     @Override
     public void dispose() {
         body.dispose();
@@ -66,4 +66,8 @@ public class NewInGameObject extends ModelInstance implements Disposable {
         this.body.proceedToTransform(this.transform);
     }
 
+    @Override
+    public btCollisionObject getBody() {
+        return body;
+    }
 }

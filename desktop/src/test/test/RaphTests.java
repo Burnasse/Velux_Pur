@@ -20,14 +20,11 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
 
-import com.mygdx.game.Entity.EntityMonster;
-import com.mygdx.game.Entity.EntityObjects;
-import com.mygdx.game.Entity.EntityPlayer;
-import com.mygdx.game.Entity.InGameObject;
-import com.mygdx.game.Entity.EntityPosition;
+import com.mygdx.game.Entity.*;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
+import test.utils.EntityPlayerTest;
 
 public class RaphTests extends ApplicationAdapter{
     public CameraInputController camController;
@@ -38,7 +35,7 @@ public class RaphTests extends ApplicationAdapter{
 
     Array<ModelInstance> instances = new Array<>();
 
-    Array<InGameObject> objectsInstances = new Array<>();
+    Array<EntityInstance> objectsInstances = new Array<>();
 
     ModelBatch modelBatch;
 
@@ -49,15 +46,15 @@ public class RaphTests extends ApplicationAdapter{
     /**
      * the player
      */
-    EntityPlayer player;
+    EntityPlayerTest player;
     /**
      * player instance
      */
-    InGameObject vaisseau;
+    EntityInstance vaisseau;
     /**
      *weapon instance
      */
-    InGameObject weapon;
+    EntityInstance weapon;
 
     btCollisionConfiguration collisionConfig;
 
@@ -107,13 +104,13 @@ public class RaphTests extends ApplicationAdapter{
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
 
-        this.player = new EntityPlayer("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),0,0,0);
-        this.vaisseau = player.getInGameObject();
+        this.player = new EntityPlayerTest("ship","convertedship.g3db",new btBoxShape(new Vector3(1f,1f,1f)),new EntityPosition(0,0,0));
+        this.vaisseau = player.getEntity();
         objectsInstances.add(this.vaisseau);
-        collisionWorld.addCollisionObject(vaisseau.body);
+        collisionWorld.addCollisionObject(vaisseau.getBody());
 
-        weapon = player.getInGameObjectWeapon();
-        weapon.mooveEntity(new EntityPosition(0f,0.2f,0.3f));
+        weapon = player.getEntityWeapon();
+        weapon.move(new EntityPosition(0f,0.2f,0.3f));
         objectsInstances.add(this.weapon);
         generateFloor();
 
@@ -130,35 +127,35 @@ public class RaphTests extends ApplicationAdapter{
         int x = 0;
         int y = 0;
         int z = 0;
-        EntityObjects box = new EntityObjects("box",model,shape, 0, 0, 0);
+        EntityObjects box = new EntityObjects("box",model,shape,1f, new EntityPosition(0,0,0));
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
                 for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
-                    objectsInstances.add(enemy.getInGameObject());
+                    objectsInstances.add(enemy.getEntity());
             }
         }
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(box.getInGameObject(new EntityPosition(x,y,z)));
+                    objectsInstances.add(box.getEntity(new EntityPosition(x,y,z)));
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z)));
+                        objectsInstances.add(box.getEntity(new EntityPosition(x, y + 1, z)));
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
                             floor.getLayout()[i - 1][j].setContent('m');
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x - 1, y + 1, z)));
+                            objectsInstances.add(box.getEntity(new EntityPosition(x - 1, y + 1, z)));
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
                             floor.getLayout()[i + 1][j].setContent('m');
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x + 1, y+ 1, z )));
+                            objectsInstances.add(box.getEntity(new EntityPosition(x + 1, y+ 1, z )));
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
                             floor.getLayout()[i][j-1].setContent('m');
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y +1, z -1)));
+                            objectsInstances.add(box.getEntity(new EntityPosition(x, y +1, z -1)));
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             floor.getLayout()[i][j + 1].setContent('m');
-                            objectsInstances.add(box.getInGameObject(new EntityPosition(x, y + 1, z + 1)));
+                            objectsInstances.add(box.getEntity(new EntityPosition(x, y + 1, z + 1)));
                         }
                     }
                 }
@@ -168,8 +165,8 @@ public class RaphTests extends ApplicationAdapter{
             z = 0;
         }
         floor.printFloor();
-        vaisseau.mooveEntity(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY()));
-        weapon.mooveEntity(new EntityPosition(floor.getRooms().get(0).getCenter().getX()+0.2f,1.2f,floor.getRooms().get(0).getCenter().getY()+0.2f));
+        vaisseau.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY()));
+        weapon.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX()+0.2f,1.2f,floor.getRooms().get(0).getCenter().getY()+0.2f));
     }
 
     /**
@@ -189,28 +186,28 @@ public class RaphTests extends ApplicationAdapter{
 
     private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.mooveEntity(new EntityPosition(+0.2f, 0f, 0f));
-            weapon.mooveEntity(new EntityPosition(+0.2f, 0f, 0f));
+            vaisseau.move(new EntityPosition(+0.2f, 0f, 0f));
+            weapon.move(new EntityPosition(+0.2f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.mooveEntity(new EntityPosition(-0.2f, 0f, 0f));
-            weapon.mooveEntity(new EntityPosition(-0.2f, 0f, 0f));
+            vaisseau.move(new EntityPosition(-0.2f, 0f, 0f));
+            weapon.move(new EntityPosition(-0.2f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, -0f, -0.2f));
-            weapon.mooveEntity(new EntityPosition(0f, -0f, -0.2f));
+            vaisseau.move(new EntityPosition(0f, -0f, -0.2f));
+            weapon.move(new EntityPosition(0f, -0f, -0.2f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, 0f, +0.2f));
-            weapon.mooveEntity(new EntityPosition(0f, 0f, +0.2f));
+            vaisseau.move(new EntityPosition(0f, 0f, +0.2f));
+            weapon.move(new EntityPosition(0f, 0f, +0.2f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, +0.2f, 0f));
-            weapon.mooveEntity(new EntityPosition(0f, +0.2f, 0f));
+            vaisseau.move(new EntityPosition(0f, +0.2f, 0f));
+            weapon.move(new EntityPosition(0f, +0.2f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            vaisseau.mooveEntity(new EntityPosition(0f, -0.2f, 0f));
-            weapon.mooveEntity(new EntityPosition(0f, -0.2f, 0f));
+            vaisseau.move(new EntityPosition(0f, -0.2f, 0f));
+            weapon.move(new EntityPosition(0f, -0.2f, 0f));
         }
 
     }

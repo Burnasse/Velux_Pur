@@ -9,15 +9,9 @@ public interface EntityInterface {
      *
      * @return the in game object
      */
-    InGameObject getInGameObject();
+    Entity getEntity();
 
-    /**
-     * Gets in game object and put it in the desired position.
-     *
-     * @param position the position
-     * @return the in game object
-     */
-    public InGameObject getInGameObject(EntityPosition position);
+    Entity getEntity(EntityPosition position);
 
     /**
      * Dispose.

@@ -1,7 +1,7 @@
 package com.mygdx.game.Entity;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.item.CreatedItems;
 import com.mygdx.game.item.Inventory;
 import com.mygdx.game.item.Item;
@@ -12,9 +12,9 @@ import com.mygdx.game.item.Weapon;
  */
 public class EntityPlayer implements EntityInterface {
 
-    private String playerName;
+    private final String playerName;
     private CharacteristicPlayer characteristics;
-    private Entity entity;
+    private EntityInstancePlayer entityInstance;
     private Inventory inventory;
     private Weapon equippedWeapon ;
 
@@ -23,55 +23,36 @@ public class EntityPlayer implements EntityInterface {
      *
      * @param playerName the player name
      * @param fileName   the file name
-     * @param shape      the shape
-     * @param initialX   the initial x
-     * @param initialY   the initial y
-     * @param initialZ   the initial z
+     * @param position   the position
      */
-
-    public EntityPlayer(String playerName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
+    public EntityPlayer(String playerName, String fileName, EntityPosition position){
         this.playerName = playerName;
         this.characteristics = new CharacteristicPlayer(0,1);
-        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
-        this.entity = new Entity(fileName,shape,position);
         this.equippedWeapon = CreatedItems.getSword();
+
+        AssetManager assets = new AssetManager();
+        assets.load(fileName,Model.class);
+        assets.finishLoading();
+        Model model = assets.get(fileName,Model.class);
+        this.entityInstance = new EntityInstancePlayer(model,position);
     }
 
     /**
      * Instantiates a new Entity player. with a model as entry
      *
      * @param playerName the player name
-     * @param model      the model
-     * @param shape      the shape
-     * @param initialX   the initial x
-     * @param initialY   the initial y
-     * @param initialZ   the initial z
+     * @param model   the file name
+     * @param position   the position
      */
-    public EntityPlayer(String playerName,Model model,btCollisionShape shape,float initialX,float initialY,float initialZ){
+    public EntityPlayer(String playerName, Model model, EntityPosition position){
         this.playerName = playerName;
         this.characteristics = new CharacteristicPlayer(0,1);
-        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
-        this.entity = new Entity(model,shape,position);
         this.equippedWeapon = CreatedItems.getSword();
+        this.entityInstance = new EntityInstancePlayer(model,position);
     }
 
-    @Override
-    public InGameObject getInGameObject(){
-        return entity.getInGameObject();
-    }
-
-    @Override
-    public InGameObject getInGameObject(EntityPosition position){
-        return entity.getInGameObject(position);
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-    public InGameObject getInGameObjectWeapon(){
-        return equippedWeapon.getInGameObject();
+    public EntityInstance getEntityWeapon(){
+        return equippedWeapon.getEntity();
     }
 
     public void usePotion(){
@@ -84,6 +65,22 @@ public class EntityPlayer implements EntityInterface {
 
     public void getNewItem(Item item){
         inventory.addItemInInventory(item);
+    }
+
+    @Override
+    public EntityInstancePlayer getEntity() {
+        return entityInstance;
+    }
+
+    @Override
+    public EntityInstancePlayer getEntity(EntityPosition position){
+        entityInstance.move(position);
+        return entityInstance;
+    }
+
+    @Override
+    public void dispose() {
+        entityInstance.dispose();
     }
 
 }

@@ -1,9 +1,9 @@
 package com.mygdx.game.item;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.mygdx.game.Entity.Entity;
-import com.mygdx.game.Entity.InGameObject;
+import com.mygdx.game.Entity.EntityInstance;
 import com.mygdx.game.Entity.EntityPosition;
 
 /**
@@ -11,7 +11,7 @@ import com.mygdx.game.Entity.EntityPosition;
  */
 public class WeaponDistance implements Weapon,Item{
 
-    private Entity weaponEntity;
+    private EntityInstance weaponEntityInstance;
 
     private Projectile projectile;
     /**
@@ -30,7 +30,11 @@ public class WeaponDistance implements Weapon,Item{
      */
     public WeaponDistance(int dammages, String fileName, btCollisionShape shape, EntityPosition spawningPos){
         this.dammages = dammages;
-        this.weaponEntity = new Entity(fileName,shape,spawningPos);
+        AssetManager assets = new AssetManager();
+        assets.load(fileName,Model.class);
+        assets.finishLoading();
+        Model model = assets.get(fileName,Model.class);
+        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
     }
 
     /**
@@ -43,11 +47,11 @@ public class WeaponDistance implements Weapon,Item{
      */
     public WeaponDistance(int dammages, Model model, btCollisionShape shape, EntityPosition spawningPos){
         this.dammages = dammages;
-        this.weaponEntity = new Entity(model,shape,spawningPos);
+        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
     }
 
     @Override
-    public InGameObject getInGameObject(){
-        return weaponEntity.getInGameObject();
+    public EntityInstance getEntity(){
+        return weaponEntityInstance;
     }
 }

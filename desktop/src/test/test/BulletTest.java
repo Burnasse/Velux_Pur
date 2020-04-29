@@ -46,7 +46,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.badlogic.gdx.utils.Disposable;
 
-
 public class BulletTest implements ApplicationListener {
     final static short GROUND_FLAG = 1 << 8;
     final static short OBJECT_FLAG = 1 << 9;
