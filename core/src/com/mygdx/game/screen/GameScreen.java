@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.FloorGeneration.GenerateLevel;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
 
@@ -23,12 +24,7 @@ import com.mygdx.game.scene.menu.*;
  */
 public class GameScreen implements Screen, StageManager {
 
-    private PerspectiveCamera cam;
-    private ModelBatch modelBatch;
-    private Model model;
-    private ModelInstance instance;
-    private Environment environment;
-    private CameraInputController camController;
+    GenerateLevel level;
 
     /**
      * Used to manage the menu
@@ -57,33 +53,15 @@ public class GameScreen implements Screen, StageManager {
     public GameScreen(VeluxPurGame manager) {
         this.manager = manager;
 
-        modelBatch = new ModelBatch();
-
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(10f, 10f, 10f);
-        cam.lookAt(0, 0, 0);
-        cam.near = 1f;
-        cam.far = 300f;
-        cam.update();
-
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
-        ModelBuilder modelBuilder = new ModelBuilder();
-        model = modelBuilder.createBox(5f, 5f, 5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        instance = new ModelInstance(model);
-
-        camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
+        level = new GenerateLevel();
+        level.create();
 
         stageManager = new MenuManager();
         stageManager.addStage("Main", new MainMenu(this, viewport, true).getStage());
         stageManager.addStage("Settings", new SettingsMenu(this).getStage());
         stageManager.addStage("Audio", new AudioMenu(this).getStage());
         stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
+        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
 
     }
 
@@ -93,32 +71,7 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void render(float delta) {
-        cam.update();
-        camController.update();
-
-        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-        modelBatch.begin(cam);
-        modelBatch.render(instance, environment);
-        modelBatch.end();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            if (isInMenu) {
-                Gdx.input.setInputProcessor(camController);
-                isInMenu = false;
-            } else {
-                stage = stageManager.getStageByName("Main");
-                Gdx.input.setInputProcessor(stage);
-                isInMenu = true;
-            }
-        }
-
-        if (isInMenu) {
-            stage.act(delta);
-            stage.draw();
-        }
-
+        level.render();
     }
 
     @Override
@@ -139,8 +92,8 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
-        modelBatch.dispose();
-        model.dispose();
+        stage.dispose();
+        level.dispose();
     }
 
     @Override

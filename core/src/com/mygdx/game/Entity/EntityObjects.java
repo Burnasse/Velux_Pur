@@ -1,7 +1,10 @@
 package com.mygdx.game.Entity;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.EntityPosition;
 
 /**
  * The type Entity objects.
@@ -11,55 +14,57 @@ public class EntityObjects implements EntityInterface {
 
     private String objectName;
     private CharacteristicMonster characteristics;
-    private Entity entity;
-
+    private EntityInstance entityInstance;
 
     /**
-     * Instantiates a new Entity objects with an outside file.
+     *Instantiates a new Entity object. with a model as entry
      *
-     * @param objName  the obj name
-     * @param fileName the file name
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param objectName the objectName name
+     * @param model   the model
+     * @param shape      the shape
+     * @param mass       the mass
+     * @param defaultPos   the position
      */
-    public EntityObjects(String objName,String fileName,btCollisionShape shape,float initialX,float initialY,float initialZ){
-        this.objectName = objName;
+    public EntityObjects(String objectName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos){
+        this.objectName = objectName;
         this.characteristics = new CharacteristicMonster(0,1);
-        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
-        this.entity = new Entity(fileName,shape,position);
+        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
     }
 
     /**
-     * Instantiates a new Entity objects with a model.
+     * Instantiates a new Entity object. with a file as entry
      *
-     * @param objName  the obj name
-     * @param model    the model
-     * @param shape    the shape
-     * @param initialX the initial x
-     * @param initialY the initial y
-     * @param initialZ the initial z
+     * @param objectName the objectName name
+     * @param fileName   the file name
+     * @param shape      the shape
+     * @param mass       the mass
+     * @param defaultPos   the position
      */
-    public EntityObjects(String objName,Model model,btCollisionShape shape,float initialX,float initialY,float initialZ){
-        this.objectName = objName;
+    public EntityObjects(String objectName, String fileName, btBoxShape shape, float mass, EntityPosition defaultPos){
+        this.objectName = objectName;
         this.characteristics = new CharacteristicMonster(0,1);
-        EntityPosition position = new EntityPosition(initialX,initialY,initialZ);
-        this.entity = new Entity(model,shape,position);
+
+        AssetManager assets = new AssetManager();
+        assets.load(fileName,Model.class);
+        assets.finishLoading();
+        Model model = assets.get(fileName,Model.class);
+        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
     }
 
-    @Override
-    public InGameObject getInGameObject(){
-        return entity.getInGameObject();
-    }
-
-    @Override
-    public InGameObject getInGameObject(EntityPosition position){
-        return entity.getInGameObject(position);
-    }
 
     @Override
     public void dispose() {
+        entityInstance.dispose();
+    }
 
+    @Override
+    public EntityInstance getEntity(){
+        return entityInstance;
+    }
+
+    @Override
+    public EntityInstance getEntity(EntityPosition position){
+        entityInstance.move(position);
+        return entityInstance;
     }
 }

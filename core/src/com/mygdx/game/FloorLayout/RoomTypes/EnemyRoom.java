@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.mygdx.game.Entity.EntityMonster;
 import com.badlogic.gdx.physics.bullet.collision.*;
+import com.mygdx.game.Entity.utils.EntityPosition;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -50,7 +51,8 @@ public class EnemyRoom extends Room {
             currentMonsterXPosition = ThreadLocalRandom.current().nextInt(x1, x2);
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
 
-            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
+            //enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
+            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, 0.1f, new EntityPosition(currentMonsterXPosition, 1 , currentMonsterZPosition)));
         }
     }
 
