@@ -1,4 +1,4 @@
-package com.mygdx.game.Entity;
+package com.mygdx.game.Entity.utils;
 
 import com.badlogic.gdx.math.Vector3;
 

@@ -3,8 +3,8 @@ package com.mygdx.game.item;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.mygdx.game.Entity.EntityInstance;
-import com.mygdx.game.Entity.EntityPosition;
+import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.EntityPosition;
 
 /**
  * The interface Item distance.

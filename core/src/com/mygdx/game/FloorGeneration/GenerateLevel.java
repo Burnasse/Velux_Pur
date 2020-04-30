@@ -1,8 +1,8 @@
 package com.mygdx.game.FloorGeneration;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -14,46 +14,101 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.*;
-import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
-import com.mygdx.game.FloorLayout.RoomTypes.Room;
-import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
+import com.mygdx.game.Entity.instances.Entity;
+import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.controller.PlayerController;
 
-public class GenerateLevel implements ApplicationListener {
+/**
+ * The type Generate level.
+ */
+public class GenerateLevel{
+
+    /**
+     * The constant GROUND_FLAG.
+     */
+    final static short GROUND_FLAG = 1 << 8;
+    /**
+     * The constant OBJECT_FLAG.
+     */
+    final static short OBJECT_FLAG = 1 << 9;
+
+    /**
+     * The type My contact listener is called when there is a collision.
+     */
+    class MyContactListener extends ContactListener {
+        @Override
+        public boolean onContactAdded (int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1,
+                                       int index1, boolean match1) {
+            // Colore en blanc quand il y a une collision entre le joueur et un autre objets
+            if (match0)
+                ((ColorAttribute)floorData.objectsInstances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+            if (match1)
+                ((ColorAttribute)floorData.objectsInstances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+            return true;
+        }
+    }
 
     private  ModelBatch modelBatch;
+    private Model model;
     private  Environment environment;
     private  PerspectiveCamera cam;
     private  CameraInputController camController;
-
-    EntityPlayer player;
-    Vector3 walkDirection = new Vector3();
-
     private DynamicWorld world;
-
-    Array<EntityInstance> objectsInstances = new Array<>();
-    Model model;
+    private FloorData floorData;
+    private EntityPlayer player;
+    private  PlayerController playerController;
+    private MyContactListener contactListener;
 
     private boolean playerPov =true;
     private int clock;
 
-    @Override
+    /**
+     * Create.
+     */
     public void create() {
         Bullet.init();
 
         world = new DynamicWorld();
+        contactListener = new MyContactListener();
 
         modelBatch = new ModelBatch();
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        modelBuilder.node().id = "box";
+        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
+        BoxShapeBuilder.build(builder,1f,1f,1f);
+        model = modelBuilder.end();
+
+        floorData = FloorFactory.create("Labyrinth", 100, 15 , 3 ,15, model);
+
+        ModelBuilder modelBuilder1 = new ModelBuilder();
+        Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+
+        player = new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
+        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+        world.getDynamicsWorld().addAction(player.getEntity().getController());
+        player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
+        player.getEntity().getBody().setContactCallbackFilter(0);
+        player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+
+        for(EntityInstance obj : floorData.objectsInstances){
+            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj, false));
+            obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            obj.getBody().setContactCallbackFlag(OBJECT_FLAG);
+            obj.getBody().setContactCallbackFilter(GROUND_FLAG);
+            world.addRigidBody((btRigidBody) obj.getBody());
+        }
 
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(14f, 6f, /**/55f);
@@ -63,83 +118,15 @@ public class GenerateLevel implements ApplicationListener {
         cam.update();
 
         camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
 
-        ModelBuilder modelBuilder = new ModelBuilder();
+        playerController = new PlayerController(player);
 
-        modelBuilder.begin();
-        modelBuilder.node().id = "box";
-        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
-                | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
-        BoxShapeBuilder.build(builder,1f,1f,1f);
-        model = modelBuilder.end();
-
-
-        ModelBuilder modelBuilder1 = new ModelBuilder();
-        Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
-
-        player = new EntityPlayer("Player", model1, new EntityPosition(10,10,10));
-        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-        world.getDynamicsWorld().addAction(player.getEntity().getController());
-        generateFloor();
-
-        for(Entity obj : objectsInstances){
-            world.addRigidBody((btRigidBody) obj.getBody());
-        }
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(camController);
+        inputMultiplexer.addProcessor(playerController);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    public void generateFloor() {
-        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
-        Labyrinth floor = new Labyrinth(100, 3, 15, 20);
-        int x = 0;
-        int y = 0;
-        int z = 0;
-
-        for (Room room : floor.getRooms()) {
-            if (room instanceof EnemyRoom) {
-                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
-                    objectsInstances.add(enemy.getEntity());
-            }
-        }
-
-        for (int i = 0; i < floor.getLayout().length; i++) {
-            for (int j = 0; j < floor.getLayout().length; j++) {
-                if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",model,new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)),0f,new EntityPosition(x,y,z)).getEntity());
-                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(new EntityObjects("box",model,shape,0f, new EntityPosition(x,y + 1, z)).getEntity());
-                    } else {
-                        if (floor.getLayout()[i - 1][j].getContent() == 'a') {
-                            floor.getLayout()[i - 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x - 1, y + 1, z));
-                            objectsInstances.add(newEntityObject.getEntity());
-                        }
-                        if (floor.getLayout()[i + 1][j].getContent() == 'a') {
-                            floor.getLayout()[i + 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x + 1, y+ 1, z ));
-                            objectsInstances.add(newEntityObject.getEntity());
-                        }
-                        if (floor.getLayout()[i][j - 1].getContent() == 'a') {
-                            floor.getLayout()[i][j-1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x, y +1, z -1));
-                            objectsInstances.add(newEntityObject.getEntity());
-                        }
-                        if (floor.getLayout()[i][j + 1].getContent() == 'a') {
-                            floor.getLayout()[i][j + 1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f,new EntityPosition(x,y+1,z+1));
-                            objectsInstances.add(newEntityObject.getEntity());
-                        }
-                    }
-
-                }
-                z = z + 1;
-            }
-            x = x + 1;
-            z = 0;
-        }
-
-        player.getEntity().transform.set(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY()), new Quaternion());
-    }
 
     private void camFollowPlayer(){
         cam.position.set(new Vector3(player.getEntity().transform.getValues()[12]+0.4531824f,player.getEntity().transform.getValues()[13]+5.767706f,player.getEntity().transform.getValues()[14]+-5.032133f));
@@ -148,38 +135,14 @@ public class GenerateLevel implements ApplicationListener {
         cam.direction.set(-0.047802035f,-0.36853015f,0.9283842f);
     }
 
+
     /**
-     * make the model assigned to the player character moves with the key pressed
+     * Render.
      */
-
-    private void playerDeplacment(){
-
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
-            walkDirection.add(1,0,0);
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-            walkDirection.add(-1,0,0);
-        if (Gdx.input.isKeyPressed(Input.Keys.UP))
-            walkDirection.add(0,0,1);
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN))
-            walkDirection.add(0,0,-1);
-
-        walkDirection.scl(4f * Gdx.graphics.getDeltaTime());
-        player.getEntity().getController().setWalkDirection(walkDirection);
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
     public void render() {
         final float delta = Math.min(1f/30f, Gdx.graphics.getDeltaTime());
 
         world.getDynamicsWorld().stepSimulation(delta, 5, 1f/60f);
-
-        playerDeplacment();
 
         clock += 1; // add the time since the last frame
 
@@ -202,33 +165,24 @@ public class GenerateLevel implements ApplicationListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         modelBatch.begin(cam);
-        modelBatch.render(objectsInstances, environment);
+        modelBatch.render(floorData.objectsInstances, environment);
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }
 
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
+    /**
+     * Dispose.
+     */
     public void dispose() {
-        for(Entity obj : objectsInstances)
+        for(Entity obj : floorData.objectsInstances)
             obj.dispose();
 
-        objectsInstances.clear();
+        floorData.objectsInstances.clear();
 
         world.dispose();
-        //contactListener.dispose();
+        contactListener.dispose();
 
         modelBatch.dispose();
         model.dispose();

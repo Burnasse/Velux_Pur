@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.scene.ButtonStage;
+import com.mygdx.game.controller.ButtonStage;
 import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.scene.TextButtonContainer;
 

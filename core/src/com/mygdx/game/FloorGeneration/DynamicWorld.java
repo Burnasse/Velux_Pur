@@ -4,6 +4,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
 
+/**
+ * The type Dynamic world create a new world with gravity.
+ */
 public class DynamicWorld {
 
     private btCollisionConfiguration collisionConfig;
@@ -13,6 +16,9 @@ public class DynamicWorld {
     private btDynamicsWorld dynamicsWorld;
     private btGhostPairCallback ghostPairCallback;;
 
+    /**
+     * Instantiates a new Dynamic world.
+     */
     public DynamicWorld(){
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -22,9 +28,11 @@ public class DynamicWorld {
         ghostPairCallback = new btGhostPairCallback();
         sweep.getOverlappingPairCache().setInternalGhostPairCallback(ghostPairCallback);
         dynamicsWorld.setGravity(new Vector3(0, -10f,0));
-
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose(){
         dynamicsWorld.dispose();
         constraintSolver.dispose();
@@ -33,10 +41,20 @@ public class DynamicWorld {
         collisionConfig.dispose();
     }
 
+    /**
+     * Get the dynamics world .
+     *
+     * @return the bt dynamics world
+     */
     public btDynamicsWorld getDynamicsWorld(){
         return dynamicsWorld;
     }
 
+    /**
+     * Add rigid body in the world.
+     *
+     * @param body the body
+     */
     public void addRigidBody(btRigidBody body){
         dynamicsWorld.addRigidBody(body);
     }

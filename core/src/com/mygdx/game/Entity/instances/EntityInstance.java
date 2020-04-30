@@ -1,40 +1,35 @@
-package com.mygdx.game.Entity;
+package com.mygdx.game.Entity.instances;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
+import com.mygdx.game.Entity.utils.EntityPosition;
 
 /**
- * The type Entity.
+ * The type EntityInstance stores the informations of
+ * collisions shape, model, mass and position of an non-player entity.
  */
 public class EntityInstance extends ModelInstance implements Disposable, Entity {
 
-    static class MyMotionState extends btMotionState {
-        Matrix4 transform;
-        @Override
-        public void getWorldTransform (Matrix4 worldTrans) {
-            worldTrans.set(transform);
-        }
-        @Override
-        public void setWorldTransform (Matrix4 worldTrans) {
-            transform.set(worldTrans);
-        }
-    }
-
     private final btRigidBody body;
-    private final MyMotionState motionState;
+    private final StaticMotionState.MotionState motionState;
     private final btCollisionShape shape;
     private static Vector3 localInertia = new Vector3();
     private final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
     private float mass;
 
-
+    /**
+     * Instantiates a new Entity instance.
+     *
+     * @param model    the entity model
+     * @param shape    the entity collision shape
+     * @param mass     the mass
+     * @param position the position
+     */
     public EntityInstance(Model model, btCollisionShape shape, float mass, EntityPosition position){
         super(model);
         this.mass = mass;
@@ -44,7 +39,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
         else
             localInertia.set(0, 0, 0);
         this.constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(mass, null, shape, localInertia);
-        motionState = new MyMotionState();
+        motionState = new StaticMotionState.MotionState();
         motionState.transform = transform;
         body = new btRigidBody(constructionInfo);
         body.setMotionState(motionState);
@@ -61,6 +56,11 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
         constructionInfo.dispose();
     }
 
+    /**
+     * Set the position of the entity.
+     *
+     * @param position the position
+     */
     public void move(EntityPosition position){
         super.transform.trn(position);
         this.body.proceedToTransform(this.transform);

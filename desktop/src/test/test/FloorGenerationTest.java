@@ -22,6 +22,8 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
 
 import com.mygdx.game.Entity.*;
+import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.RoomTypes.SpawnRoom;

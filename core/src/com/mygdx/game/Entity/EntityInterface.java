@@ -1,5 +1,8 @@
 package com.mygdx.game.Entity;
 
+import com.mygdx.game.Entity.instances.Entity;
+import com.mygdx.game.Entity.utils.EntityPosition;
+
 /**
  * The interface EntityiInterface.
  */

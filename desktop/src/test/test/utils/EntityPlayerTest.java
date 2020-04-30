@@ -4,6 +4,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.Entity.*;
+import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.item.CreatedItems;
 import com.mygdx.game.item.Inventory;
 import com.mygdx.game.item.Item;
