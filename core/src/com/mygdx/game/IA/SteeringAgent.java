@@ -7,8 +7,9 @@ import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.instances.EntityInstance;
-import com.mygdx.game.FloorLayout.Position;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SteeringAgent implements Steerable<Vector3> {
@@ -17,53 +18,55 @@ public class SteeringAgent implements Steerable<Vector3> {
     private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
     private Vector3 position;
     private Vector3 linearVelocity;
-    private float angularVelocity = 0.5f;
+    private float angularVelocity = 8f;
     private float maxSpeed;
     private boolean independentFacing;
     private SteeringBehavior<Vector3> behavior;
     private boolean isTagged = true;
     EntityInstance object;
-    Target target = new Target(0,0,0);
+    Target target = new Target(0, 0, 0);
     int x1;
     int x2;
     int z1;
     int z2;
+    Timer timer = new Timer();
 
 
     public SteeringAgent(EntityInstance object) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(1f, 1f, 1f);
-        independentFacing = true;
-        orientation = 1;
+        independentFacing = false;
+        orientation = 80;
         maxSpeed = 10f;
     }
 
-    public SteeringAgent(EntityInstance object, Position center, int x1, int x2, int z1, int z2) {
+    public SteeringAgent(EntityInstance object, int x1, int x2, int z1, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(1f, 0, 1f);
         independentFacing = true;
         orientation = 1;
         maxSpeed = 5;
+
         behavior = new Seek<>(this);
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
         this.z2 = z2;
         generateRandomTarget();
-        //routine.setWanderRadius(Math.min(Math.abs(y1-y2)/2,Math.abs(x1-x2)/2));
-        //routine.setTarget(new Target(x1, 0 , center.getY()));
     }
 
-    public void generateRandomTarget() {
+    private void generateRandomTarget() {
         if (behavior instanceof Seek) {
-            int dim = ThreadLocalRandom.current().nextInt(1, 3);
-            if (dim == 1)
-                target = new Target(new Vector3(ThreadLocalRandom.current().nextInt(x1, x2), 1, target.getPosition().z));
+            int xmin = Math.min(x1,x2);
+            int xmax = Math.max(x1,x2);
+            int zmin = Math.min(z1,z2);
+            int zmax = Math.max(z1,z2);
+            int xTarget = ThreadLocalRandom.current().nextInt(xmin, xmax - 1);
+            int zTarget = ThreadLocalRandom.current().nextInt(zmin, zmax - 1);
 
-            if (dim == 2)
-                target = new Target(new Vector3(target.getPosition().x, 1, ThreadLocalRandom.current().nextInt(z1, z2)));
+            target = new Target(new Vector3(xTarget, 0, zTarget));
             ((Seek<Vector3>) behavior).setTarget(target);
         }
     }
@@ -102,12 +105,25 @@ public class SteeringAgent implements Steerable<Vector3> {
         if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
 
+        }
+        if (behavior.isEnabled()) {
             if (behavior instanceof Seek) {
-                if ((int)position.x == (int)target.vector.x || (int)position.z == (int)target.vector.z)
-                    generateRandomTarget();
-            }
+                if ((position.x <= target.vector.x + 1 && position.x >= target.vector.x - 1) || (position.z <= target.vector.z + 1 && position.z >= target.vector.z - 1)) {
+                    behavior.setEnabled(false);
+                    maxSpeed = 0;
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            behavior.setEnabled(true);
+                            maxSpeed = 3;
+                            generateRandomTarget();
+                        }
+                    }, 100);
+                }
 
+            }
             applySteering(steeringOutput, delta);
+
         }
     }
 

@@ -64,7 +64,7 @@ public class EntityObjects implements EntityInterface {
 
     @Override
     public EntityInstance getEntity(EntityPosition position){
-        entityInstance.move(position);
+        entityInstance.transform.trn(position);
         return entityInstance;
     }
 }

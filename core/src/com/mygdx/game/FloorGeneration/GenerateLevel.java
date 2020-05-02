@@ -161,6 +161,9 @@ public class GenerateLevel{
             camController.update();
         }
 
+        for (EntityMonster foe : floorData.entityMonsters)
+            foe.behavior.update(delta);
+
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 

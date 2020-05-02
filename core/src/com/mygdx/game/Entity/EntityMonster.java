@@ -39,7 +39,7 @@ public class EntityMonster implements EntityInterface {
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0, 1);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new SteeringAgent(entityInstance, center, x1, x2, y1, y2);
+        behavior = new SteeringAgent(entityInstance, x1, x2, y1, y2);
     }
 
     /**
