@@ -22,6 +22,7 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
@@ -49,6 +50,8 @@ public class AIWanderingTest extends ApplicationAdapter {
 
     Array<EntityInstance> objectsInstances = new Array<>();
 
+    Array<EntityMonster> enemies = new Array<>();
+
     ModelBatch modelBatch;
 
     Model model;
@@ -69,7 +72,6 @@ public class AIWanderingTest extends ApplicationAdapter {
 
     private int clock;
 
-    ArrayList<SteeringAgent> behaviors = new ArrayList<>();
 
     DefaultTimepiece timepiece = new DefaultTimepiece();
 
@@ -129,7 +131,7 @@ public class AIWanderingTest extends ApplicationAdapter {
             if (room instanceof EnemyRoom) {
                 for (EntityMonster enemy : ((EnemyRoom) room).getEnemies()) {
                     objectsInstances.add(enemy.getEntity());
-                    behaviors.add(new SteeringAgent(enemy.getEntity()));
+                    enemies.add(enemy);
                 }
             }
             if (room instanceof SpawnRoom)
@@ -232,8 +234,8 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         collisionWorld.performDiscreteCollisionDetection();
 
-        for (SteeringAgent behavior : behaviors)
-            behavior.update(timepiece.getDeltaTime());
+        for (EntityMonster foe : enemies)
+            foe.behavior.update(timepiece.getDeltaTime());
 
         Gdx.gl.glClearColor(0.3f, 0.3f, 0.3f, 1.f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);

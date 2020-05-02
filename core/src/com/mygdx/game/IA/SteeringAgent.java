@@ -4,10 +4,12 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
-import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.FloorLayout.Position;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class SteeringAgent implements Steerable<Vector3> {
 
@@ -18,9 +20,15 @@ public class SteeringAgent implements Steerable<Vector3> {
     private float angularVelocity = 0.5f;
     private float maxSpeed;
     private boolean independentFacing;
-    private SteeringBehavior<Vector3> steeringBehavior;
+    private SteeringBehavior<Vector3> behavior;
     private boolean isTagged = true;
     EntityInstance object;
+    Target target = new Target(0,0,0);
+    int x1;
+    int x2;
+    int z1;
+    int z2;
+
 
     public SteeringAgent(EntityInstance object) {
         this.object = object;
@@ -28,12 +36,38 @@ public class SteeringAgent implements Steerable<Vector3> {
         linearVelocity = new Vector3(1f, 1f, 1f);
         independentFacing = true;
         orientation = 1;
-        maxSpeed = 80f;
-        Truc truc = new Truc();
-        truc.setVector(new Vector3(5,20,5));
-        //steeringBehavior = new Wander<>(this);
-        steeringBehavior = new Seek<>(this, truc);
+        maxSpeed = 10f;
     }
+
+    public SteeringAgent(EntityInstance object, Position center, int x1, int x2, int z1, int z2) {
+        this.object = object;
+        position = object.transform.getTranslation(new Vector3());
+        linearVelocity = new Vector3(1f, 0, 1f);
+        independentFacing = true;
+        orientation = 1;
+        maxSpeed = 5;
+        behavior = new Seek<>(this);
+        this.x1 = x1;
+        this.x2 = x2;
+        this.z1 = z1;
+        this.z2 = z2;
+        generateRandomTarget();
+        //routine.setWanderRadius(Math.min(Math.abs(y1-y2)/2,Math.abs(x1-x2)/2));
+        //routine.setTarget(new Target(x1, 0 , center.getY()));
+    }
+
+    public void generateRandomTarget() {
+        if (behavior instanceof Seek) {
+            int dim = ThreadLocalRandom.current().nextInt(1, 3);
+            if (dim == 1)
+                target = new Target(new Vector3(ThreadLocalRandom.current().nextInt(x1, x2), 1, target.getPosition().z));
+
+            if (dim == 2)
+                target = new Target(new Vector3(target.getPosition().x, 1, ThreadLocalRandom.current().nextInt(z1, z2)));
+            ((Seek<Vector3>) behavior).setTarget(target);
+        }
+    }
+
 
     public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
         // If we haven't got any velocity, then we can do nothing.
@@ -61,21 +95,17 @@ public class SteeringAgent implements Steerable<Vector3> {
                 this.orientation = newOrientation;
             }
         }
+
     }
 
     public void update(float delta) {
-        if (steeringBehavior != null) {
-            steeringBehavior.calculateSteering(steeringOutput);
+        if (behavior != null) {
+            behavior.calculateSteering(steeringOutput);
 
-            /*
-             * Here you might want to add a motor control layer filtering steering accelerations.
-             *
-             * For instance, a car in a driving game has physical constraints on its movement:
-             * - it cannot turn while stationary
-             * - the faster it moves, the slower it can turn (without going into a skid)
-             * - it can brake much more quickly than it can accelerate
-             * - it only moves in the direction it is facing (ignoring power slides)
-             */
+            if (behavior instanceof Seek) {
+                if ((int)position.x == (int)target.vector.x || (int)position.z == (int)target.vector.z)
+                    generateRandomTarget();
+            }
 
             applySteering(steeringOutput, delta);
         }

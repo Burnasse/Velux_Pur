@@ -9,8 +9,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Entity.EntityMonster;
-import com.badlogic.gdx.physics.bullet.collision.*;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ public class EnemyRoom extends Room {
     /**
      * generate a room with monsters
      *
-     * @param x1 x coordinate of the first point
-     * @param y1 y coordinate of the first point
-     * @param x2 x coordinate of the second point
-     * @param y2 y coordinate of the second point
+     * @param x1               x coordinate of the first point
+     * @param y1               y coordinate of the first point
+     * @param x2               x coordinate of the second point
+     * @param y2               y coordinate of the second point
      * @param numberOfMonsters number of Monsters in the room
      */
 
@@ -44,7 +44,7 @@ public class EnemyRoom extends Room {
         Model model = modelBuilder.end();
 
         Bullet.init();
-        btBoxShape btBoxShape = new btBoxShape(new Vector3(0.3f,0.3f,0.3f));
+        btBoxShape btBoxShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
 
         for (int i = 0; i < numberOfMonsters; i++) {
 
@@ -52,7 +52,7 @@ public class EnemyRoom extends Room {
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
 
             //enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, currentMonsterXPosition, 1, currentMonsterZPosition));
-            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, 0.1f, new EntityPosition(currentMonsterXPosition, 1 , currentMonsterZPosition)));
+            enemies.add(new EntityMonster("méchant monsieur", model, btBoxShape, 0.1f, new EntityPosition(currentMonsterXPosition, 1, currentMonsterZPosition), getCenter(), getX1(), getX2(), getY1(), getY2()));
         }
     }
 
