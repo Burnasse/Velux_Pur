@@ -3,12 +3,15 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Jump;
+import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SteeringAgent implements Steerable<Vector3> {
@@ -43,8 +46,8 @@ public class SteeringAgent implements Steerable<Vector3> {
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(3f, 1, 3f);
-        independentFacing = false;
+        linearVelocity = new Vector3(3f, 0, 3f);
+        independentFacing = true;
         orientation = 0;
         maxSpeed = 2f;
 
@@ -52,17 +55,13 @@ public class SteeringAgent implements Steerable<Vector3> {
         this.x2 = x2;
         this.z1 = z1;
         this.z2 = z2;
+
         generateRandomTarget();
+        behavior = new Seek<>(this,target);
     }
 
     public void generateRandomTarget() {
-
         target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
-        if (behavior == null)
-            behavior = new Seek<>(this, target);
-        else
-            if(behavior instanceof Seek)
-                ((Seek<Vector3>) behavior).setTarget(target);
     }
 
 
@@ -95,9 +94,24 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     }
 
+    private boolean isAround(float position, float target, float value){
+        return position >= target - value && position <= target + value;
+    }
+
     public void update(float delta) {
-        if ((int) position.x == (int)target.vector.x || (int)position.z == (int)target.vector.z) {
+
+        if (isAround(position.x,target.vector.x,0.2f) || isAround(position.z,target.vector.z,0.2f)) {
             generateRandomTarget();
+            behavior.setEnabled(false);
+            maxSpeed = 0;
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    maxSpeed = 2f;
+                    behavior.setEnabled(true);
+                    behavior = new Seek<>(behavior.getOwner(),target);
+                }
+            }, 1000);
         }
 
         if (behavior != null) {
