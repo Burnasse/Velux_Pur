@@ -35,11 +35,11 @@ public class EntityMonster implements EntityInterface {
         behavior = new SteeringAgent(entityInstance);
     }
 
-    public EntityMonster(String monsterName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos, Position center, int x1, int x2, int y1, int y2) {
+    public EntityMonster(String monsterName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos, Position center, int x1, int y1, int x2, int y2) {
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0, 1);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new SteeringAgent(entityInstance, x1, x2, y1, y2);
+        behavior = new SteeringAgent(entityInstance, x1, y1, x2, y2);
     }
 
     /**

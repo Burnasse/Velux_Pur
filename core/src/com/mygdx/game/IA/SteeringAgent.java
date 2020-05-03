@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class SteeringAgent implements Steerable<Vector3> {
@@ -18,7 +17,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
     private Vector3 position;
     private Vector3 linearVelocity;
-    private float angularVelocity = 8f;
+    private float angularVelocity = 0.2f;
     private float maxSpeed;
     private boolean independentFacing;
     private SteeringBehavior<Vector3> behavior;
@@ -35,21 +34,20 @@ public class SteeringAgent implements Steerable<Vector3> {
     public SteeringAgent(EntityInstance object) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(1f, 1f, 1f);
-        independentFacing = false;
+        linearVelocity = new Vector3(0f, 0, 0f);
+        independentFacing = true;
         orientation = 80;
-        maxSpeed = 10f;
+        maxSpeed = 2f;
     }
 
-    public SteeringAgent(EntityInstance object, int x1, int x2, int z1, int z2) {
+    public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(1f, 0, 1f);
-        independentFacing = true;
-        orientation = 1;
-        maxSpeed = 5;
+        linearVelocity = new Vector3(3f, 1, 3f);
+        independentFacing = false;
+        orientation = 0;
+        maxSpeed = 2f;
 
-        behavior = new Seek<>(this);
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
@@ -57,18 +55,14 @@ public class SteeringAgent implements Steerable<Vector3> {
         generateRandomTarget();
     }
 
-    private void generateRandomTarget() {
-        if (behavior instanceof Seek) {
-            int xmin = Math.min(x1,x2);
-            int xmax = Math.max(x1,x2);
-            int zmin = Math.min(z1,z2);
-            int zmax = Math.max(z1,z2);
-            int xTarget = ThreadLocalRandom.current().nextInt(xmin, xmax - 1);
-            int zTarget = ThreadLocalRandom.current().nextInt(zmin, zmax - 1);
+    public void generateRandomTarget() {
 
-            target = new Target(new Vector3(xTarget, 0, zTarget));
-            ((Seek<Vector3>) behavior).setTarget(target);
-        }
+        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
+        if (behavior == null)
+            behavior = new Seek<>(this, target);
+        else
+            if(behavior instanceof Seek)
+                ((Seek<Vector3>) behavior).setTarget(target);
     }
 
 
@@ -102,30 +96,16 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     public void update(float delta) {
+        if ((int) position.x == (int)target.vector.x || (int)position.z == (int)target.vector.z) {
+            generateRandomTarget();
+        }
+
         if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
-
-        }
-        if (behavior.isEnabled()) {
-            if (behavior instanceof Seek) {
-                if ((position.x <= target.vector.x + 1 && position.x >= target.vector.x - 1) || (position.z <= target.vector.z + 1 && position.z >= target.vector.z - 1)) {
-                    behavior.setEnabled(false);
-                    maxSpeed = 0;
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            behavior.setEnabled(true);
-                            maxSpeed = 3;
-                            generateRandomTarget();
-                        }
-                    }, 100);
-                }
-
-            }
             applySteering(steeringOutput, delta);
-
         }
     }
+
 
     public static SteeringAcceleration<Vector3> getSteeringOutput() {
         return steeringOutput;
