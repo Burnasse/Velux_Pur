@@ -134,10 +134,6 @@ public class SteeringAgent implements Steerable<Vector3> {
         this.position = position;
     }
 
-    public void translate(float x, float y, float z) {
-        position.add(x, y, z);
-    }
-
     @Override
     public float getOrientation() {
         return orientation;
@@ -213,7 +209,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 80;
+        return 0;
     }
 
     @Override
@@ -223,7 +219,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularSpeed() {
-        return 80;
+        return 0;
     }
 
     @Override
@@ -232,7 +228,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 80;
+        return 0;
     }
 
     @Override
