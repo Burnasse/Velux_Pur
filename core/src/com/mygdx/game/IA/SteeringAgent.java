@@ -111,7 +111,7 @@ public class SteeringAgent implements Steerable<Vector3> {
                     behavior.setEnabled(true);
                     behavior = new Seek<>(behavior.getOwner(),target);
                 }
-            }, 1000);
+            }, 80);
         }
 
         if (behavior != null) {
@@ -209,7 +209,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 0;
+        return 80;
     }
 
     @Override
@@ -219,7 +219,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularSpeed() {
-        return 0;
+        return 80;
     }
 
     @Override
@@ -228,7 +228,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 0;
+        return 80;
     }
 
     @Override
