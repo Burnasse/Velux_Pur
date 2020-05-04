@@ -3,11 +3,11 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.steer.behaviors.Jump;
-import com.badlogic.gdx.ai.steer.behaviors.LookWhereYouAreGoing;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.Timer;
@@ -18,6 +18,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     float orientation;
     private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
+    private EntityPlayer player;
     private Vector3 position;
     private Vector3 linearVelocity;
     private float angularVelocity = 0.2f;
@@ -64,6 +65,10 @@ public class SteeringAgent implements Steerable<Vector3> {
         target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
     }
 
+    public boolean IsThePlayerNear(){
+        Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
+        return playerPosition.x >= x1 && playerPosition.x<= x2 && playerPosition.z >= z1 && playerPosition.z <= z2;
+    }
 
     public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
         // If we haven't got any velocity, then we can do nothing.
@@ -209,7 +214,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 80;
+        return 1;
     }
 
     @Override
@@ -219,7 +224,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularSpeed() {
-        return 80;
+        return 1;
     }
 
     @Override
@@ -228,10 +233,14 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 80;
+        return 1;
     }
 
     @Override
     public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+    }
+
+    public void setPlayer(EntityPlayer player){
+        this.player = player;
     }
 }

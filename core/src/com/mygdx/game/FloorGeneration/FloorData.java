@@ -4,6 +4,9 @@ import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
+
+import java.util.ArrayList;
 
 /**
  * The type Floor data stores all data relative of the floor.

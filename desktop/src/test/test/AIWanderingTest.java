@@ -34,6 +34,7 @@ import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.FloorGeneration.DynamicWorld;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.controller.PlayerController;
 
 /**
@@ -123,6 +124,12 @@ public class AIWanderingTest extends ApplicationAdapter {
             world.addRigidBody((btRigidBody) obj.getBody());
         }
 
+        for(EntityMonster monster : floorData.entityMonsters){
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+            monster.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
+            monster.getEntity().getBody().setContactCallbackFilter(0);
+        }
+
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(14f, 6f, /**/55f);
         cam.lookAt(10f, 0, 30f);
@@ -138,6 +145,9 @@ public class AIWanderingTest extends ApplicationAdapter {
         inputMultiplexer.addProcessor(camController);
         inputMultiplexer.addProcessor(playerController);
         Gdx.input.setInputProcessor(inputMultiplexer);
+
+        for (EntityMonster foe:floorData.entityMonsters)
+            foe.behavior.setPlayer(player);
     }
 
 
@@ -159,7 +169,7 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         clock += 1; // add the time since the last frame
 
-        if (clock > 10) {
+                if (clock > 10) {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
                 playerPov = !playerPov;
             }
@@ -173,9 +183,11 @@ public class AIWanderingTest extends ApplicationAdapter {
             camController.update();
         }
 
-        for (EntityMonster foe : floorData.entityMonsters)
+        for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.update(delta);
-
+            if (foe.behavior.IsThePlayerNear())
+                System.out.println("AAAAAAH");
+        }
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
