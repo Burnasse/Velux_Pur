@@ -125,10 +125,17 @@ public class AIWanderingTest extends ApplicationAdapter {
         }
 
         for(EntityMonster monster : floorData.entityMonsters){
+            monster.getEntity().getBody().setUserValue(floorData.objectsInstances.indexOf(monster.getEntity(), false));
+            monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            monster.getEntity().getBody().setContactCallbackFlag(OBJECT_FLAG);
+            monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
+            world.addRigidBody((btRigidBody) monster.getEntity().getBody());;
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
             monster.getEntity().getBody().setContactCallbackFilter(0);
+
         }
+
 
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(14f, 6f, /**/55f);
@@ -185,8 +192,6 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.update(delta);
-            if (foe.behavior.IsThePlayerNear())
-                System.out.println("AAAAAAH");
         }
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
@@ -202,6 +207,7 @@ public class AIWanderingTest extends ApplicationAdapter {
     /**
      * Dispose.
      */
+
     public void dispose() {
         for (Entity obj : floorData.objectsInstances)
             obj.dispose();

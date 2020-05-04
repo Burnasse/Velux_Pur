@@ -3,11 +3,11 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
-import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.Timer;
@@ -16,41 +16,45 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class SteeringAgent implements Steerable<Vector3> {
 
-    float orientation;
-    private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
     private EntityPlayer player;
+    private EntityInstance object;
+
+    private float orientation;
+    private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
+
     private Vector3 position;
+
     private Vector3 linearVelocity;
-    private float angularVelocity = 0.2f;
-    private float maxSpeed;
-    private boolean independentFacing;
+    private float maxLinearAcceleration = 1;
+    private float maxLinearSpeed;
+
+    private float angularVelocity = 80;
+    private float maxAngularAcceleration = 80;
+    private float maxAngularSpeed = 80;
+
+
     private SteeringBehavior<Vector3> behavior;
+    private Target target = new Target(0, 0, 0);
+
     private boolean isTagged = true;
-    EntityInstance object;
-    Target target = new Target(0, 0, 0);
+    private boolean independentFacing;
+
+
     int x1;
     int x2;
     int z1;
     int z2;
+
     Timer timer = new Timer();
-
-
-    public SteeringAgent(EntityInstance object) {
-        this.object = object;
-        position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(0f, 0, 0f);
-        independentFacing = true;
-        orientation = 80;
-        maxSpeed = 2f;
-    }
 
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(3f, 0, 3f);
         independentFacing = true;
+
         orientation = 0;
-        maxSpeed = 2f;
+        maxLinearSpeed = 3f;
 
         this.x1 = x1;
         this.x2 = x2;
@@ -58,24 +62,38 @@ public class SteeringAgent implements Steerable<Vector3> {
         this.z2 = z2;
 
         generateRandomTarget();
-        behavior = new Seek<>(this,target);
+        behavior = new Seek<>(this, target);
     }
 
-    public void generateRandomTarget() {
-        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
-    }
+    public void update(float delta) {
+        /*if (playerIsNear()) {
+            setMaxAngularAcceleration(80);
+            target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
+            behavior = new Pursue<>(this,target);
+        } else {*/
+        if (behavior instanceof Pursue) {
+            generateRandomTarget();
+            behavior = new Seek<>(behavior.getOwner(), target);
+        }
+        if (isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) {
+            generateRandomTarget();
+            behavior.setEnabled(false);
+            maxLinearSpeed = 0;
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    maxLinearSpeed = 2f;
+                    behavior.setEnabled(true);
+                    behavior = new Seek<>(behavior.getOwner(), target);
+                }
+            }, 800);
+        }
+        //}
 
-    public boolean IsThePlayerNear(){
-        Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
-        return playerPosition.x >= x1 && playerPosition.x<= x2 && playerPosition.z >= z1 && playerPosition.z <= z2;
-    }
-
-    public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
-        // If we haven't got any velocity, then we can do nothing.
-        if (character.getLinearVelocity().isZero(character.getZeroLinearSpeedThreshold()))
-            return character.getOrientation();
-
-        return character.vectorToAngle(character.getLinearVelocity());
+        if (behavior != null) {
+            behavior.calculateSteering(steeringOutput);
+            applySteering(steeringOutput, delta);
+        }
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
@@ -99,30 +117,25 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     }
 
-    private boolean isAround(float position, float target, float value){
+    private boolean isAround(float position, float target, float value) {
         return position >= target - value && position <= target + value;
     }
 
-    public void update(float delta) {
+    public void generateRandomTarget() {
+        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
+    }
 
-        if (isAround(position.x,target.vector.x,0.2f) || isAround(position.z,target.vector.z,0.2f)) {
-            generateRandomTarget();
-            behavior.setEnabled(false);
-            maxSpeed = 0;
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    maxSpeed = 2f;
-                    behavior.setEnabled(true);
-                    behavior = new Seek<>(behavior.getOwner(),target);
-                }
-            }, 80);
-        }
+    private boolean playerIsNear() {
+        Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
+        return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 && playerPosition.z <= z2;
+    }
 
-        if (behavior != null) {
-            behavior.calculateSteering(steeringOutput);
-            applySteering(steeringOutput, delta);
-        }
+    public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
+        // If we haven't got any velocity, then we can do nothing.
+        if (character.getLinearVelocity().isZero(character.getZeroLinearSpeedThreshold()))
+            return character.getOrientation();
+
+        return character.vectorToAngle(character.getLinearVelocity());
     }
 
 
@@ -205,42 +218,55 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return maxSpeed;
+        return maxLinearSpeed;
     }
 
     @Override
     public void setMaxLinearSpeed(float maxLinearSpeed) {
+        this.maxLinearSpeed = maxLinearSpeed;
     }
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 1;
+        return maxLinearAcceleration;
     }
 
     @Override
     public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-
+        this.maxLinearAcceleration = maxLinearAcceleration;
     }
 
     @Override
     public float getMaxAngularSpeed() {
-        return 1;
+        return maxAngularSpeed;
     }
 
     @Override
     public void setMaxAngularSpeed(float maxAngularSpeed) {
+        this.maxAngularSpeed = maxAngularSpeed;
     }
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 1;
+        return maxAngularAcceleration;
     }
 
     @Override
     public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+        this.maxAngularAcceleration = maxAngularAcceleration;
     }
 
-    public void setPlayer(EntityPlayer player){
+    public void setPlayer(EntityPlayer player) {
         this.player = player;
+    }
+
+
+    public SteeringAgent(EntityInstance object) {  //semble inutile, peut-être que je le virerai dans le futur
+        this.object = object;
+        position = object.transform.getTranslation(new Vector3());
+        linearVelocity = new Vector3(0f, 0, 0f);
+        independentFacing = true;
+        orientation = 80;
+        maxLinearSpeed = 2f;
     }
 }
