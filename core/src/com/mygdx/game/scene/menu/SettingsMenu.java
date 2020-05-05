@@ -28,28 +28,28 @@ public class SettingsMenu implements MenuStage {
 
         container.getButtonByName("Back").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Main");
+                manager.displayStage("Main");
                 return true;
             }
         });
 
         container.getButtonByName("Audio").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Audio");
+                manager.displayStage("Audio");
                 return true;
             }
         });
 
         container.getButtonByName("Advanced").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Advanced");
+                manager.displayStage("Advanced");
                 return true;
             }
         });
 
         container.getButtonByName("Controls").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Controls");
+                manager.displayStage("Controls");
                 return true;
             }
         });

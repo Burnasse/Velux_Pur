@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.screen.MainMenuScreen;
 
@@ -16,6 +17,7 @@ public class VeluxPurGame extends Game {
 
     @Override
     public void create() {
+        Bullet.init();
         PreferencesManager pref = new PreferencesManager();
         pref.initializePrefs();
         PrefKeys.initKeys(pref.getPreferences());
@@ -33,8 +35,9 @@ public class VeluxPurGame extends Game {
         Screen previousScreen = getScreen();
         setScreen(newScreen);
 
-        if(previousScreen != null)
+        if(previousScreen != null){
             previousScreen.dispose();
+        }
     }
 
     @Override
@@ -49,8 +52,7 @@ public class VeluxPurGame extends Game {
      * Back to menu.
      */
     public void backToMenu(){
-        setScreen(menuScreen);
-        menuScreen.setInputProcessor();
+        changeScreen(menuScreen);
     }
 
 }
