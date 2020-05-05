@@ -55,7 +55,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
     /**
      * Get the ghost object (equivalent to RigidBody).
      *
-     * @return tthe ghost object
+     * @return the ghost object
      */
     public btPairCachingGhostObject getGhostObject(){
         return ghostObject;

@@ -26,6 +26,9 @@ public class PrefKeys {
     public static int Left = Input.Keys.Q;
     public static int Right = Input.Keys.D;
 
+    public static int C = Input.Keys.C;
+    public static int LeftClick = Input.Buttons.LEFT;
+
     /**
      * Init keys for retrieve all keys changed by the user.
      * This method must be used on launch and when the key binding change.

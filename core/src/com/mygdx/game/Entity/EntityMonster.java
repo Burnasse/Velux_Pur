@@ -68,6 +68,8 @@ public class EntityMonster implements EntityInterface {
     public void dispose() {
     }
 
-
+    public void move(EntityPosition pos){
+        entityInstance.move(pos);
+    }
 
 }
