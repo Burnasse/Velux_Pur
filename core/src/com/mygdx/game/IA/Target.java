@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector3;
 
 public class Target implements Steerable<Vector3> {
+
     Vector3 vector;
     float orientation = 0;
 
@@ -14,6 +15,7 @@ public class Target implements Steerable<Vector3> {
 
     public Target(float x, float y, float z) {
         vector = new Vector3(x, y, z);
+        orientation = vectorToAngle(vector);
     }
 
     public void setVector(Vector3 vector) {
@@ -37,13 +39,13 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.y);
+        return (float) Math.atan2(-vector.x, vector.z);
     }
 
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
-        outVector.y = (float) Math.cos(angle);
+        outVector.z = (float) Math.cos(angle);
         return outVector;
     }
 
@@ -54,17 +56,17 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public Vector3 getLinearVelocity() {
-        return new Vector3(4,4,4);
+        return new Vector3(0,0,0);
     }
 
     @Override
     public float getAngularVelocity() {
-        return 4;
+        return 1;
     }
 
     @Override
     public float getBoundingRadius() {
-        return 1;
+        return 0.1f;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -99,7 +101,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 5;
+        return 1;
     }
 
     @Override
@@ -109,7 +111,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularSpeed() {
-        return 5;
+        return 1;
     }
 
     @Override
@@ -119,7 +121,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 5;
+        return 1;
     }
 
     @Override
