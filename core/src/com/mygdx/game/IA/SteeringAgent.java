@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.EntityPosition;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,8 +71,9 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         if (playerIsNear()) {
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            behavior = new Pursue<>(this, target);
-            setMaxLinearSpeed(80);
+
+            behavior = new Pursue<>(this, target).setMaxPredictionTime(0);
+            maxLinearSpeed = 80;
         } else {
             if (behavior instanceof Pursue) {
                 generateRandomTarget();
@@ -103,7 +105,8 @@ public class SteeringAgent implements Steerable<Vector3> {
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
-        object.transform.translate(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time);
+        object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+        object.body.proceedToTransform(object.transform);
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
 
         // Update orientation and angular velocity

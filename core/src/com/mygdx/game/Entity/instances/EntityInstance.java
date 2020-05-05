@@ -15,7 +15,7 @@ import com.mygdx.game.Entity.utils.EntityPosition;
  */
 public class EntityInstance extends ModelInstance implements Disposable, Entity {
 
-    private final btRigidBody body;
+    public final btRigidBody body;
     private final StaticMotionState.MotionState motionState;
     private final btCollisionShape shape;
     private static Vector3 localInertia = new Vector3();
@@ -62,7 +62,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
      * @param position the position
      */
     public void move(EntityPosition position){
-        super.transform.trn(position);
+        super.transform.setTranslation(position);
         this.body.proceedToTransform(this.transform);
     }
 

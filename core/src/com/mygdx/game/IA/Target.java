@@ -66,7 +66,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getBoundingRadius() {
-        return 0.1f;
+        return 1f;
     }
 
     @Override
