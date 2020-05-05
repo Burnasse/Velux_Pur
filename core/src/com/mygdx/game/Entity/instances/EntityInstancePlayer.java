@@ -75,6 +75,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
      *
      * @param position the position
      */
+
     public void move(EntityPosition position){
         controller.setWalkDirection(position);
     }

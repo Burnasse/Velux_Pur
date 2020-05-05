@@ -19,6 +19,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private EntityPlayer player;
     private EntityInstance object;
 
+
     private float orientation;
     private static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
 
@@ -66,29 +67,31 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     public void update(float delta) {
-        /*if (playerIsNear()) {
+
+        if (playerIsNear()) {
             setMaxAngularAcceleration(80);
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            behavior = new Pursue<>(this,target);
-        } else {*/
-        if (behavior instanceof Pursue) {
-            generateRandomTarget();
-            behavior = new Seek<>(behavior.getOwner(), target);
+            behavior = new Pursue<>(this, target);
+        } else {
+
+            if (behavior instanceof Pursue) {
+                generateRandomTarget();
+                behavior = new Seek<>(behavior.getOwner(), target);
+            }
+            if (isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) {
+                generateRandomTarget();
+                behavior.setEnabled(false);
+                maxLinearSpeed = 0;
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        maxLinearSpeed = 2f;
+                        behavior.setEnabled(true);
+                        behavior = new Seek<>(behavior.getOwner(), target);
+                    }
+                }, 800);
+            }
         }
-        if (isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) {
-            generateRandomTarget();
-            behavior.setEnabled(false);
-            maxLinearSpeed = 0;
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    maxLinearSpeed = 2f;
-                    behavior.setEnabled(true);
-                    behavior = new Seek<>(behavior.getOwner(), target);
-                }
-            }, 800);
-        }
-        //}
 
         if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
@@ -99,7 +102,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
-        object.transform.trn(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time);
+        object.transform.translate(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time);
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
 
         // Update orientation and angular velocity
@@ -114,7 +117,6 @@ public class SteeringAgent implements Steerable<Vector3> {
                 this.orientation = newOrientation;
             }
         }
-
     }
 
     private boolean isAround(float position, float target, float value) {

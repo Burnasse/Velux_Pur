@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector3;
 
-public class Target implements Location<Vector3>, Steerable<Vector3> {
+public class Target implements Steerable<Vector3> {
     Vector3 vector;
     float orientation = 0;
 
@@ -54,17 +54,17 @@ public class Target implements Location<Vector3>, Steerable<Vector3> {
 
     @Override
     public Vector3 getLinearVelocity() {
-        return null;
+        return new Vector3(4,4,4);
     }
 
     @Override
     public float getAngularVelocity() {
-        return 0;
+        return 4;
     }
 
     @Override
     public float getBoundingRadius() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class Target implements Location<Vector3>, Steerable<Vector3> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 0;
+        return 2;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class Target implements Location<Vector3>, Steerable<Vector3> {
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 0;
+        return 5;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class Target implements Location<Vector3>, Steerable<Vector3> {
 
     @Override
     public float getMaxAngularSpeed() {
-        return 0;
+        return 5;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class Target implements Location<Vector3>, Steerable<Vector3> {
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 0;
+        return 5;
     }
 
     @Override
