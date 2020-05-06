@@ -3,6 +3,7 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
@@ -38,7 +39,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private SteeringBehavior<Vector3> behavior;
     private Target target = new Target(0, 0, 0);
 
-    private boolean isTagged = true;
+    private boolean isTagged = false;
     private boolean independentFacing;
 
 
@@ -52,8 +53,8 @@ public class SteeringAgent implements Steerable<Vector3> {
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(2, 0, 2);
-        independentFacing = true;
+        linearVelocity = new Vector3(50, 0, 50);
+        independentFacing = false;
 
         orientation = 0;
         maxLinearSpeed = 3f;
@@ -64,23 +65,23 @@ public class SteeringAgent implements Steerable<Vector3> {
         this.z2 = z2;
 
         generateRandomTarget();
-        behavior = new Seek<>(this, target);
+        behavior = new Arrive<>(this, target);
     }
 
     public void update(float delta) {
 
         if (playerIsNear()) {
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-
-            behavior = new Pursue<>(this, target).setMaxPredictionTime(0);
-            maxLinearSpeed = 80;
+            target.setBoundingRadius(0.1f);
+            setMaxLinearSpeed(4);
+            setMaxLinearAcceleration(10);
+            behavior = new Pursue<>(this, target, 1);
         } else {
             if (behavior instanceof Pursue) {
                 generateRandomTarget();
                 behavior = new Seek<>(behavior.getOwner(), target);
                 setMaxLinearSpeed(2);
-            }
-            if ((isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) && behavior.isEnabled()) {
+            } else if ((isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) && behavior.isEnabled()) {
 
                 behavior.setEnabled(false);
                 maxLinearSpeed = 0;
@@ -88,9 +89,9 @@ public class SteeringAgent implements Steerable<Vector3> {
                     @Override
                     public void run() {
                         generateRandomTarget();
-                        maxLinearSpeed = 2f;
+                        maxLinearSpeed = 8000f;
                         behavior.setEnabled(true);
-                        behavior = new Seek<>(behavior.getOwner(), target);
+                        behavior = new Arrive<>(behavior.getOwner(), target);
                     }
                 }, 800);
             }
@@ -103,6 +104,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
+
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
         object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
@@ -128,7 +130,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     public void generateRandomTarget() {
-        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 1, ThreadLocalRandom.current().nextInt(z1, z2));
+        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 0, ThreadLocalRandom.current().nextInt(z1, z2));
     }
 
     private boolean playerIsNear() {

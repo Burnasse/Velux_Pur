@@ -104,7 +104,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         BoxShapeBuilder.build(builder, 1f, 1f, 1f);
         model = modelBuilder.end();
 
-        floorData = FloorFactory.create("GenericFloor", 50, 3, 5, 10, model);
+        floorData = FloorFactory.create("GenericFloor", 100, 3, 8, 14, model);
 
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f, 0.5f, 16, new Material(ColorAttribute.createDiffuse(Color.BLUE)), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
@@ -125,14 +125,13 @@ public class AIWanderingTest extends ApplicationAdapter {
         }
 
         for(EntityMonster monster : floorData.entityMonsters){
-            monster.getEntity().getBody().setUserValue(floorData.objectsInstances.indexOf(monster.getEntity(), false));
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            monster.getEntity().getBody().setContactCallbackFlag(OBJECT_FLAG);
+            //monster.getEntity().getBody().setContactCallbackFlag(OBJECT_FLAG);
             monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
             world.addRigidBody((btRigidBody) monster.getEntity().getBody());;
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-            monster.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
             monster.getEntity().getBody().setContactCallbackFilter(0);
+            monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         }
 
@@ -194,6 +193,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.update(delta);
         }
+
 
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);

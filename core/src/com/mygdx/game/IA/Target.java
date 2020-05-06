@@ -8,14 +8,32 @@ public class Target implements Steerable<Vector3> {
 
     Vector3 vector;
     float orientation = 0;
+    float boundingRadius = 0;
 
-    public Target(Vector3 vector) {
+    private Vector3 position;
+
+    private Vector3 linearVelocity = new Vector3(1, 1, 1);
+    private float maxLinearAcceleration = 1;
+    private float maxLinearSpeed = 1;
+
+    private float angularVelocity = 1;
+    private float maxAngularAcceleration = 1;
+    private float maxAngularSpeed = 1;
+
+    public boolean isTagged = false;
+
+    public Target(Vector3 vector, float boundingRadius) {
         this.vector = vector;
+        this.boundingRadius = boundingRadius;
+    }
+
+    public Target(float x, float y, float z, float boundingRadius) {
+        vector = new Vector3(x, y, z);
+        this.boundingRadius = boundingRadius;
     }
 
     public Target(float x, float y, float z) {
         vector = new Vector3(x, y, z);
-        orientation = vectorToAngle(vector);
     }
 
     public void setVector(Vector3 vector) {
@@ -39,13 +57,13 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.y);
     }
 
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
-        outVector.z = (float) Math.cos(angle);
+        outVector.y = (float) Math.cos(angle);
         return outVector;
     }
 
@@ -56,32 +74,32 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public Vector3 getLinearVelocity() {
-        return new Vector3(0,0,0);
+        return linearVelocity;
     }
 
     @Override
     public float getAngularVelocity() {
-        return 1;
+        return angularVelocity;
     }
 
     @Override
     public float getBoundingRadius() {
-        return 1f;
+        return boundingRadius;
     }
 
     @Override
     public boolean isTagged() {
-        return false;
+        return isTagged;
     }
 
     @Override
     public void setTagged(boolean tagged) {
-
+        this.isTagged = tagged;
     }
 
     @Override
     public float getZeroLinearSpeedThreshold() {
-        return 0;
+        return 0.3f;
     }
 
     @Override
@@ -91,41 +109,45 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return 1;
+        return maxLinearSpeed;
     }
 
     @Override
     public void setMaxLinearSpeed(float maxLinearSpeed) {
-
+        this.maxLinearSpeed = maxLinearSpeed;
     }
 
     @Override
     public float getMaxLinearAcceleration() {
-        return 1;
+        return maxLinearAcceleration;
     }
 
     @Override
     public void setMaxLinearAcceleration(float maxLinearAcceleration) {
-
+        this.maxLinearAcceleration = maxLinearAcceleration;
     }
 
     @Override
     public float getMaxAngularSpeed() {
-        return 1;
+        return maxAngularSpeed;
     }
 
     @Override
     public void setMaxAngularSpeed(float maxAngularSpeed) {
-
+        this.maxAngularSpeed = maxAngularSpeed;
     }
 
     @Override
     public float getMaxAngularAcceleration() {
-        return 1;
+        return maxAngularAcceleration;
     }
 
     @Override
     public void setMaxAngularAcceleration(float maxAngularAcceleration) {
+        this.maxAngularAcceleration = maxAngularAcceleration;
+    }
 
+    public void setBoundingRadius(float boundingRadius) {
+        this.boundingRadius = boundingRadius;
     }
 }
