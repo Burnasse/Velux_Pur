@@ -54,7 +54,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     Timer timer = new Timer();
 
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
-        Random random = new Random();
+
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(50, 0, 50);
@@ -81,7 +81,7 @@ public class SteeringAgent implements Steerable<Vector3> {
             behavior = new Pursue<>(this, target, 0);
         } else {
             if (behavior instanceof Pursue) {
-                setMaxLinearAcceleration(0);
+                setMaxLinearAcceleration(1);
                 generateRandomTarget();
                 behavior = new Arrive<>(behavior.getOwner(), target);
                 setMaxLinearSpeed(2);
@@ -112,6 +112,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         if ((isAround(position.x, target.vector.x, 1f) && isAround(position.z, target.vector.z, 1f)) && behavior instanceof Pursue)
             System.out.println("normalement tu prends une attaque");
+
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
         object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
@@ -122,6 +123,7 @@ public class SteeringAgent implements Steerable<Vector3> {
         if (independentFacing) {
             this.orientation += angularVelocity * time;
             this.angularVelocity += steering.angular * time;
+
         } else {
             // For non-independent facing we have to align orientation to linear velocity
             float newOrientation = calculateOrientationFromLinearVelocity(this);
