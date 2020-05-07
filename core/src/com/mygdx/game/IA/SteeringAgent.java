@@ -6,7 +6,6 @@ import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
-import com.badlogic.gdx.ai.steer.behaviors.Seek;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -37,6 +36,8 @@ public class SteeringAgent implements Steerable<Vector3> {
     private float maxAngularAcceleration = 0;
     private float maxAngularSpeed = 0;
 
+    float weaponRange;
+
 
     private SteeringBehavior<Vector3> behavior;
     private Target target = new Target(0, 0, 0);
@@ -54,7 +55,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     Timer timer = new Timer();
 
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
-
+        Random random = new Random();
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(50, 0, 50);
@@ -70,6 +71,10 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
+
+        if (random.nextInt(2) == 1)
+            weaponRange = 50f;
+        else weaponRange = 1f;
     }
 
     public void update(float delta) {
@@ -110,29 +115,29 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
 
-        if ((isAround(position.x, target.vector.x, 1f) && isAround(position.z, target.vector.z, 1f)) && behavior instanceof Pursue)
+        if ((isAround(position.x, target.vector.x, weaponRange) && isAround(position.z, target.vector.z, weaponRange)) && behavior instanceof Pursue)
             System.out.println("normalement tu prends une attaque");
+        else {
+            // Update position and linear velocity. Velocity is trimmed to maximum speed
+            this.position.mulAdd(linearVelocity, time);
+            object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+            object.body.proceedToTransform(object.transform);
+            this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
 
-        // Update position and linear velocity. Velocity is trimmed to maximum speed
-        this.position.mulAdd(linearVelocity, time);
-        object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
-        object.body.proceedToTransform(object.transform);
-        this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
+            // Update orientation and angular velocity
+            if (independentFacing) {
+                this.orientation += angularVelocity * time;
+                this.angularVelocity += steering.angular * time;
 
-        // Update orientation and angular velocity
-        if (independentFacing) {
-            this.orientation += angularVelocity * time;
-            this.angularVelocity += steering.angular * time;
-
-        } else {
-            // For non-independent facing we have to align orientation to linear velocity
-            float newOrientation = calculateOrientationFromLinearVelocity(this);
-            if (newOrientation != this.orientation) {
-                this.angularVelocity = (newOrientation - this.orientation) * time;
-                this.orientation = newOrientation;
+            } else {
+                // For non-independent facing we have to align orientation to linear velocity
+                float newOrientation = calculateOrientationFromLinearVelocity(this);
+                if (newOrientation != this.orientation) {
+                    this.angularVelocity = (newOrientation - this.orientation) * time;
+                    this.orientation = newOrientation;
+                }
             }
         }
-
     }
 
     private boolean isAround(float position, float target, float value) {
