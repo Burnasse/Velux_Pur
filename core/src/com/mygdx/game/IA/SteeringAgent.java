@@ -1,6 +1,7 @@
 package com.mygdx.game.IA;
 
 import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
@@ -12,6 +13,7 @@ import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,6 +44,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private boolean isTagged = false;
     private boolean independentFacing;
 
+    SteerableAdapter<Vector3> truc = new SteerableAdapter<>();
 
     int x1;
     int x2;
@@ -51,6 +54,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     Timer timer = new Timer();
 
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
+        Random random = new Random();
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(50, 0, 50);
@@ -72,20 +76,21 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         if (playerIsNear()) {
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            target.setBoundingRadius(0.1f);
             setMaxLinearSpeed(4);
             setMaxLinearAcceleration(10);
-            behavior = new Pursue<>(this, target, 1);
+            behavior = new Pursue<>(this, target, 0);
         } else {
             if (behavior instanceof Pursue) {
+                setMaxLinearAcceleration(0);
                 generateRandomTarget();
-                behavior = new Seek<>(behavior.getOwner(), target);
+                behavior = new Arrive<>(behavior.getOwner(), target);
                 setMaxLinearSpeed(2);
-            } else if ((isAround(position.x, target.vector.x, 1) || isAround(position.z, target.vector.z, 1)) && behavior.isEnabled()) {
+            } else if ((isAround(position.x, target.vector.x, 1) && isAround(position.z, target.vector.z, 1)) && behavior.isEnabled()) {
 
                 behavior.setEnabled(false);
                 maxLinearSpeed = 0;
                 timer.schedule(new TimerTask() {
+
                     @Override
                     public void run() {
                         generateRandomTarget();
@@ -105,6 +110,8 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
 
+        if ((isAround(position.x, target.vector.x, 1f) && isAround(position.z, target.vector.z, 1f)) && behavior instanceof Pursue)
+            System.out.println("normalement tu prends une attaque");
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
         object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
@@ -123,10 +130,11 @@ public class SteeringAgent implements Steerable<Vector3> {
                 this.orientation = newOrientation;
             }
         }
+
     }
 
     private boolean isAround(float position, float target, float value) {
-        return position >= target - value && position <= target + value;
+        return (position >= target - value && position <= target + value);
     }
 
     public void generateRandomTarget() {
@@ -135,7 +143,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     private boolean playerIsNear() {
         Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
-        return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 && playerPosition.z <= z2;
+        return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 - 1 && playerPosition.z <= z2 + 1;
     }
 
     public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
@@ -199,13 +207,13 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.y);
     }
 
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
-        outVector.z = (float) Math.cos(angle);
+        outVector.y = (float) Math.cos(angle);
         return outVector;
     }
 

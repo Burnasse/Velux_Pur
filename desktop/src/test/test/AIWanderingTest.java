@@ -104,7 +104,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         BoxShapeBuilder.build(builder, 1f, 1f, 1f);
         model = modelBuilder.end();
 
-        floorData = FloorFactory.create("GenericFloor", 100, 3, 8, 14, model);
+        floorData = FloorFactory.create("GenericFloor", 20, 2, 4, 10, model);
 
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f, 0.5f, 16, new Material(ColorAttribute.createDiffuse(Color.BLUE)), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
