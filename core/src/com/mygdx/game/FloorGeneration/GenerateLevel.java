@@ -103,7 +103,7 @@ public class GenerateLevel{
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         for(EntityInstance obj : floorData.objectsInstances){
-            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj, false));
+            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
             obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             obj.getBody().setContactCallbackFlag(OBJECT_FLAG);
             obj.getBody().setContactCallbackFilter(GROUND_FLAG);

@@ -68,7 +68,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
-            System.out.println("oui");
+            System.out.println("AHAHAHAHAH");
+        if (button == Input.Buttons.RIGHT)
+            System.out.println("OUHOUHOUHOUH");
         return true;
     }
 

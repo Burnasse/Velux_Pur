@@ -19,7 +19,7 @@ public class CreatedItems {
         modelBuilder.begin();
         modelBuilder.node().id = "box";
         modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.BLACK)))
-                .box(0.2f, 1.3f, 0.2f);
+                .box(0.2f, 0.4f, 0.09f);
         Model swordModel = modelBuilder.end();
 
 

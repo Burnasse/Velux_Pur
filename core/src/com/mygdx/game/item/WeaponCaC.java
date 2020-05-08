@@ -31,7 +31,7 @@ private int dammages;
         assets.load(fileName,Model.class);
         assets.finishLoading();
         Model model = assets.get(fileName,Model.class);
-        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
+        this.weaponEntityInstance = new EntityInstance(model,shape,0.02f,spawningPos);
     }
 
     /**
@@ -50,6 +50,12 @@ private int dammages;
     @Override
     public EntityInstance getEntity(){
         return weaponEntityInstance;
+    }
+
+
+    @Override
+    public int getDammage(){
+        return dammages;
     }
 
 

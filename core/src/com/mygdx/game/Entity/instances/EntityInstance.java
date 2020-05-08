@@ -50,8 +50,8 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
 
     @Override
     public void dispose() {
-        body.dispose();
         shape.dispose();
+        body.dispose();
         motionState.dispose();
         constructionInfo.dispose();
     }

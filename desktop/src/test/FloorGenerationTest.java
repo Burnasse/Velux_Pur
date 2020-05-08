@@ -28,7 +28,7 @@ import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.RoomTypes.SpawnRoom;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
-import test.utils.EntityPlayerTest;
+
 
 /**
  * Just a test to see if the floor is nicely generated
@@ -100,7 +100,7 @@ public class FloorGenerationTest extends ApplicationAdapter {
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
 
-        EntityPlayerTest ship = new EntityPlayerTest("ship","convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),new EntityPosition(0,0,0));
+        test.EntityPlayerTest ship = new test.EntityPlayerTest("ship", "convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),new EntityPosition(0,0,0));
         this.vaisseau = ship.getEntity();
         objectsInstances.add(vaisseau);
         collisionWorld.addCollisionObject(vaisseau.getBody());

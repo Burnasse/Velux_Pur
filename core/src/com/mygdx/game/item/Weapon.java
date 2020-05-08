@@ -7,4 +7,6 @@ import com.mygdx.game.Entity.instances.EntityInstance;
  */
 public interface Weapon {
     EntityInstance getEntity();
+
+    int getDammage();
 }
