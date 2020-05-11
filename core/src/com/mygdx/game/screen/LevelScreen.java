@@ -83,7 +83,7 @@ public class LevelScreen implements Screen, StageManager{
 
     @Override
     public void initScreen() {
-        level = new GenerateLevel();
+        level = new GenerateLevel(true);
         level.create();
 
         stageManager = new MenuManager();

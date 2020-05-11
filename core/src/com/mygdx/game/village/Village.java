@@ -33,7 +33,7 @@ public class Village {
                                        int index1, boolean match1) {
 
             if (match0) {
-                System.out.println(userValue0 + " --- " + userValue1);
+                System.out.println(userValue0 + " --- 0 ---" + userValue1);
                 if(controller.waitTrigger && userValue1 != controller.userValue)
                     controller.notifyTrigger();
                 if(userValue1 == 1)
@@ -47,10 +47,9 @@ public class Village {
                 if(userValue1 == 5 && !controller.waitTrigger)
                     controller.setCanChangeLayout(userValue1, false);
             }
-            if(match0) {
-
+            if(match1){
+                System.out.println(userValue0 + " --- 1 ---" + userValue1);
             }
-
             return true;
         }
 
@@ -65,7 +64,9 @@ public class Village {
         }
     }
 
-    private WorldManager worldManager;
+    private final boolean DEBUG_MODE;
+
+    private VillageBuilder villageBuilder;
     private Environment environment;
     private MyContactListener listener;
     private ModelBatch modelBatch;
@@ -80,13 +81,23 @@ public class Village {
     private DebugDrawer debugDrawer;
 
     public Village(GameScreen screen){
+        DEBUG_MODE = false;
+        this.screen = screen;
+    }
+
+    public Village(GameScreen screen, boolean DEBUG_MODE){
+        this.DEBUG_MODE = DEBUG_MODE;
         this.screen = screen;
     }
 
     public void create(){
-        debugDrawer = new DebugDrawer();
-        worldManager = new WorldManager(debugDrawer);
-        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+        if(DEBUG_MODE){
+            debugDrawer = new DebugDrawer();
+            villageBuilder = new VillageBuilder(debugDrawer);
+            debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+        }else
+            villageBuilder = new VillageBuilder();
+
         listener = new MyContactListener();
         modelBatch = new ModelBatch();
         environment = new Environment();
@@ -100,29 +111,29 @@ public class Village {
                 | VertexAttributes.Usage.Normal);
 
         /* Trigger: goToLevel() | index: 1 */
-        worldManager.createTrigger(new EntityPosition(-4.5f,0,0),.5f,1,.5f);
+        villageBuilder.createTrigger(new EntityPosition(-4.5f,0,0),.5f,1,.5f);
 
         /* Trigger: trader() | index: 2 */
-        worldManager.createTrigger(new EntityPosition(-0,0,0),.5f,1,.5f);
+        villageBuilder.createTrigger(new EntityPosition(-0,0,0),.5f,1,.5f);
 
         /* Trigger: smith() | index: 3 */
-        worldManager.createTrigger(new EntityPosition(-5.5f,0,0),.5f,1,.5f);
+        villageBuilder.createTrigger(new EntityPosition(-5.5f,0,0),.5f,1,.5f);
 
         /* Trigger: changeLayout1 | index: 4 */
-        worldManager.createTrigger(new EntityPosition(5.0f,0,0),2.0f,1.0f,.5f);
+        villageBuilder.createTrigger(new EntityPosition(5.0f,0,0),2.0f,1.0f,.5f);
 
         /* Trigger: changeLayout2 | index: 5 */
-        worldManager.createTrigger(new EntityPosition(5.0f,0,4),2,1,.5f);
+        villageBuilder.createTrigger(new EntityPosition(5.0f,0,3),2,1,.5f);
 
-        worldManager.createGround(groundModel, new EntityPosition(0,0,0));
-        worldManager.createGround(groundModel, new EntityPosition(4,0,3f));
-        worldManager.createGround(groundModel, new EntityPosition(8,0,6f));
+        villageBuilder.createGround(groundModel, 0,0,0);
+        villageBuilder.createGround(groundModel, 4,0,3f);
+        villageBuilder.createGround(groundModel, 8,0,6f);
 
-        worldManager.createHouse(0,1.5f,2,3,2);
-        worldManager.createHouse(-3,1.5f,1.5f,3.5f,2);
-        worldManager.createHouse(4,4.5f,3,2.5f,2);
-        worldManager.createHouse(11,4.5f,2.5f,4,2);
-        worldManager.createHouse(8,7.5f,5,6,2);
+        villageBuilder.createHouse(0,1.5f,2,3,2);
+        villageBuilder.createHouse(-3,1.5f,1.5f,3.5f,2);
+        villageBuilder.createHouse(4,4.5f,3,2.5f,2);
+        villageBuilder.createHouse(11,4.5f,2.5f,4,2);
+        villageBuilder.createHouse(8,7.5f,5,6,2);
 
         AssetManager assetManager = new AssetManager();
         assetManager.load("skyBox.g3db", Model.class);
@@ -147,10 +158,10 @@ public class Village {
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        worldManager.getWorld().addCollisionObject(player.getEntity().getGhostObject(),
+        villageBuilder.getWorld().addCollisionObject(player.getEntity().getGhostObject(),
                 (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,
                 (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-        worldManager.getWorld().addAction(player.getEntity().getController());
+        villageBuilder.getWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(PLAYER_FLAG);
         player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
@@ -177,21 +188,23 @@ public class Village {
         animationController.update(Gdx.graphics.getDeltaTime());
 
         if(!isDispose)
-            worldManager.getWorld().stepSimulation(delta, 5, 1f/60f);
+            villageBuilder.getWorld().stepSimulation(delta, 5, 1f/60f);
 
         //camFollowPlayer();
         camera.update();
 
         modelBatch.begin(camera);
-        modelBatch.render(worldManager.getObjectsInstance(), environment);
+        modelBatch.render(villageBuilder.getObjectsInstance(), environment);
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(sky);
         modelBatch.render(ground,environment);
         modelBatch.end();
 
-        debugDrawer.begin(camera);
-        worldManager.getWorld().debugDrawWorld();
-        debugDrawer.end();
+        if(DEBUG_MODE) {
+            debugDrawer.begin(camera);
+            villageBuilder.getWorld().debugDrawWorld();
+            debugDrawer.end();
+        }
 
         if(!isDispose) player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
 
@@ -200,7 +213,7 @@ public class Village {
     public void dispose(){
         isDispose = true;
         modelBatch.dispose();
-        worldManager.dispose();
+        villageBuilder.dispose();
         player.dispose();
     }
 

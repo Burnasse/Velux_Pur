@@ -106,7 +106,7 @@ public class GameScreen implements Screen, StageManager {
     @Override
     public void initScreen() {
 
-        village = new Village(this);
+        village = new Village(this,true);
         village.create();
 
         stageManager = new MenuManager();

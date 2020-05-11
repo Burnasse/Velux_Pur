@@ -21,17 +21,17 @@ import com.mygdx.game.FloorGeneration.DynamicWorld;
 import static com.mygdx.game.village.CallbackFlags.GROUND_FLAG;
 import static com.mygdx.game.village.CallbackFlags.TRIGGER_FLAG;
 
-public class WorldManager {
+public class VillageBuilder {
 
     private DynamicWorld world;
     private Array<EntityInstance> objectsInstance;
 
-    public WorldManager(){
+    public VillageBuilder(){
         world = new DynamicWorld();
         objectsInstance = new Array<>();
     }
 
-    public WorldManager(DebugDrawer debugDrawer){
+    public VillageBuilder(DebugDrawer debugDrawer){
         world = new DynamicWorld(debugDrawer);
         objectsInstance = new Array<>();
     }
@@ -41,7 +41,7 @@ public class WorldManager {
         EntityObjects trigger = new EntityObjects("trigger",new Model(), triggerShape, 0f, position);
 
         objectsInstance.add(trigger.getEntity());
-        trigger.getEntity().getBody().setUserValue(objectsInstance.indexOf(trigger.getEntity(), false));
+        trigger.getEntity().getBody().setUserValue(objectsInstance.indexOf(trigger.getEntity(), false)+1);
         trigger.getEntity().getBody().setCollisionFlags(trigger.getEntity().getBody().getCollisionFlags()
                 | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE
                 | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
@@ -63,12 +63,12 @@ public class WorldManager {
         addObjectInWorld(house);
     }
 
-    public void createGround(Model model, EntityPosition position){
+    public void createGround(Model model, float x, float y, float z){
         btBoxShape invisibleWallShape = new btBoxShape(new Vector3(.1f,1,.5f));
         btBoxShape groundShape = new btBoxShape(new Vector3(5f,.25f,.5f));
-        EntityObjects ground = new EntityObjects("ground",model, groundShape,0f, position);
-        EntityObjects invisibleWallLeft = new EntityObjects("wall",new Model(),invisibleWallShape,0f,new EntityPosition(position.x+5f,position.y,position.z));
-        EntityObjects invisibleWallRight = new EntityObjects("wall",new Model(),invisibleWallShape,0f,new EntityPosition(position.x-5f,position.y,position.z));
+        EntityObjects ground = new EntityObjects("ground",model, groundShape,0f, new EntityPosition(x,y,z));
+        EntityObjects invisibleWallLeft = new EntityObjects("wall",new Model(),invisibleWallShape,0f,new EntityPosition(x+5f,y,z));
+        EntityObjects invisibleWallRight = new EntityObjects("wall",new Model(),invisibleWallShape,0f,new EntityPosition(x-5f,y,z));
 
         addObjectInWorld(ground);
         addObjectInWorld(invisibleWallLeft);
