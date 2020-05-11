@@ -12,24 +12,18 @@ public class Target implements Steerable<Vector3> {
 
     private Vector3 position;
 
-    private Vector3 linearVelocity = new Vector3(1, 1, 1);
+    private Vector3 linearVelocity = new Vector3(1, 0, 1);
     private float maxLinearAcceleration = 1;
     private float maxLinearSpeed = 1;
 
-    private float angularVelocity = 1;
-    private float maxAngularAcceleration = 1;
-    private float maxAngularSpeed = 1;
+    private float angularVelocity = 50;
+    private float maxAngularAcceleration = 50;
+    private float maxAngularSpeed = 50;
 
     public boolean isTagged = false;
 
-    public Target(Vector3 vector, float boundingRadius) {
+    public Target(Vector3 vector) {
         this.vector = vector;
-        this.boundingRadius = boundingRadius;
-    }
-
-    public Target(float x, float y, float z, float boundingRadius) {
-        vector = new Vector3(x, y, z);
-        this.boundingRadius = boundingRadius;
     }
 
     public Target(float x, float y, float z) {
@@ -63,7 +57,7 @@ public class Target implements Steerable<Vector3> {
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
-        outVector.y = (float) Math.cos(angle);
+        outVector.z = (float) Math.cos(angle);
         return outVector;
     }
 
@@ -147,7 +141,4 @@ public class Target implements Steerable<Vector3> {
         this.maxAngularAcceleration = maxAngularAcceleration;
     }
 
-    public void setBoundingRadius(float boundingRadius) {
-        this.boundingRadius = boundingRadius;
-    }
 }

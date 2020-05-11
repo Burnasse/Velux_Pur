@@ -1,10 +1,10 @@
 package com.mygdx.game.IA;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.SteerableAdapter;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.ai.steer.behaviors.Evade;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
@@ -45,8 +45,6 @@ public class SteeringAgent implements Steerable<Vector3> {
     private boolean isTagged = false;
     private boolean independentFacing;
 
-    SteerableAdapter<Vector3> truc = new SteerableAdapter<>();
-
     int x1;
     int x2;
     int z1;
@@ -55,7 +53,6 @@ public class SteeringAgent implements Steerable<Vector3> {
     Timer timer = new Timer();
 
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
-        Random random = new Random();
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(50, 0, 50);
@@ -71,26 +68,30 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
+        Random random = new Random();
+        weaponRange = 3f;
 
-        if (random.nextInt(2) == 1)
-            weaponRange = 50f;
-        else weaponRange = 1f;
     }
 
     public void update(float delta) {
 
-        if (playerIsNear()) {
+        if (playerInRoom()) {
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            setMaxLinearSpeed(4);
+            setMaxLinearSpeed(3);
             setMaxLinearAcceleration(10);
-            behavior = new Pursue<>(this, target, 0);
+
+            if ((isAround(position, target.vector, weaponRange * 1.5f) && weaponRange < 1))
+                behavior = new Arrive<>(this, target);
+
+            else
+                behavior = new Pursue<>(this, target, 0);
         } else {
             if (behavior instanceof Pursue) {
                 setMaxLinearAcceleration(1);
                 generateRandomTarget();
                 behavior = new Arrive<>(behavior.getOwner(), target);
                 setMaxLinearSpeed(2);
-            } else if ((isAround(position.x, target.vector.x, 1) && isAround(position.z, target.vector.z, 1)) && behavior.isEnabled()) {
+            } else if ((isAround(position, target.vector, 1) ) && behavior.isEnabled()) {
 
                 behavior.setEnabled(false);
                 maxLinearSpeed = 0;
@@ -114,10 +115,11 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
-
-        if ((isAround(position.x, target.vector.x, weaponRange) && isAround(position.z, target.vector.z, weaponRange)) && behavior instanceof Pursue)
-            System.out.println("normalement tu prends une attaque");
-        else {
+        if (( isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade)) {
+            System.out.println("distance");
+        } else if (isAround(position, target.vector, weaponRange) && playerInRoom() && weaponRange <1) {
+            System.out.println("cac");
+        } else {
             // Update position and linear velocity. Velocity is trimmed to maximum speed
             this.position.mulAdd(linearVelocity, time);
             object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
@@ -140,15 +142,15 @@ public class SteeringAgent implements Steerable<Vector3> {
         }
     }
 
-    private boolean isAround(float position, float target, float value) {
-        return (position >= target - value && position <= target + value);
+    private boolean isAround(Vector3 position, Vector3 target, float radius) {
+        return Math.pow((position.x - target.x),2) + Math.pow((position.z - target.z),2) <= radius*radius;
     }
 
     public void generateRandomTarget() {
         target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 0, ThreadLocalRandom.current().nextInt(z1, z2));
     }
 
-    private boolean playerIsNear() {
+    private boolean playerInRoom() {
         Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
         return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 - 1 && playerPosition.z <= z2 + 1;
     }
@@ -159,11 +161,6 @@ public class SteeringAgent implements Steerable<Vector3> {
             return character.getOrientation();
 
         return character.vectorToAngle(character.getLinearVelocity());
-    }
-
-
-    public static SteeringAcceleration<Vector3> getSteeringOutput() {
-        return steeringOutput;
     }
 
     @Override
@@ -190,7 +187,6 @@ public class SteeringAgent implements Steerable<Vector3> {
         return linearVelocity;
     }
 
-
     @Override
     public float getAngularVelocity() {
         return angularVelocity;
@@ -211,16 +207,15 @@ public class SteeringAgent implements Steerable<Vector3> {
         this.isTagged = tagged;
     }
 
-
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.y);
+        return (float) Math.atan2(-vector.x, vector.z);
     }
 
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
-        outVector.y = (float) Math.cos(angle);
+        outVector.z = (float) Math.tan(angle);
         return outVector;
     }
 
