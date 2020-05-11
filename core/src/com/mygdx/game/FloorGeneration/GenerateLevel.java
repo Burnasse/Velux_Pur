@@ -22,6 +22,7 @@ import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.controller.PlayerController;
+import com.mygdx.game.village.PlayerFactory;
 
 /**
  * The type Generate level.
@@ -87,7 +88,7 @@ public class GenerateLevel{
         modelBuilder.node().id = "box";
         MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
-        BoxShapeBuilder.build(builder,1f,1f,1f);
+        BoxShapeBuilder.build(builder,10f,10f,10f);
         model = modelBuilder.end();
 
         floorData = FloorFactory.create("Labyrinth", 100, 15 , 3 ,15, model);
@@ -95,7 +96,7 @@ public class GenerateLevel{
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
-        player = new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
+        player = PlayerFactory.create(floorData.playerSpawnPosition);//new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);

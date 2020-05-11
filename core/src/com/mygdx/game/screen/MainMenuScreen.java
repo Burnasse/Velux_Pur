@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
 
-
 /**
  * The type Main menu screen.
  */
@@ -45,7 +44,6 @@ public class MainMenuScreen implements Screen, StageManager {
         Gdx.input.setInputProcessor(stage);
     }
 
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 1, 1);
@@ -78,6 +76,7 @@ public class MainMenuScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
+        stage.dispose();
     }
 
     public void displayStage(String stageName) {

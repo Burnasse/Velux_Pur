@@ -3,6 +3,7 @@ package com.mygdx.game.Entity;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
@@ -48,6 +49,20 @@ public class EntityObjects implements EntityInterface {
         assets.load(fileName,Model.class);
         assets.finishLoading();
         Model model = assets.get(fileName,Model.class);
+        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
+    }
+
+    /**
+     * Instantiates a new Entity object. with a file as entry
+     *
+     * @param objectName the objectName name
+     * @param shape      the shape
+     * @param mass       the mass
+     * @param defaultPos   the position
+     */
+    public EntityObjects(String objectName, Model model, btCollisionShape shape, float mass, EntityPosition defaultPos){
+        this.objectName = objectName;
+        this.characteristics = new CharacteristicMonster(0,1);
         entityInstance = new EntityInstance(model,shape,mass,defaultPos);
     }
 
