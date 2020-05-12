@@ -34,7 +34,7 @@ import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.FloorGeneration.DynamicWorld;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
-import com.mygdx.game.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.controller.PlayerController;
 
 /**
@@ -124,12 +124,13 @@ public class AIWanderingTest extends ApplicationAdapter {
             world.addRigidBody((btRigidBody) obj.getBody());
         }
 
-        for(EntityMonster monster : floorData.entityMonsters){
+        for (EntityMonster monster : floorData.entityMonsters) {
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             //monster.getEntity().getBody().setContactCallbackFlag(OBJECT_FLAG);
             monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
-            world.addRigidBody((btRigidBody) monster.getEntity().getBody());;
-            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+            world.addRigidBody((btRigidBody) monster.getEntity().getBody());
+            ;
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getEntity().getBody().setContactCallbackFilter(0);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
@@ -152,7 +153,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         inputMultiplexer.addProcessor(playerController);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-        for (EntityMonster foe:floorData.entityMonsters)
+        for (EntityMonster foe : floorData.entityMonsters)
             foe.behavior.setPlayer(player);
     }
 
@@ -176,7 +177,7 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         clock += 1; // add the time since the last frame
 
-                if (clock > 10) {
+        if (clock > 10) {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
                 playerPov = !playerPov;
             }
@@ -191,7 +192,8 @@ public class AIWanderingTest extends ApplicationAdapter {
         }
 
         for (EntityMonster foe : floorData.entityMonsters) {
-            floorData.objectsInstances.addAll(foe.behavior.projectiles());
+            if (foe.behavior instanceof Gunner)
+                floorData.objectsInstances.addAll(((Gunner) foe.behavior).projectiles());
             foe.behavior.update(delta);
         }
 

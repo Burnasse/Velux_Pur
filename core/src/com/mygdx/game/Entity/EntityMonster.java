@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Position;
+import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.IA.SteeringAgent;
 
 /**
@@ -32,14 +33,15 @@ public class EntityMonster implements EntityInterface {
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0, 1);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new SteeringAgent(entityInstance);
+
+        //behavior = new Gunner(entityInstance);
     }
 
-    public EntityMonster(String monsterName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos, Position center, int x1, int y1, int x2, int y2) {
+    public EntityMonster(String monsterName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos, int x1, int y1, int x2, int y2) {
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0, 1);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new SteeringAgent(entityInstance, x1, y1, x2, y2);
+        behavior = new Gunner(entityInstance, x1, y1, x2, y2);
     }
 
     /**
@@ -59,7 +61,7 @@ public class EntityMonster implements EntityInterface {
         assets.finishLoading();
         Model model = assets.get(fileName, Model.class);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new SteeringAgent(entityInstance);
+        //behavior = new Gunner(entityInstance);
     }
 
 

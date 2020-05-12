@@ -17,9 +17,7 @@ public class Projectile {
 
     private EntityInstance instance;
     private Vector3 direction;
-    private Vector3 target;
     private float speed;
-    private float remainingTime = 1;
 
     public Projectile(Vector3 target, float speed, Vector3 initialPosition) {
 
@@ -34,7 +32,6 @@ public class Projectile {
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
         instance = new EntityInstance(model, btBoxShape, 50f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
-        this.target = target;
         direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);
         direction = direction.nor();
 
