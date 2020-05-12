@@ -17,6 +17,7 @@ public class Projectile {
 
     private EntityInstance instance;
     private Vector3 direction;
+    private Vector3 target;
     private float speed;
     private float remainingTime = 1;
 
@@ -33,8 +34,8 @@ public class Projectile {
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
         instance = new EntityInstance(model, btBoxShape, 50f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
-
-        direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.y - initialPosition.y);
+        this.target = target;
+        direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);
         direction = direction.nor();
 
         this.speed = speed;
@@ -42,7 +43,7 @@ public class Projectile {
 
     void update(float deltaTime) {
 
-        instance.transform.translate(new EntityPosition(direction.x * speed * deltaTime, 0, direction.z * speed * deltaTime));
+        instance.transform.translate(new EntityPosition( direction.x* speed * deltaTime, 0,  direction.z*speed * deltaTime));
 
         instance.body.proceedToTransform(instance.transform);
     }

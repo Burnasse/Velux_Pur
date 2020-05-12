@@ -76,7 +76,8 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     public void update(float delta) {
-
+        coolDown = coolDown + delta;
+        updateProjectiles(delta);
 
         if (playerInRoom()) {
 
@@ -113,7 +114,13 @@ public class SteeringAgent implements Steerable<Vector3> {
             }
         }
 
-        if (behavior != null) {
+        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && !(behavior instanceof Evade)) {
+            if (coolDown >= 2) {
+                target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
+                shootProjectile();
+                coolDown = 0;
+            }
+        } else if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
             applySteering(steeringOutput, delta);
 
@@ -121,9 +128,6 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
-
-        coolDown = coolDown + time;
-        updateProjectiles(time);
 
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
@@ -135,7 +139,6 @@ public class SteeringAgent implements Steerable<Vector3> {
         if (independentFacing) {
             this.orientation += angularVelocity * time;
             this.angularVelocity += steering.angular * time;
-
         }
         if (!independentFacing) {
             // For non-independent facing we have to align orientation to linear velocity
@@ -147,10 +150,7 @@ public class SteeringAgent implements Steerable<Vector3> {
             }
         }
 
-        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade) && coolDown >=2) {
-            shootProjectile();
-            coolDown = 0;
-        }
+
     }
 
     private boolean isAround(Vector3 position, Vector3 target, float radius) {
@@ -300,7 +300,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void shootProjectile() {
-        projectilesShot.add(new Projectile(target.vector, 4f, position));
+        projectilesShot.add(new Projectile(target.vector, 10f, position));
     }
 
     private void updateProjectiles(float delta) {
