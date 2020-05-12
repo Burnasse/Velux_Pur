@@ -30,7 +30,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private Vector3 position;
 
     private Vector3 linearVelocity;
-    private float maxLinearAcceleration = 1;
+    private float maxLinearAcceleration = 3;
     private float maxLinearVelocity;
 
     private float angularVelocity = 5000;
@@ -38,6 +38,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     private float maxAngularSpeed = 5000;
 
     float weaponRange;
+    float coolDown = 2;
 
     private ArrayList<Projectile> projectilesShot = new ArrayList<>();
 
@@ -75,6 +76,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     public void update(float delta) {
+
 
         if (playerInRoom()) {
 
@@ -114,16 +116,20 @@ public class SteeringAgent implements Steerable<Vector3> {
         if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
             applySteering(steeringOutput, delta);
+
         }
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
+
+        coolDown = coolDown + time;
         updateProjectiles(time);
+
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
         object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
-        object.body.proceedToTransform(object.transform);
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
+        object.body.proceedToTransform(object.transform);
 
         // Update orientation and angular velocity
         if (independentFacing) {
@@ -133,16 +139,18 @@ public class SteeringAgent implements Steerable<Vector3> {
         }
         if (!independentFacing) {
             // For non-independent facing we have to align orientation to linear velocity
-            float newOrientation = vectorToAngle(linearVelocity);
+            float newOrientation = vectorToAngle(target.vector);
             if (newOrientation != this.orientation) {
                 this.angularVelocity = (newOrientation - this.orientation) * time;
                 this.orientation = newOrientation;
+
             }
         }
-        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade)) {
-            shootProjectile();
-        }
 
+        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade) && coolDown >=2) {
+            shootProjectile();
+            coolDown = 0;
+        }
     }
 
     private boolean isAround(Vector3 position, Vector3 target, float radius) {
@@ -212,7 +220,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.y);
+        return (float) Math.atan2(-vector.x, vector.z);
     }
 
     @Override
@@ -292,12 +300,12 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void shootProjectile() {
-        projectilesShot.add(new Projectile(target.vector, 8f, position));
+        projectilesShot.add(new Projectile(target.vector, 4f, position));
     }
 
     private void updateProjectiles(float delta) {
         for (Projectile projectile : projectilesShot)
-            projectile.Update(delta);
+            projectile.update(delta);
     }
 
     public Array<? extends EntityInstance> projectiles() {

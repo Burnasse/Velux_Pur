@@ -16,7 +16,7 @@ import com.mygdx.game.Entity.utils.EntityPosition;
 public class Projectile {
 
     private EntityInstance instance;
-    private Vector3 target;
+    private Vector3 direction;
     private float speed;
     private float remainingTime = 1;
 
@@ -32,26 +32,17 @@ public class Projectile {
         Bullet.init();
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
-        instance = new EntityInstance(model, btBoxShape, 50f, new EntityPosition(initialPosition.x,1,initialPosition.z));
+        instance = new EntityInstance(model, btBoxShape, 50f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
 
-        this.target = target;
+        direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.y - initialPosition.y);
+        direction = direction.nor();
+
         this.speed = speed;
     }
 
-    void Update(float deltaTime)
-    {
-        remainingTime = remainingTime - deltaTime;
-        Vector3 projectilePos = instance.transform.getTranslation(new Vector3());
+    void update(float deltaTime) {
 
-        float xDistance = (target.x - projectilePos.x);
-        float zDistance = (target.z - projectilePos.z);
-
-        // Integrate the velocity into the position.
-
-        instance.transform.translate(new EntityPosition( speed * deltaTime, 0,   speed * deltaTime));
-
-
-        if (remainingTime <= 0)
+        instance.transform.translate(new EntityPosition(direction.x * speed * deltaTime, 0, direction.z * speed * deltaTime));
 
         instance.body.proceedToTransform(instance.transform);
     }
