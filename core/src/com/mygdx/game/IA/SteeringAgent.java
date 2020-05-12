@@ -8,11 +8,12 @@ import com.badlogic.gdx.ai.steer.behaviors.Evade;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
-import java.util.Random;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ThreadLocalRandom;
@@ -30,20 +31,21 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     private Vector3 linearVelocity;
     private float maxLinearAcceleration = 1;
-    private float maxLinearSpeed;
+    private float maxLinearVelocity;
 
-    private float angularVelocity = 0;
-    private float maxAngularAcceleration = 0;
-    private float maxAngularSpeed = 0;
+    private float angularVelocity = 5000;
+    private float maxAngularAcceleration = 5000;
+    private float maxAngularSpeed = 5000;
 
     float weaponRange;
 
+    private ArrayList<Projectile> projectilesShot = new ArrayList<>();
 
     private SteeringBehavior<Vector3> behavior;
     private Target target = new Target(0, 0, 0);
 
     private boolean isTagged = false;
-    private boolean independentFacing;
+    private boolean independentFacing = false;
 
     int x1;
     int x2;
@@ -55,11 +57,11 @@ public class SteeringAgent implements Steerable<Vector3> {
     public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
         this.object = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(50, 0, 50);
+        linearVelocity = new Vector3(50, 50, 50);
         independentFacing = false;
 
-        orientation = 0;
-        maxLinearSpeed = 3f;
+        orientation = 1;
+        maxLinearVelocity = 3f;
 
         this.x1 = x1;
         this.x2 = x2;
@@ -68,7 +70,6 @@ public class SteeringAgent implements Steerable<Vector3> {
 
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
-        Random random = new Random();
         weaponRange = 3f;
 
     }
@@ -76,6 +77,7 @@ public class SteeringAgent implements Steerable<Vector3> {
     public void update(float delta) {
 
         if (playerInRoom()) {
+
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
             setMaxLinearSpeed(3);
             setMaxLinearAcceleration(10);
@@ -85,22 +87,23 @@ public class SteeringAgent implements Steerable<Vector3> {
 
             else
                 behavior = new Pursue<>(this, target, 0);
+
         } else {
             if (behavior instanceof Pursue) {
                 setMaxLinearAcceleration(1);
                 generateRandomTarget();
                 behavior = new Arrive<>(behavior.getOwner(), target);
                 setMaxLinearSpeed(2);
-            } else if ((isAround(position, target.vector, 1) ) && behavior.isEnabled()) {
+            } else if ((isAround(position, target.vector, 1)) && behavior.isEnabled()) {
 
                 behavior.setEnabled(false);
-                maxLinearSpeed = 0;
+                maxLinearVelocity = 0f;
                 timer.schedule(new TimerTask() {
 
                     @Override
                     public void run() {
                         generateRandomTarget();
-                        maxLinearSpeed = 8000f;
+                        maxLinearVelocity = 8000f;
                         behavior.setEnabled(true);
                         behavior = new Arrive<>(behavior.getOwner(), target);
                     }
@@ -115,35 +118,35 @@ public class SteeringAgent implements Steerable<Vector3> {
     }
 
     private void applySteering(SteeringAcceleration<Vector3> steering, float time) {
-        if (( isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade)) {
-            System.out.println("distance");
-        } else if (isAround(position, target.vector, weaponRange) && playerInRoom() && weaponRange <1) {
-            System.out.println("cac");
-        } else {
-            // Update position and linear velocity. Velocity is trimmed to maximum speed
-            this.position.mulAdd(linearVelocity, time);
-            object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
-            object.body.proceedToTransform(object.transform);
-            this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
+        updateProjectiles(time);
+        // Update position and linear velocity. Velocity is trimmed to maximum speed
+        this.position.mulAdd(linearVelocity, time);
+        object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+        object.body.proceedToTransform(object.transform);
+        this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
 
-            // Update orientation and angular velocity
-            if (independentFacing) {
-                this.orientation += angularVelocity * time;
-                this.angularVelocity += steering.angular * time;
+        // Update orientation and angular velocity
+        if (independentFacing) {
+            this.orientation += angularVelocity * time;
+            this.angularVelocity += steering.angular * time;
 
-            } else {
-                // For non-independent facing we have to align orientation to linear velocity
-                float newOrientation = calculateOrientationFromLinearVelocity(this);
-                if (newOrientation != this.orientation) {
-                    this.angularVelocity = (newOrientation - this.orientation) * time;
-                    this.orientation = newOrientation;
-                }
+        }
+        if (!independentFacing) {
+            // For non-independent facing we have to align orientation to linear velocity
+            float newOrientation = vectorToAngle(linearVelocity);
+            if (newOrientation != this.orientation) {
+                this.angularVelocity = (newOrientation - this.orientation) * time;
+                this.orientation = newOrientation;
             }
         }
+        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && weaponRange > 1 && !(behavior instanceof Evade)) {
+            shootProjectile();
+        }
+
     }
 
     private boolean isAround(Vector3 position, Vector3 target, float radius) {
-        return Math.pow((position.x - target.x),2) + Math.pow((position.z - target.z),2) <= radius*radius;
+        return Math.pow((position.x - target.x), 2) + Math.pow((position.z - target.z), 2) <= radius * radius;
     }
 
     public void generateRandomTarget() {
@@ -209,7 +212,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.y);
     }
 
     @Override
@@ -226,7 +229,7 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getZeroLinearSpeedThreshold() {
-        return 0.2f;
+        return 0;
     }
 
     @Override
@@ -236,12 +239,12 @@ public class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float getMaxLinearSpeed() {
-        return maxLinearSpeed;
+        return maxLinearVelocity;
     }
 
     @Override
     public void setMaxLinearSpeed(float maxLinearSpeed) {
-        this.maxLinearSpeed = maxLinearSpeed;
+        this.maxLinearVelocity = maxLinearSpeed;
     }
 
     @Override
@@ -285,6 +288,24 @@ public class SteeringAgent implements Steerable<Vector3> {
         linearVelocity = new Vector3(0f, 0, 0f);
         independentFacing = true;
         orientation = 80;
-        maxLinearSpeed = 2f;
+        maxLinearVelocity = 2f;
+    }
+
+    private void shootProjectile() {
+        projectilesShot.add(new Projectile(target.vector, 8f, position));
+    }
+
+    private void updateProjectiles(float delta) {
+        for (Projectile projectile : projectilesShot)
+            projectile.Update(delta);
+    }
+
+    public Array<? extends EntityInstance> projectiles() {
+        Array<EntityInstance> instances = new Array<>();
+        for (Projectile projectile :
+                projectilesShot) {
+            instances.add(projectile.getInstance());
+        }
+        return instances;
     }
 }

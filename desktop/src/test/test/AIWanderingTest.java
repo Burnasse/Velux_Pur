@@ -191,6 +191,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         }
 
         for (EntityMonster foe : floorData.entityMonsters) {
+            floorData.objectsInstances.addAll(foe.behavior.projectiles());
             foe.behavior.update(delta);
         }
 
