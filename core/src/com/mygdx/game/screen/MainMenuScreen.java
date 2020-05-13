@@ -26,7 +26,9 @@ public class MainMenuScreen implements Screen, StageManager {
      */
     public MainMenuScreen(final VeluxPurGame manager) {
         this.manager = manager;
+    }
 
+    public void initScreen() {
         this.stage = new MainMenu(this, viewport, false).getStage();
 
         stageManager = new MenuManager();
@@ -39,7 +41,8 @@ public class MainMenuScreen implements Screen, StageManager {
 
     @Override
     public void show() {
-
+        initScreen();
+        Gdx.input.setInputProcessor(stage);
     }
 
 
@@ -77,15 +80,16 @@ public class MainMenuScreen implements Screen, StageManager {
     public void dispose() {
     }
 
-    public void setInputProcessor() {
-        Gdx.input.setInputProcessor(stage);
-    }
-
-    public void show(String stageName) {
+    public void displayStage(String stageName) {
         stage = stageManager.changeStage(stageName, viewport);
     }
 
     public void startGame() {
         manager.changeScreen(new GameScreen(manager));
     }
+
+    public void startMultiplayerGame() {
+        manager.setScreen(new MultiplayerGameScreen(manager));
+    }
+
 }

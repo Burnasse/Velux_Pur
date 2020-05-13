@@ -21,8 +21,10 @@ public class EntityPlayer implements EntityInterface {
     private CharacteristicPlayer characteristics;
     private EntityInstancePlayer entityInstance;
     private Inventory inventory;
+
     public Weapon equippedWeapon ;
     private boolean isAttacking;
+
 
     /**
      * Instantiates a new Entity player. with a file as entry
@@ -31,28 +33,32 @@ public class EntityPlayer implements EntityInterface {
      * @param fileName   the file name
      * @param position   the position
      */
-    public EntityPlayer(String playerName, String fileName, EntityPosition position){
+    public EntityPlayer(String playerName, String fileName, EntityPosition position) {
         this.playerName = playerName;
+
         this.characteristics = new CharacteristicPlayer(0,1);
 
+
         AssetManager assets = new AssetManager();
-        assets.load(fileName,Model.class);
+        assets.load(fileName, Model.class);
         assets.finishLoading();
+
         Model model = assets.get(fileName,Model.class);
         this.entityInstance = new EntityInstancePlayer(model,position);
         this.isAttacking = false;
+
     }
 
     /**
      * Instantiates a new Entity player. with a model as entry
      *
      * @param playerName the player name
-     * @param model   the file name
+     * @param model      the file name
      * @param position   the position
      */
-    public EntityPlayer(String playerName, Model model, EntityPosition position){
+    public EntityPlayer(String playerName, Model model, EntityPosition position) {
         this.playerName = playerName;
-        this.characteristics = new CharacteristicPlayer(0,1);
+        this.characteristics = new CharacteristicPlayer(0, 1);
         this.equippedWeapon = CreatedItems.getSword();
         this.entityInstance = new EntityInstancePlayer(model,position);
         this.isAttacking = false;
@@ -60,17 +66,23 @@ public class EntityPlayer implements EntityInterface {
 
     public Weapon getWeapon(){
         return equippedWeapon;
+
+        this.entityInstance = new EntityInstancePlayer(model, position);
     }
 
-    public void usePotion(){
+    public EntityInstance getEntityWeapon() {
+        return equippedWeapon.getEntity();
+    }
+
+    public void usePotion() {
         inventory.usePotion();
     }
 
-    public void getPotion(){
+    public void getPotion() {
         inventory.getNewPotion();
     }
 
-    public void getNewItem(Item item){
+    public void getNewItem(Item item) {
         inventory.addItemInInventory(item);
     }
 
@@ -99,7 +111,7 @@ public class EntityPlayer implements EntityInterface {
     }
 
     @Override
-    public EntityInstancePlayer getEntity(EntityPosition position){
+    public EntityInstancePlayer getEntity(EntityPosition position) {
         entityInstance.move(position);
         return entityInstance;
     }

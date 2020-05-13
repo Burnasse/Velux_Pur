@@ -2,6 +2,7 @@ package com.mygdx.game.Entity.instances;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
@@ -45,6 +46,27 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
         controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
     }
 
+    /**
+     * Instantiates a new Entity instance player with float[] position.
+     * Mainly used in multiplayer
+     *
+     * @param model           the model
+     * @param defaultPosition the default position
+     */
+    public EntityInstancePlayer(Model model, float[] defaultPosition) {
+        super(model);
+        transform.set(defaultPosition);
+        transform.rotate(Vector3.X, 90);
+        motionState = new StaticMotionState.MotionState();
+        motionState.transform = transform;
+        ghostObject = new btPairCachingGhostObject();
+        ghostObject.setWorldTransform(transform);
+        ghostShape = new btCapsuleShape(0.1f, .5f);
+        ghostObject.setCollisionShape(ghostShape);
+        ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
+    }
+
     @Override
     public void dispose() {
         controller.dispose();
@@ -57,7 +79,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
      *
      * @return the ghost object
      */
-    public btPairCachingGhostObject getGhostObject(){
+    public btPairCachingGhostObject getGhostObject() {
         return ghostObject;
     }
 
@@ -75,7 +97,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
      *
      * @param position the position
      */
-    public void move(EntityPosition position){
+    public void move(EntityPosition position) {
         controller.setWalkDirection(position);
     }
 
