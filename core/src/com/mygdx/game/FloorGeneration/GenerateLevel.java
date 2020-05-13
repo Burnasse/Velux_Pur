@@ -40,7 +40,7 @@ public class GenerateLevel{
     /**
      * The type My contact listener is called when there is a collision.
      */
-    class MyContactListener extends ContactListener {
+    public class MyContactListener extends ContactListener {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1,
                                        int index1, boolean match1) {
@@ -103,7 +103,7 @@ public class GenerateLevel{
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         for(EntityInstance obj : floorData.objectsInstances){
-            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj, false));
+            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
             obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             obj.getBody().setContactCallbackFlag(OBJECT_FLAG);
             obj.getBody().setContactCallbackFilter(GROUND_FLAG);
@@ -119,7 +119,7 @@ public class GenerateLevel{
 
         camController = new CameraInputController(cam);
 
-        playerController = new PlayerController(player);
+        playerController = new PlayerController(player,playerPov);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);

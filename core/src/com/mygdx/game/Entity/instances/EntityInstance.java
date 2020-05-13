@@ -18,7 +18,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
 
     private final btRigidBody body;
     private final StaticMotionState.MotionState motionState;
-    private final btCollisionShape shape;
+    private  btCollisionShape shape;
     private static Vector3 localInertia = new Vector3();
     private final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
     private float mass;
@@ -51,8 +51,8 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
 
     @Override
     public void dispose() {
-        body.dispose();
         shape.dispose();
+        body.dispose();
         motionState.dispose();
         constructionInfo.dispose();
     }
@@ -62,15 +62,18 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
      *
      * @param position the position
      */
-    public void move(EntityPosition position) {
-        super.transform.trn(position);
-        this.body.proceedToTransform(this.transform);
+    public void move(EntityPosition position){
+        super.transform.setTranslation(position);
     }
 
     @Override
     public btCollisionObject getBody() {
         return body;
     }
+
+    public void setCollisionShape(btCollisionShape shape){
+        this.shape = shape;
+        this.body.setCollisionShape(shape);
 
     /**
      * Set the entity position
