@@ -71,10 +71,10 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
         return body;
     }
 
-    public void setCollisionShape(btCollisionShape shape){
+    public void setCollisionShape(btCollisionShape shape) {
         this.shape = shape;
         this.body.setCollisionShape(shape);
-
+    }
     /**
      * Set the entity position
      * mainly used in multiplayer
