@@ -23,7 +23,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
      *
      * @param player the player
      */
-    public PlayerController(EntityPlayer player,boolean playerPov) {
+    public PlayerController(EntityPlayer player) {
         this.player = player;
     }
 

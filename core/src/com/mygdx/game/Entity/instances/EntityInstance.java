@@ -64,6 +64,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
      */
     public void move(EntityPosition position){
         super.transform.setTranslation(position);
+        this.body.proceedToTransform(this.transform);
     }
 
     @Override

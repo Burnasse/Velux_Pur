@@ -64,10 +64,22 @@ public class EntityPlayer implements EntityInterface {
         this.isAttacking = false;
     }
 
+    /**
+     * Instantiates a new Entity player. with a model as entry
+     *
+     * @param playerName the player name
+     * @param model      the file name
+     * @param position   the position
+     */
+    public EntityPlayer(String playerName, Model model, float[] position) {
+        this.playerName = playerName;
+        this.characteristics = new CharacteristicPlayer(0, 1);
+        this.equippedWeapon = CreatedItems.getSword();
+        this.entityInstance = new EntityInstancePlayer(model, position);
+    }
+
     public Weapon getWeapon(){
         return equippedWeapon;
-
-        this.entityInstance = new EntityInstancePlayer(model, position);
     }
 
     public EntityInstance getEntityWeapon() {
