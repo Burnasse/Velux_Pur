@@ -82,7 +82,7 @@ public class EntityPlayer implements EntityInterface {
 
     public void equipWeapon(Weapon weapon){
         this.equippedWeapon = weapon;
-        equippedWeapon.getEntity().move(new EntityPosition(getPosition().x+1,getPosition().y,getPosition().z+1));
+        equippedWeapon.getEntity().move(new EntityPosition(getPosition().x+1,getPosition().y+0.5f,getPosition().z+1));
     }
 
     public void attack(){

@@ -54,6 +54,7 @@ public class RaphTests extends ApplicationAdapter {
     final static short WEAPON_FLAG = 1 << 7;
 
     final static short ENNEMY_FLAG = 1 << 6;
+
     final static short PLAYER_FLAG = 25;
 
     public class EntityToDelete{
@@ -72,21 +73,17 @@ public class RaphTests extends ApplicationAdapter {
         @Override
         public boolean onContactAdded (int userValue0, int partId0, int index0, boolean match0, final int userValue1, int partId1,
                                        int index1, boolean match1) {
+
             if (match0) {
-
                 if(cdAttack == 60) {
-                    System.out.println(index0);
-                    System.out.println(partId0);
-                    System.out.println(floorData.entityMonsters.get(userValue1).getEntity().getBody().getCollisionFlags());
-
-                    if(floorData.entityMonsters.get(userValue1).getHealth()>0) {
+                    if(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth()>0) {
                         System.out.println("contact 0");
-                        System.out.println("entité num :" + userValue1);
-                        System.out.println(floorData.entityMonsters.get(userValue1).getHealth());
-                        floorData.entityMonsters.get(userValue1).damage(player.getWeapon());
-                        System.out.println(floorData.entityMonsters.get(userValue1).getHealth());
-                        if (floorData.entityMonsters.get(userValue1).getHealth() <= 0) {
-                            toDelete = new EntityToDelete(userValue1);
+                        System.out.println("entité num :" + (userValue1-firstEnnemyUserValue));
+                        System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
+                        floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).damage(player.getWeapon());
+                        System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
+                        if (floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth() <= 0) {
+                            toDelete = new EntityToDelete(userValue1-firstEnnemyUserValue);
                         }
                         cdAttack = 0;
                     }
@@ -108,11 +105,17 @@ public class RaphTests extends ApplicationAdapter {
     private EntityPlayer player;
     private PlayerController playerController;
     private RaphTests.MyContactListener contactListener;
+    /**
+     * - toutes les Entity Instances a mettre en ejux doivent etre misent la dedans.
+     * - les index des objets correpsondent a UserValue du body de l'objet
+     * - pour trouvé l'entity monster correspondant au constact, il faut faire UserValue-firstEnnemyUserValue
+     */
     private ArrayList<EntityInstance> instances;
     private double cdAttack = 0;
     private EntityToDelete toDelete = null;
     private boolean playerPov =true;
     boolean isespose = false;
+    int firstEnnemyUserValue;
 
     /**
      * Create.
@@ -143,43 +146,55 @@ public class RaphTests extends ApplicationAdapter {
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
+        /**
+         * ajoute le player
+         */
         player = new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
         player.equipWeapon(CreatedItems.getSword());
-        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-        world.getDynamicsWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(PLAYER_FLAG);
         player.getEntity().getBody().setContactCallbackFilter(0);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+        player.getEntity().getBody().setUserValue(instances.size());
+        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+        world.getDynamicsWorld().addAction(player.getEntity().getController());
 
         /**
          * ajoute arme dans le jeu
          */
-        player.getWeapon().getEntity().getBody().setUserValue(1);
+        player.getWeapon().getEntity().getBody().setUserValue(0);
         player.getWeapon().getEntity().getBody().setCollisionFlags(player.getWeapon().getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);;
         player.getWeapon().getEntity().getBody().setContactCallbackFlag(WEAPON_FLAG);
-        player.getWeapon().getEntity().getBody().setContactCallbackFilter(ENNEMY_FLAG);
-        player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+        player.getWeapon().getEntity().getBody().setContactCallbackFilter(ENNEMY_FLAG | GROUND_FLAG);
+        player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
         instances.add(player.getWeapon().getEntity());
         world.addRigidBody((btRigidBody) player.getWeapon().getEntity().getBody());
+        instances.add(player.getWeapon().getEntity());
 
-
+        /**
+         * ajoute le sol et murs
+         */
         for(EntityInstance obj : floorData.objectsInstances){
-            obj.getBody().setUserValue(1+floorData.objectsInstances.indexOf(obj));
+            obj.getBody().setUserValue(instances.size());
             obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             obj.getBody().setContactCallbackFlag(GROUND_FLAG);
             obj.getBody().setContactCallbackFilter(0);
             world.addRigidBody((btRigidBody) obj.getBody());
+            instances.add(obj);
         }
+        firstEnnemyUserValue = instances.size();
 
+        /**
+         * ajoute les mobs
+         */
         for(EntityMonster monster : floorData.entityMonsters){
-            monster.getEntity().getBody().setUserValue(floorData.objectsInstances.indexOf(monster.getEntity()));
+            monster.getEntity().getBody().setUserValue(instances.size());
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             monster.getEntity().getBody().setContactCallbackFlag(ENNEMY_FLAG);
-            monster.getEntity().getBody().setContactCallbackFilter(WEAPON_FLAG);
+            monster.getEntity().getBody().setContactCallbackFilter(0);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
             world.addRigidBody((btRigidBody) monster.getEntity().getBody());
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-            monster.getEntity().getBody().setContactCallbackFilter(0);
+            instances.add(monster.getEntity());
         }
 
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -211,22 +226,8 @@ public class RaphTests extends ApplicationAdapter {
 
     private void deleteDeadEntity(){
         isespose = true;
-        /*final btCollisionObject obj = floorData.objectsInstances.get(toDelete.userValue).getBody();
-        floorData.objectsInstances.remove(toDelete.userValue);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Gdx.app.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        world.getDynamicsWorld().removeRigidBody((btRigidBody)obj);
-                    }
-                });
-            }
-        }).start();
-        ((ColorAttribute)floorData.objectsInstances.get(toDelete.userValue).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
-*/
         floorData.objectsInstances.get(toDelete.userValue).getBody().setCollisionFlags(55);
+        floorData.objectsInstances.get(toDelete.userValue).move(new EntityPosition(-50,-50,-50));
         toDelete = null;
         isespose = false;
         world.getDynamicsWorld().getForceUpdateAllAabbs();
@@ -243,6 +244,7 @@ public class RaphTests extends ApplicationAdapter {
             cdAttack += 1;
 
 
+
         camFollowPlayer();
         cam.update();
 
@@ -254,7 +256,7 @@ public class RaphTests extends ApplicationAdapter {
             deleteDeadEntity();
             toDelete = null;
         }
-        player.getWeapon().getEntity().move(new EntityPosition(player.getPosition().x+0.2f,player.getPosition().y,player.getPosition().z+0.2f));
+        player.getWeapon().getEntity().move(new EntityPosition(player.getPosition().x+0.3f,player.getPosition().y,player.getPosition().z+0.2f));
 
 
 
@@ -262,12 +264,11 @@ public class RaphTests extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         modelBatch.begin(cam);
-        modelBatch.render(floorData.objectsInstances, environment);
         modelBatch.render(player.getEntity(),environment);
         modelBatch.render(instances,environment);
         modelBatch.end();
 
-            player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
+        player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }
 
     /**

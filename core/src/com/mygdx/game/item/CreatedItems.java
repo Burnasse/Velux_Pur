@@ -23,7 +23,7 @@ public class CreatedItems {
         Model swordModel = modelBuilder.end();
 
 
-        WeaponCaC sword = new WeaponCaC(5,swordModel,new btBoxShape(new Vector3(0.1f,0.7f,0.1f)),new EntityPosition(0,0,0));
+        WeaponCaC sword = new WeaponCaC(5,swordModel,new btBoxShape(new Vector3(+0f,+0.7f,+0.5f)),new EntityPosition(0,0,0));
         return sword;
     }
 }
