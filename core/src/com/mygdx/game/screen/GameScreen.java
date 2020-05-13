@@ -3,10 +3,12 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.VeluxPurGame;
+import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
 import com.mygdx.game.village.Village;
 
@@ -15,7 +17,9 @@ import com.mygdx.game.village.Village;
  */
 public class GameScreen implements Screen, StageManager {
 
-    Village village;
+    private Village village;
+
+    private MainMenu menu;
 
     /**
      * Used to manage the menu
@@ -56,10 +60,12 @@ public class GameScreen implements Screen, StageManager {
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             if (isInMenu) {
-                Gdx.input.setInputProcessor(village.getController());
+                village.setController();
                 isInMenu = false;
             } else {
                 stage = stageManager.getStageByName("Main");
+                Controllers.clearListeners();
+                Controllers.addListener((ButtonStageController)menu.getStage());
                 Gdx.input.setInputProcessor(stage);
                 isInMenu = true;
             }
@@ -109,8 +115,9 @@ public class GameScreen implements Screen, StageManager {
         village = new Village(this,true);
         village.create();
 
+        menu = new MainMenu(this, viewport, true);
         stageManager = new MenuManager();
-        stageManager.addStage("Main", new MainMenu(this, viewport, true).getStage());
+        stageManager.addStage("Main", menu.getStage());
         stageManager.addStage("Settings", new SettingsMenu(this).getStage());
         stageManager.addStage("Audio", new AudioMenu(this).getStage());
         stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());

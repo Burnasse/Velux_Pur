@@ -1,13 +1,14 @@
 package com.mygdx.game.scene.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.controller.ButtonStage;
+import com.mygdx.game.controller.DisplayButtonController;
+import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.screen.MainMenuScreen;
 import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.scene.TextButtonContainer;
@@ -18,7 +19,7 @@ import com.mygdx.game.scene.TextButtonContainer;
 public class MainMenu implements MenuStage {
 
     private TextButtonContainer container;
-    private ButtonStage stage;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Main menu.
@@ -64,9 +65,9 @@ public class MainMenu implements MenuStage {
         });
 
         TextButton[] buttons = container.getButtons().toArray();
-        MenuController menuController = new MenuController(buttons);
+        DisplayButtonController displayButtonController = new DisplayButtonController(buttons);
 
-        stage = new ButtonStage(viewport, menuController);
+        stage = new ButtonStageController(viewport, displayButtonController);
         stage.setKeyboardFocus(container.getActor());
         stage.addActor(container);
 
@@ -76,5 +77,9 @@ public class MainMenu implements MenuStage {
     @Override
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose(){
+        Controllers.removeListener(stage);
     }
 }

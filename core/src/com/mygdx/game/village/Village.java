@@ -3,6 +3,7 @@ package com.mygdx.game.village;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -33,7 +34,7 @@ public class Village {
                                        int index1, boolean match1) {
 
             if (match0) {
-                System.out.println(userValue0 + " --- 0 ---" + userValue1);
+                //System.out.println(userValue0 + " --- 0 ---" + userValue1);
                 if(controller.waitTrigger && userValue1 != controller.userValue)
                     controller.notifyTrigger();
                 if(userValue1 == 1)
@@ -55,10 +56,10 @@ public class Village {
 
         @Override
         public void onContactEnded(int userValue0, boolean match0, int userValue1, boolean match1) {
-            if (match1) {
-                if(userValue0 == 3)
+            if (match0) {
+                if(userValue1 == 4)
                     controller.canChangeLayout = false;
-                if(userValue0 == 4)
+                if(userValue1 == 5)
                     controller.canChangeLayout = false;
             }
         }
@@ -217,8 +218,10 @@ public class Village {
         player.dispose();
     }
 
-    public VillageController getController(){
-        return controller;
+    public void setController(){
+        Controllers.clearListeners();
+        Controllers.addListener(controller);
+        Gdx.input.setInputProcessor(controller);
     }
 
 }

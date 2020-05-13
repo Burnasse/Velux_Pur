@@ -52,21 +52,6 @@ public class EntityObjects implements EntityInterface {
         entityInstance = new EntityInstance(model,shape,mass,defaultPos);
     }
 
-    /**
-     * Instantiates a new Entity object. with a file as entry
-     *
-     * @param objectName the objectName name
-     * @param shape      the shape
-     * @param mass       the mass
-     * @param defaultPos   the position
-     */
-    public EntityObjects(String objectName, Model model, btCollisionShape shape, float mass, EntityPosition defaultPos){
-        this.objectName = objectName;
-        this.characteristics = new CharacteristicMonster(0,1);
-        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
-    }
-
-
     @Override
     public void dispose() {
         entityInstance.dispose();

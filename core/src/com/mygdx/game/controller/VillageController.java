@@ -5,7 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.controllers.mappings.Xbox;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -21,6 +23,8 @@ public class VillageController implements InputProcessor, ControllerListener {
     private Thread thread;
     public boolean waitTrigger = false;
 
+    private boolean isSprint = false;
+    private boolean controllerEnable = true;
     public boolean canChangeLayout = false;
     public boolean canChangeUp = false;
     public int userValue = -1;
@@ -28,6 +32,8 @@ public class VillageController implements InputProcessor, ControllerListener {
     public VillageController(EntityPlayer player, AnimationController animation) {
         this.player = player;
         this.animation = animation;
+        Controllers.clearListeners();
+        Controllers.addListener(this);
     }
 
     @Override
@@ -36,65 +42,25 @@ public class VillageController implements InputProcessor, ControllerListener {
         speed = 0;
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
-            if (!lookLeft)
-                player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-
-            lookLeft = true;
-            player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-            walkDirection.add(1, 0, 0);
-
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                animation.animate("running", -1, 1.0f, null, 0.2f);
-                speed = 3f;
-            } else {
-                animation.animate("walk", -1, 1.0f, null, 0.2f);
-                speed = 1.5f;
-            }
+            moveLeft(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
-            if (lookLeft)
-                player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-
-            lookLeft = false;
-            player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-            walkDirection.add(-1, 0, 0);
-
-            if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-                animation.animate("running", -1, 1.0f, null, 0.2f);
-                speed = 3f;
-            } else {
-                animation.animate("walk", -1, 1.0f, null, 0.2f);
-                speed = 1.5f;
-            }
-
+            moveRight(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up)) && player.getEntity().getController().onGround()
                 && canChangeLayout && canChangeUp) {
-            Script_ChangeLayout(true, 3);
+            Script_ChangeLayout(false,true, 3);
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down)) && player.getEntity().getController().onGround()
                 && canChangeLayout && !canChangeUp) {
-            Script_ChangeLayout(false, 3);
+            Script_ChangeLayout(false,false, 3);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && player.getEntity().getController().onGround()) {
-            player.getEntity().getController().jump(new Vector3(0, 15, 0));
-            animation.animate("jump", 1, 1.0f, new AnimationController.AnimationListener() {
-                @Override
-                public void onEnd(AnimationController.AnimationDesc anim) {
-                    if (speed == 30)
-                        animation.animate("running", -1, 1.0f, null, 0.2f);
-                    else
-                        animation.animate("walk", -1, 1.0f, null, 0.2f);
-                }
-
-                @Override
-                public void onLoop(AnimationController.AnimationDesc animation) {
-                }
-            }, 0.2f);
+           jump();
         }
 
         setMovement(speed);
@@ -157,17 +123,51 @@ public class VillageController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        return false;
+        if (buttonCode == Xbox.A && player.getEntity().getController().onGround()){
+            jump();
+            //setMovement(speed);
+        }
+
+        if(buttonCode == Xbox.B)
+            isSprint = true;
+
+        //setMovement(speed);
+        return true;
     }
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        return false;
+        if (!player.getEntity().getController().onGround())
+            return false;
+        if(buttonCode == Xbox.B)
+            isSprint = false;
+        return true;
     }
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        return false;
+        if(!controllerEnable)
+            return false;
+        if (axisCode == Xbox.L_STICK_HORIZONTAL_AXIS) {
+            if (value == -1)
+                moveLeft(isSprint);
+            else if (value == 1)
+                moveRight(isSprint);
+            else
+                animation.animate("idle", -1, 1.0f, null, 0.2f);
+            setMovement(speed);
+        }
+        if (axisCode == Xbox.L_STICK_VERTICAL_AXIS && player.getEntity().getController().onGround()
+                && canChangeLayout) {
+            if (value == -1  && canChangeUp){
+                Script_ChangeLayout(true,true, 3);
+            }
+
+            else if (value == 1  && !canChangeUp)
+                Script_ChangeLayout(true,false, 3);
+        }
+
+        return true;
     }
 
     @Override
@@ -200,11 +200,12 @@ public class VillageController implements InputProcessor, ControllerListener {
 
     private void setInputProcessor() {
         Gdx.input.setInputProcessor(this);
+        controllerEnable = true;
     }
 
-    private void Script_ChangeLayout(final boolean moveUp, final float zTarget) {
+    private void Script_ChangeLayout(final boolean isGamepad, final boolean moveUp, final float zTarget) {
         Gdx.input.setInputProcessor(null);
-
+        controllerEnable = false;
         if (moveUp && lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, 1);
@@ -229,6 +230,8 @@ public class VillageController implements InputProcessor, ControllerListener {
         animation.animate("walk", -1, 1.0f, null, 0.2f);
         speed = 1.5f;
 
+        if(isGamepad)
+            setMovement(speed);
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -266,7 +269,7 @@ public class VillageController implements InputProcessor, ControllerListener {
                     player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
 
                 player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-                player.getEntity().getController().setGravity(new Vector3(0, -70, 0));
+                player.getEntity().getController().setGravity(new Vector3(0, -10, 0));
                 walkDirection.set(0, 0, 0);
                 setMovement(0);
                 animation.animate("idle", -1, 1.0f, null, 0.2f);
@@ -290,6 +293,58 @@ public class VillageController implements InputProcessor, ControllerListener {
         this.userValue = userValue;
     }
 
+    private void moveLeft(boolean sprint){
+        if (!lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+
+        lookLeft = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+
+    private void moveRight(boolean sprint){
+        if (lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+
+        lookLeft = false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+
+    private void jump(){
+        player.getEntity().getController().jump(new Vector3(0, 3, 0));
+        animation.animate("jump", 1, 1.0f, new AnimationController.AnimationListener() {
+            @Override
+            public void onEnd(AnimationController.AnimationDesc anim) {
+                if (speed == 3)
+                    animation.animate("running", -1, 1.0f, null, 0.2f);
+                else if(speed == 1.5f)
+                    animation.animate("walk", -1, 1.0f, null, 0.2f);
+                else
+                    animation.animate("idle", -1, 1.0f, null, 0.2f);
+            }
+
+            @Override
+            public void onLoop(AnimationController.AnimationDesc animation) {
+            }
+        }, 0.2f);
+    }
 
 }
 

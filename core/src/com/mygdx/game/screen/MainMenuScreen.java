@@ -2,6 +2,8 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -17,6 +19,7 @@ public class MainMenuScreen implements Screen, StageManager {
     private Stage stage;
     private ScreenViewport viewport = new ScreenViewport();
     private MenuManager stageManager;
+    private MainMenu mainMenu;
 
     /**
      * Instantiates a new Main menu screen.
@@ -28,7 +31,9 @@ public class MainMenuScreen implements Screen, StageManager {
     }
 
     public void initScreen() {
-        this.stage = new MainMenu(this, viewport, false).getStage();
+        mainMenu = new MainMenu(this,viewport,false);
+        Controllers.addListener((ControllerListener) mainMenu.getStage());
+        this.stage = mainMenu.getStage();
 
         stageManager = new MenuManager();
         stageManager.addStage("Main", stage);
@@ -76,7 +81,8 @@ public class MainMenuScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
-        stage.dispose();
+        mainMenu.dispose();
+        stageManager.dispose();
     }
 
     public void displayStage(String stageName) {
