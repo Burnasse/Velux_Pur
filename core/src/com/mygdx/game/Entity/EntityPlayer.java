@@ -56,6 +56,7 @@ public class EntityPlayer implements EntityInterface {
 
     /**
      * Instantiates a new Entity player. with a model as entry
+     * Mainly used in multiplayer
      *
      * @param playerName the player name
      * @param model      the file name

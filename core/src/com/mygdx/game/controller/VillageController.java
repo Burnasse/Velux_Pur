@@ -128,8 +128,10 @@ public class VillageController implements InputProcessor, ControllerListener {
             //setMovement(speed);
         }
 
-        if(buttonCode == Xbox.B)
+        if(buttonCode == Xbox.B){
             isSprint = true;
+        }
+
 
         //setMovement(speed);
         return true;
@@ -137,8 +139,7 @@ public class VillageController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        if (!player.getEntity().getController().onGround())
-            return false;
+
         if(buttonCode == Xbox.B)
             isSprint = false;
         return true;
@@ -210,18 +211,15 @@ public class VillageController implements InputProcessor, ControllerListener {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, 1);
         }
-
-        if (moveUp && !lookLeft) {
+        else if (moveUp) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, 1);
         }
-
-        if (!moveUp && lookLeft) {
+        else if (lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, -1);
         }
-
-        if (!moveUp && !lookLeft) {
+        else {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, -1);
         }
@@ -261,12 +259,11 @@ public class VillageController implements InputProcessor, ControllerListener {
 
                 if (moveUp && lookLeft)
                     player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-                if (moveUp && !lookLeft)
+                else if (moveUp)
                     player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
-                if (!moveUp && lookLeft)
+                else if (lookLeft)
                     player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
-                if (!moveUp && !lookLeft)
-                    player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+                else player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
 
                 player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
                 player.getEntity().getController().setGravity(new Vector3(0, -10, 0));

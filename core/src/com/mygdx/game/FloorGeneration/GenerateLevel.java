@@ -105,8 +105,8 @@ public class GenerateLevel{
 
         floorData = FloorFactory.create("Labyrinth", 20, 2 , 3 ,7, model);
 
-        ModelBuilder modelBuilder1 = new ModelBuilder();
-        Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+        //ModelBuilder modelBuilder1 = new ModelBuilder();
+        //Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
         player = PlayerFactory.create(floorData.playerSpawnPosition);//new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);

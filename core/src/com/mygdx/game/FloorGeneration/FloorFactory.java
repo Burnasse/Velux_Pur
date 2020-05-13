@@ -92,7 +92,7 @@ public class FloorFactory {
             z = 0;
         }
 
-        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),30,floor.getRooms().get(0).getCenter().getY());
+        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),20,floor.getRooms().get(0).getCenter().getY());
 
         return new FloorData(objectsInstances,entityMonsters,spawnPosition);
 

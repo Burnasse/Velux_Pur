@@ -1,7 +1,6 @@
 package com.mygdx.game.village;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
@@ -34,7 +32,6 @@ public class Village {
                                        int index1, boolean match1) {
 
             if (match0) {
-                //System.out.println(userValue0 + " --- 0 ---" + userValue1);
                 if(controller.waitTrigger && userValue1 != controller.userValue)
                     controller.notifyTrigger();
                 if(userValue1 == 1)
@@ -47,9 +44,10 @@ public class Village {
                     controller.setCanChangeLayout(userValue1,true);
                 if(userValue1 == 5 && !controller.waitTrigger)
                     controller.setCanChangeLayout(userValue1, false);
-            }
-            if(match1){
-                System.out.println(userValue0 + " --- 1 ---" + userValue1);
+                if(userValue1 == 6 && !controller.waitTrigger)
+                    controller.setCanChangeLayout(userValue1,true);
+                if(userValue1 == 7 && !controller.waitTrigger)
+                    controller.setCanChangeLayout(userValue1, false);
             }
             return true;
         }
@@ -60,6 +58,10 @@ public class Village {
                 if(userValue1 == 4)
                     controller.canChangeLayout = false;
                 if(userValue1 == 5)
+                    controller.canChangeLayout = false;
+                if(userValue1 == 6)
+                    controller.canChangeLayout = false;
+                if(userValue1 == 7)
                     controller.canChangeLayout = false;
             }
         }
@@ -111,6 +113,7 @@ public class Village {
                 VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal);
 
+
         /* Trigger: goToLevel() | index: 1 */
         villageBuilder.createTrigger(new EntityPosition(-4.5f,0,0),.5f,1,.5f);
 
@@ -121,10 +124,16 @@ public class Village {
         villageBuilder.createTrigger(new EntityPosition(-5.5f,0,0),.5f,1,.5f);
 
         /* Trigger: changeLayout1 | index: 4 */
-        villageBuilder.createTrigger(new EntityPosition(5.0f,0,0),2.0f,1.0f,.5f);
+        villageBuilder.createTrigger(new EntityPosition(4.0f,0.25f,0),0.5f,0.25f,.5f);
 
         /* Trigger: changeLayout2 | index: 5 */
-        villageBuilder.createTrigger(new EntityPosition(5.0f,0,3),2,1,.5f);
+        villageBuilder.createTrigger(new EntityPosition(4.0f,0.25f,3),0.5f,0.25f,.5f);
+
+        /* Trigger: changeLayout3 | index: 6 */
+        villageBuilder.createTrigger(new EntityPosition(8f,0.25f,3),0.5f,0.25f,.5f);
+
+        /* Trigger: changeLayout4 | index: 7 */
+        villageBuilder.createTrigger(new EntityPosition(8f,0.25f,6),0.5f,0.25f,.5f);
 
         villageBuilder.createGround(groundModel, 0,0,0);
         villageBuilder.createGround(groundModel, 4,0,3f);
@@ -168,12 +177,8 @@ public class Village {
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         controller = new VillageController(player, animationController);
-        CameraInputController cameraInputController = new CameraInputController(camera);
 
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(cameraInputController);
-        multiplexer.addProcessor(controller);
-        Gdx.input.setInputProcessor(multiplexer);
+        Gdx.input.setInputProcessor(controller);
     }
 
     private void camFollowPlayer(){
@@ -191,7 +196,7 @@ public class Village {
         if(!isDispose)
             villageBuilder.getWorld().stepSimulation(delta, 5, 1f/60f);
 
-        //camFollowPlayer();
+        camFollowPlayer();
         camera.update();
 
         modelBatch.begin(camera);
