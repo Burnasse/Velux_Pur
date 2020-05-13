@@ -42,8 +42,8 @@ public class FloorFactory {
 
 
         btBoxShape shape = new btBoxShape(new Vector3(5f, 5f, 5f));
-        Array<EntityInstance> objectsInstances = new Array<>();
-        Array<EntityMonster> entityMonsters = new Array<>();
+        ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
+        ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
       
         EntityPosition spawnPosition;
 
