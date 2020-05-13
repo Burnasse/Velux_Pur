@@ -27,6 +27,7 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.Entity;
@@ -60,7 +61,7 @@ public class AIWanderingTest extends ApplicationAdapter {
                                       int index1, boolean match1) {
             // Colore en blanc quand il y a une collision entre le joueur et un autre objets
             if (match0)
-                ((ColorAttribute) floorData.objectsInstances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+                ((ColorAttribute) floorData.objectsInstances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.BLUE);
             if (match1)
                 ((ColorAttribute) floorData.objectsInstances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
             return true;
@@ -192,9 +193,9 @@ public class AIWanderingTest extends ApplicationAdapter {
         }
 
         for (EntityMonster foe : floorData.entityMonsters) {
+            foe.behavior.update(delta);
             if (foe.behavior instanceof Gunner)
                 floorData.objectsInstances.addAll(((Gunner) foe.behavior).projectiles());
-            foe.behavior.update(delta);
         }
 
 

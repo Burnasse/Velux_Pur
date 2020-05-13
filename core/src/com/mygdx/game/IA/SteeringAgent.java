@@ -3,21 +3,19 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class SteeringAgent implements Steerable<Vector3> {
 
     EntityPlayer player;
-    EntityInstance object;
+    EntityInstance instance;
 
 
     float orientation;
@@ -51,16 +49,16 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     float coolDown;
     float maxCoolDown;
 
-    public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2) {
-        this.object = object;
+    public SteeringAgent(EntityInstance instance, int x1, int z1, int x2, int z2) {
+        this.instance = instance;
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
         this.z2 = z2;
     }
 
-    public SteeringAgent(EntityInstance object, int x1, int z1, int x2, int z2, float maxCoolDown) {
-        this.object = object;
+    public SteeringAgent(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown) {
+        this.instance = instance;
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
@@ -75,9 +73,9 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
-        object.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+        instance.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
-        object.body.proceedToTransform(object.transform);
+        instance.body.proceedToTransform(instance.transform);
 
         // Update orientation and angular velocity
         if (independentFacing) {
@@ -88,9 +86,11 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         if (!independentFacing) {
             // For non-independent facing we have to align orientation to linear velocity
             float newOrientation = vectorToAngle(target.vector);
-            if (newOrientation != this.orientation) {
-                this.angularVelocity = (newOrientation - this.orientation) * time;
-                this.orientation = newOrientation;
+            if (Math.abs(newOrientation) != this.orientation) {
+                this.angularVelocity = newOrientation - orientation * time;
+                this.orientation = Math.abs(newOrientation);
+                instance.transform.rotateRad(instance.transform.getTranslation(new Vector3()),orientation);
+                instance.body.proceedToTransform(instance.transform);
             }
         }
 
@@ -164,7 +164,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.y);
     }
 
     @Override
@@ -232,14 +232,4 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     public void setPlayer(EntityPlayer player) {
         this.player = player;
     }
-
-
-    public SteeringAgent(EntityInstance object) {  //semble inutile, peut-être que je le virerai dans le futur
-        this.object = object;
-        position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(0f, 0, 0f);
-        orientation = 80;
-        maxLinearSpeed = 2f;
-    }
-
 }

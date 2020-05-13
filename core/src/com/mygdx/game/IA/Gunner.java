@@ -18,7 +18,7 @@ public class Gunner extends SteeringAgent {
     ArrayList<Projectile> projectilesShot = new ArrayList<>();
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
-        super(object,x1,z1,x2,z2);
+        super(object, x1, z1, x2, z2);
         maxCoolDown = 1;
         coolDown = maxCoolDown;
 
@@ -38,7 +38,7 @@ public class Gunner extends SteeringAgent {
         super(object, x1, z1, x2, z2, maxCoolDown);
         coolDown = maxCoolDown;
 
-        this.object = object;
+        this.instance = object;
         position = object.transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(50, 50, 50);
 
@@ -55,7 +55,7 @@ public class Gunner extends SteeringAgent {
 
 
     @Override
-    public void update(float delta){
+    public void update(float delta) {
         coolDown = coolDown + delta;
         updateProjectiles(delta);
 
@@ -111,8 +111,12 @@ public class Gunner extends SteeringAgent {
     }
 
     private void updateProjectiles(float delta) {
-        for (Projectile projectile : projectilesShot)
-            projectile.update(delta);
+        for (Projectile projectile : projectilesShot) {
+            if (projectile.isDone())
+                projectile.instance.dispose();
+            else projectile.update(delta);
+
+        }
     }
 
     public Array<? extends EntityInstance> projectiles() {

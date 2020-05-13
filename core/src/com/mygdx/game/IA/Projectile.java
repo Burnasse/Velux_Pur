@@ -15,9 +15,11 @@ import com.mygdx.game.Entity.utils.EntityPosition;
 
 public class Projectile {
 
-    private EntityInstance instance;
+    public EntityInstance instance;
     private Vector3 direction;
     private float speed;
+    private float remainingTime = 4;
+    private boolean isDone = false;
 
     public Projectile(Vector3 target, float speed, Vector3 initialPosition) {
 
@@ -39,10 +41,18 @@ public class Projectile {
     }
 
     void update(float deltaTime) {
+        if (remainingTime > 0) {
+            instance.transform.translate(new EntityPosition(direction.x * speed * deltaTime, 0, direction.z * speed * deltaTime));
+            instance.body.proceedToTransform(instance.transform);
+            remainingTime = remainingTime - deltaTime;
+        }
+        else{
+            isDone = true;
+        }
+    }
 
-        instance.transform.translate(new EntityPosition( direction.x* speed * deltaTime, 0,  direction.z*speed * deltaTime));
-
-        instance.body.proceedToTransform(instance.transform);
+    public boolean isDone() {
+        return isDone;
     }
 
     public EntityInstance getInstance() {
