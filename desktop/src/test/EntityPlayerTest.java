@@ -1,4 +1,4 @@
-package test.utils;
+package test;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;

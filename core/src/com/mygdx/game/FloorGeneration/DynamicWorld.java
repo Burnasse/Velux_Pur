@@ -14,7 +14,7 @@ public class DynamicWorld {
     private btDispatcher dispatcher;
     private btAxisSweep3 sweep;
     private btConstraintSolver constraintSolver;
-    private btDynamicsWorld dynamicsWorld;
+    public btDynamicsWorld dynamicsWorld;
     private btGhostPairCallback ghostPairCallback;;
 
     /**

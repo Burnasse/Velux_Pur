@@ -260,7 +260,8 @@ public class GenerateMultiplayerLevel implements Screen {
     public void addPlayer(DataPlayerPosition data) {
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f, 0.5f, 16, new Material(ColorAttribute.createDiffuse(Color.BLUE)), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
-        EntityPlayer newPlayer = new EntityPlayer(String.valueOf(data.id), model1, data.matrix4);
+        String playerID = String.valueOf(data.id);
+        EntityPlayer newPlayer = new EntityPlayer(playerID, model1, data.matrix4);
         world.getDynamicsWorld().addCollisionObject(newPlayer.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(newPlayer.getEntity().getController());
         newPlayer.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);

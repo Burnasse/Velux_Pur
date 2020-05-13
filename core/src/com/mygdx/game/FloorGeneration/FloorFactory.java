@@ -14,6 +14,8 @@ import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
 
+import java.util.ArrayList;
+
 /**
  * The type Floor factory generate a floor.
  */
@@ -38,9 +40,11 @@ public class FloorFactory {
         else
             floor = new GenericFloor(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
 
+
         btBoxShape shape = new btBoxShape(new Vector3(5f, 5f, 5f));
         Array<EntityInstance> objectsInstances = new Array<>();
         Array<EntityMonster> entityMonsters = new Array<>();
+      
         EntityPosition spawnPosition;
 
         int x = 0;

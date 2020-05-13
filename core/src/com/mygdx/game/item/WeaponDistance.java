@@ -54,4 +54,8 @@ public class WeaponDistance implements Weapon,Item{
     public EntityInstance getEntity(){
         return weaponEntityInstance;
     }
+    @Override
+    public int getDammage(){
+        return dammages;
+    }
 }

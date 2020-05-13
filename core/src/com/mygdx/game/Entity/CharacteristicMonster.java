@@ -18,4 +18,13 @@ public class CharacteristicMonster implements Characteristic{
         this.attackDamage = attackDamage;
         this.health = health;
     }
+
+    public int getHealth(){
+        return health;
+    }
+
+    public void setHealth(int health){
+        this.health = health;
+    }
+
 }

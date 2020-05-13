@@ -7,50 +7,32 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.Entity.EntityPlayer;
 
-/**
- * The type Player controller.
- */
-public class PlayerController implements InputProcessor, ControllerListener {
+public class PovController implements InputProcessor, ControllerListener {
 
-    private EntityPlayer player;
-    private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
 
-    /**
-     * Instantiates a new Player controller.
-     *
-     * @param player the player
-     */
-    public PlayerController(EntityPlayer player) {
-        this.player = player;
+    public PovController(boolean playerPov){
+        this.playerPov = playerPov;
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR))
-            walkDirection.add(1, 0, 0);
-        if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR))
-            walkDirection.add(-1, 0, 0);
-        if (Gdx.input.isKeyPressed(PrefKeys.UP_ARR))
-            walkDirection.add(0, 0, 1);
-        if (Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR))
-            walkDirection.add(0, 0, -1);
-
-        setMovement();
+        if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+            this.playerPov = !this.playerPov;
+            System.out.println("c est appuyerrrr");
+        }
 
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
-            walkDirection.set(0, 0, 0);
-            setMovement();
+        if(Gdx.input.isKeyPressed(PrefKeys.C)) {
+            this.playerPov = !this.playerPov;
+            System.out.println("c est appuyerrrr");
         }
-
-        return true;
+        return false;
     }
 
     @Override
@@ -60,18 +42,12 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
-            player.attack();
-        return true;
+        return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (button == PrefKeys.LeftClick)
-            System.out.println("AHAHAHAHAH");
-        if (button == Input.Buttons.RIGHT)
-            System.out.println("OUHOUHOUHOUH");
-        return true;
+        return false;
     }
 
     @Override
@@ -101,7 +77,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-
         return false;
     }
 
@@ -134,14 +109,4 @@ public class PlayerController implements InputProcessor, ControllerListener {
     public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
         return false;
     }
-
-    /**
-     * Set movement
-     */
-    private void setMovement() {
-        walkDirection.scl(4f * Gdx.graphics.getDeltaTime());
-        player.getEntity().getController().setWalkDirection(walkDirection);
-
-    }
-
 }
