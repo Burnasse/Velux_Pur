@@ -27,9 +27,9 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     float maxLinearAcceleration;
     float maxLinearSpeed;
 
-    float angularVelocity = 0;
-    float maxAngularAcceleration = 0;
-    float maxAngularSpeed = 0;
+    float angularVelocity = 1;
+    float maxAngularAcceleration = 1;
+    float maxAngularSpeed = 1;
 
     float weaponRange;
 
@@ -75,25 +75,26 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         this.position.mulAdd(linearVelocity, time);
         instance.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
         this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
-        instance.body.proceedToTransform(instance.transform);
 
         // Update orientation and angular velocity
         if (independentFacing) {
             this.orientation += angularVelocity * time;
             this.angularVelocity += steering.angular * time;
+            instance.transform.rotateRad(instance.transform.getTranslation(new Vector3()),orientation);
         }
 
         if (!independentFacing) {
             // For non-independent facing we have to align orientation to linear velocity
-            float newOrientation = vectorToAngle(target.vector);
-            if (Math.abs(newOrientation) != this.orientation) {
-                this.angularVelocity = newOrientation - orientation * time;
-                this.orientation = Math.abs(newOrientation);
+            float newOrientation = calculateOrientationFromLinearVelocity(this);
+            System.out.println("newOrientation = " + newOrientation);
+            System.out.println("orientation = " + orientation);
+            if (Math.round(newOrientation) != Math.round(this.orientation)) {
+                this.angularVelocity = (newOrientation - this.orientation) * time;
+                this.orientation = newOrientation;
                 instance.transform.rotateRad(instance.transform.getTranslation(new Vector3()),orientation);
-                instance.body.proceedToTransform(instance.transform);
             }
         }
-
+        instance.body.proceedToTransform(instance.transform);
 
     }
 
@@ -164,7 +165,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.y);
+        return (float) Math.atan2(-vector.x, vector.z);
     }
 
     @Override
