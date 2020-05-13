@@ -15,13 +15,15 @@ import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.controller.PlayerController;
+import com.mygdx.game.village.PlayerFactory;
 
 /**
  * The type Generate level.
@@ -53,6 +55,9 @@ public class GenerateLevel{
         }
     }
 
+    private final boolean DEBUG_MODE;
+    private DebugDrawer debugDrawer;
+
     private  ModelBatch modelBatch;
     private Model model;
     private  Environment environment;
@@ -67,13 +72,21 @@ public class GenerateLevel{
     private boolean playerPov =true;
     private int clock;
 
+    public GenerateLevel(boolean DEBUG_MODE){
+        this.DEBUG_MODE = DEBUG_MODE;
+    }
+
     /**
      * Create.
      */
     public void create() {
-        Bullet.init();
+        if(DEBUG_MODE){
+            debugDrawer = new DebugDrawer();
+            world = new DynamicWorld(debugDrawer);
+            debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+        }else
+            world = new DynamicWorld();
 
-        world = new DynamicWorld();
         contactListener = new MyContactListener();
 
         modelBatch = new ModelBatch();
@@ -87,15 +100,15 @@ public class GenerateLevel{
         modelBuilder.node().id = "box";
         MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
-        BoxShapeBuilder.build(builder,1f,1f,1f);
+        BoxShapeBuilder.build(builder,10f,10f,10f);
         model = modelBuilder.end();
 
-        floorData = FloorFactory.create("Labyrinth", 100, 15 , 3 ,15, model);
+        floorData = FloorFactory.create("Labyrinth", 20, 2 , 3 ,7, model);
 
-        ModelBuilder modelBuilder1 = new ModelBuilder();
-        Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
+        //ModelBuilder modelBuilder1 = new ModelBuilder();
+        //Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
-        player = new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
+        player = PlayerFactory.create(floorData.playerSpawnPosition);//new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
@@ -168,6 +181,12 @@ public class GenerateLevel{
         modelBatch.render(floorData.objectsInstances, environment);
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
+
+        if(DEBUG_MODE) {
+            debugDrawer.begin(cam);
+            world.getDynamicsWorld().debugDrawWorld();
+            debugDrawer.end();
+        }
 
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }

@@ -1,13 +1,16 @@
 package com.mygdx.game.Entity.instances;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btConvexShape;
-import com.badlogic.gdx.physics.bullet.collision.btPairCachingGhostObject;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -21,10 +24,6 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
     private btKinematicCharacterController controller;
     private btPairCachingGhostObject ghostObject;
     private btConvexShape ghostShape;
-    /**
-     * The Motion state.
-     */
-    public final StaticMotionState.MotionState motionState;
 
     /**
      * Instantiates a new Entity instance player.
@@ -36,14 +35,17 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
         super(model);
         transform.trn(defaultPosition);
         transform.rotate(Vector3.X, 90);
-        motionState = new StaticMotionState.MotionState();
-        motionState.transform = transform;
+        transform.rotate(Vector3.Y, 90);
+
         ghostObject = new btPairCachingGhostObject();
         ghostObject.setWorldTransform(transform);
-        ghostShape = new btCapsuleShape(0.1f, .5f);
-        ghostObject.setCollisionShape(ghostShape);
+        ghostShape = new btBoxShape(new Vector3(0.25f,0.25f,1f));
+        btCompoundShape compoundShape = new btCompoundShape();
+        compoundShape.addChildShape(new Matrix4(transform).set(new Vector3(0,1f,0), new Quaternion()).rotate(Vector3.X, 90),ghostShape);
+        ghostObject.setCollisionShape(compoundShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, 0f, Vector3.Y);
+        controller.setGravity(new Vector3(0, -10, 0));
     }
 
     /**
@@ -57,14 +59,12 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
         super(model);
         transform.set(defaultPosition);
         transform.rotate(Vector3.X, 90);
-        motionState = new StaticMotionState.MotionState();
-        motionState.transform = transform;
         ghostObject = new btPairCachingGhostObject();
         ghostObject.setWorldTransform(transform);
-        ghostShape = new btCapsuleShape(0.1f, .5f);
+        ghostShape = new btCapsuleShape(0.1f, 1f);
         ghostObject.setCollisionShape(ghostShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f);
     }
 
     @Override

@@ -32,11 +32,17 @@ public class VeluxPurGame extends Game {
      * @param newScreen the new screen
      */
     public void changeScreen(Screen newScreen){
-        Screen previousScreen = getScreen();
+        final Screen previousScreen = getScreen();
         setScreen(newScreen);
 
         if(previousScreen != null){
-            previousScreen.dispose();
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    previousScreen.dispose();
+                }
+            });
+
         }
     }
 

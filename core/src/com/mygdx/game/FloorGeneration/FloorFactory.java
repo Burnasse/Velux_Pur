@@ -40,9 +40,11 @@ public class FloorFactory {
         else
             floor = new GenericFloor(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
 
-        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
+
+        btBoxShape shape = new btBoxShape(new Vector3(5f, 5f, 5f));
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
+      
         EntityPosition spawnPosition;
 
         int x = 0;
@@ -61,40 +63,40 @@ public class FloorFactory {
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",model,new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)),0f,new EntityPosition(x,y,z)).getEntity());
+                    objectsInstances.add(new EntityObjects("box",model,shape,0f,new EntityPosition(x,y,z)).getEntity());
                     if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
                         objectsInstances.add(new EntityObjects("box",model,shape,0f, new EntityPosition(x,y + 1, z)).getEntity());
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
                             floor.getLayout()[i - 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x - 1, y + 1, z));
+                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x - 10, y + 10, z));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
                             floor.getLayout()[i + 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x + 1, y+ 1, z ));
+                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x + 10, y+ 10, z ));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
                             floor.getLayout()[i][j-1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x, y +1, z -1));
+                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x, y +10, z -10));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             floor.getLayout()[i][j + 1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f,new EntityPosition(x,y+1,z+1));
+                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f,new EntityPosition(x,y+10,z+10));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                     }
 
                 }
-                z = z + 1;
+                z = z + 10;
             }
-            x = x + 1;
+            x = x + 10;
             z = 0;
         }
 
-        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY());
+        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),20,floor.getRooms().get(0).getCenter().getY());
 
         return new FloorData(objectsInstances,entityMonsters,spawnPosition);
 

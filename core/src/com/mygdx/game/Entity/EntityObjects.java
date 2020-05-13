@@ -3,6 +3,7 @@ package com.mygdx.game.Entity;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
@@ -50,7 +51,6 @@ public class EntityObjects implements EntityInterface {
         Model model = assets.get(fileName,Model.class);
         entityInstance = new EntityInstance(model,shape,mass,defaultPos);
     }
-
 
     @Override
     public void dispose() {

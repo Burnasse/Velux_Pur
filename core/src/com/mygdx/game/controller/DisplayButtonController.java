@@ -9,7 +9,7 @@ import java.util.LinkedList;
 /**
  * The type Menu controller control the actions of the inputs on the menu.
  */
-public class MenuController {
+public class DisplayButtonController {
 
     private LinkedList<TextButton> buttonGroup = new LinkedList<>();
     private int currentButton = 0;
@@ -19,7 +19,7 @@ public class MenuController {
      *
      * @param buttons the buttons
      */
-    public MenuController(TextButton... buttons) {
+    public DisplayButtonController(TextButton... buttons) {
         Collections.addAll(buttonGroup, buttons);
         buttonGroup.get(0).setChecked(true);
     }

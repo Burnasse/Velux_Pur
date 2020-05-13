@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.controller.ButtonStage;
+import com.mygdx.game.controller.DisplayButtonController;
+import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.scene.TextButtonContainer;
 
@@ -16,7 +16,7 @@ import com.mygdx.game.scene.TextButtonContainer;
 public class SettingsMenu implements MenuStage {
 
     private TextButtonContainer container;
-    private ButtonStage stage;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Settings menu.
@@ -55,9 +55,9 @@ public class SettingsMenu implements MenuStage {
         });
 
         TextButton[] buttons = container.getButtons().toArray();
-        MenuController menuController = new MenuController(buttons);
+        DisplayButtonController displayButtonController = new DisplayButtonController(buttons);
 
-        stage = new ButtonStage(new ScreenViewport(), menuController);
+        stage = new ButtonStageController(new ScreenViewport(), displayButtonController);
         stage.setKeyboardFocus(container.getActor());
         stage.addActor(container);
         stage.act();
