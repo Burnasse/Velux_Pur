@@ -1,12 +1,19 @@
 package com.mygdx.game.FloorGeneration;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
@@ -32,20 +39,29 @@ public class FloorFactory {
      * @param model         the model
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Model model){
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Model model) {
+
         Floor floor;
 
-        if(floorType.equalsIgnoreCase("Labyrinth"))
-            floor = new Labyrinth(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
+        int blockSize = 10;
+
+        if (floorType.equalsIgnoreCase("Labyrinth"))
+            floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else
-            floor = new GenericFloor(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
+            floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
 
-        btBoxShape shape = new btBoxShape(new Vector3(5f, 5f, 5f));
+        btBoxShape shape = new btBoxShape(new Vector3(blockSize/2f, blockSize/2f, blockSize/2f));
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
-      
+
+        Model ground;
+        btBoxShape groundShape = new btBoxShape(new Vector3(sizeOfFloor * blockSize/2, blockSize/2, sizeOfFloor * blockSize/2));
+
         EntityPosition spawnPosition;
+
+
+
 
         int x = 0;
         int y = 0;
@@ -53,52 +69,63 @@ public class FloorFactory {
 
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
-                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies()){
+                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies()) {
                     entityMonsters.add(enemy);
                     objectsInstances.add(enemy.getEntity());
                 }
             }
         }
 
-        for (int i = 0; i < floor.getLayout().length; i++) {
-            for (int j = 0; j < floor.getLayout().length; j++) {
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        modelBuilder.node().id = "box";
+        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.PINK)));
+        BoxShapeBuilder.build(builder, sizeOfFloor * blockSize, blockSize, sizeOfFloor * blockSize);
+
+        ground = modelBuilder.end();
+
+
+        for (int i = 0; i < sizeOfFloor; i++) {
+            for (int j = 0; j < sizeOfFloor; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",model,shape,0f,new EntityPosition(x,y,z)).getEntity());
-                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(new EntityObjects("box",model,shape,0f, new EntityPosition(x,y + 1, z)).getEntity());
+                    if (i == 0 || j == 0 || i == sizeOfFloor -1 || j == sizeOfFloor-1) {
+                        objectsInstances.add(new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z)).getEntity());
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
                             floor.getLayout()[i - 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x - 10, y + 10, z));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x - blockSize, y + blockSize, z));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
                             floor.getLayout()[i + 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x + 10, y+ 10, z ));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x + blockSize, y + blockSize, z));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
-                            floor.getLayout()[i][j-1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x, y +10, z -10));
+                            floor.getLayout()[i][j - 1].setContent('m');
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z - blockSize));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             floor.getLayout()[i][j + 1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f,new EntityPosition(x,y+10,z+10));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z + blockSize));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                     }
 
                 }
-                z = z + 10;
+                z = z + blockSize;
             }
-            x = x + 10;
+            x = x + blockSize;
             z = 0;
         }
 
-        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),20,floor.getRooms().get(0).getCenter().getY());
+        objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition((sizeOfFloor * blockSize /2) - blockSize/2, 0f, (sizeOfFloor* blockSize /2)-blockSize/2)).getEntity());
 
-        return new FloorData(objectsInstances,entityMonsters,spawnPosition);
+        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX()* blockSize, 20, floor.getRooms().get(0).getCenter().getY()* blockSize);
+
+        return new FloorData(objectsInstances, entityMonsters, spawnPosition);
 
     }
 }
