@@ -28,8 +28,7 @@ public class FloorData {
 
     /**
      * Instantiates a new Floor data.
-     *
-     * @param objectsInstances    the objects instances
+     *  @param objectsInstances    the objects instances
      * @param entityMonsters      the entity monsters
      * @param playerSpawnPosition the player spawn position
      */

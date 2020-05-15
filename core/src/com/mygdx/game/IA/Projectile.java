@@ -18,7 +18,7 @@ public class Projectile {
     public EntityInstance instance;
     private Vector3 direction;
     private float speed;
-    private float remainingTime = 4;
+    private float remainingTime = 0.2f;
     private boolean isDone = false;
 
     public Projectile(Vector3 target, float speed, Vector3 initialPosition) {

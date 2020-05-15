@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.steer.behaviors.Evade;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.ArrayList;
@@ -16,6 +17,17 @@ public class Gunner extends SteeringAgent {
     float projectileDamage;
 
     ArrayList<Projectile> projectilesShot = new ArrayList<>();
+    Array<EntityInstance> doneProjectiles = new Array<>();
+
+    public Array<EntityInstance> getDoneProjectiles() {
+
+        for(EntityInstance entityInstance : doneProjectiles){
+            entityInstance.dispose();
+        }
+        Array<EntityInstance> temp = doneProjectiles;
+        doneProjectiles.clear();
+        return temp;
+    }
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
         super(object, x1, z1, x2, z2);
@@ -56,6 +68,7 @@ public class Gunner extends SteeringAgent {
 
     @Override
     public void update(float delta) {
+        checkProjectiles();
         coolDown = coolDown + delta;
         updateProjectiles(delta);
 
@@ -110,16 +123,22 @@ public class Gunner extends SteeringAgent {
         projectilesShot.add(new Projectile(target.vector, 10f, position));
     }
 
+    private void checkProjectiles(){
+        for (Projectile projectile: projectilesShot) {
+            if (projectile.isDone())
+                doneProjectiles.add(projectile.getInstance());
+        }
+    }
+
     private void updateProjectiles(float delta) {
         for (Projectile projectile : projectilesShot) {
             if (projectile.isDone())
                 projectile.instance.dispose();
             else projectile.update(delta);
-
         }
     }
 
-    public Array<? extends EntityInstance> projectiles() {
+    public Array<EntityInstance> projectiles() {
         Array<EntityInstance> instances = new Array<>();
         for (Projectile projectile :
                 projectilesShot) {

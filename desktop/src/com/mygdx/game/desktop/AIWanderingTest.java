@@ -1,4 +1,4 @@
-package test.test;
+package com.mygdx.game.desktop;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -36,6 +36,7 @@ import com.mygdx.game.FloorGeneration.DynamicWorld;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.IA.Gunner;
+import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.controller.PlayerController;
 
 /**
@@ -78,6 +79,9 @@ public class AIWanderingTest extends ApplicationAdapter {
     private EntityPlayer player;
     private PlayerController playerController;
     private MyContactListener contactListener;
+
+    private Array<EntityInstance> temp = new Array<>();
+    private Array<Projectile> aa = new Array<>();
 
     private boolean playerPov = true;
     private int clock;
@@ -192,11 +196,16 @@ public class AIWanderingTest extends ApplicationAdapter {
             camController.update();
         }
 
+        temp.clear();
+
         for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.update(delta);
-            if (foe.behavior instanceof Gunner)
-                floorData.objectsInstances.addAll(((Gunner) foe.behavior).projectiles());
+            if (foe.behavior instanceof Gunner){
+                ((Gunner) foe.behavior).projectiles().removeAll(((Gunner) foe.behavior).getDoneProjectiles(),true);
+                temp.addAll(((Gunner) foe.behavior).projectiles());
+            }
         }
+
 
 
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
@@ -204,6 +213,7 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         modelBatch.begin(cam);
         modelBatch.render(floorData.objectsInstances, environment);
+        modelBatch.render(temp, environment);
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
