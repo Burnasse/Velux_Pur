@@ -3,13 +3,13 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.FloorGeneration.GenerateLevel;
+import com.mygdx.game.gameGeneration.GenerateLevel;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
 
 public class LevelScreen implements Screen, StageManager{
 
-    GenerateLevel level;
+    private GenerateLevel level;
 
     /**
      * Used to manage the menu

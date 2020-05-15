@@ -43,8 +43,8 @@ public abstract class Floor {
      * put rooms in a floor
      *
      * @param numberOfRooms the number of rooms in the floor
-     * @param minRoomSize the minimum size of the width/height of the rooms
-     * @param maxRoomSize the maximum size of the width/height of the rooms
+     * @param minRoomSize   the minimum size of the width/height of the rooms
+     * @param maxRoomSize   the maximum size of the width/height of the rooms
      */
 
     public void GenerateRooms(int numberOfRooms, int minRoomSize, int maxRoomSize) {
@@ -77,7 +77,7 @@ public abstract class Floor {
             } else {
                 rooms.add(new SpawnRoom(x, y, x + width, y + height));
             }
-            if(count == 3000) rooms.clear();
+            if (count == 3000) rooms.clear();
         }
 
         for (Room room : rooms) {

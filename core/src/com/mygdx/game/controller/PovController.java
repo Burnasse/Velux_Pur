@@ -12,13 +12,13 @@ public class PovController implements InputProcessor, ControllerListener {
 
     private boolean playerPov;
 
-    public PovController(boolean playerPov){
+    public PovController(boolean playerPov) {
         this.playerPov = playerPov;
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.C)) {
             this.playerPov = !this.playerPov;
             System.out.println("c est appuyerrrr");
         }
@@ -28,7 +28,7 @@ public class PovController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean keyUp(int keycode) {
-        if(Gdx.input.isKeyPressed(PrefKeys.C)) {
+        if (Gdx.input.isKeyPressed(PrefKeys.C)) {
             this.playerPov = !this.playerPov;
             System.out.println("c est appuyerrrr");
         }

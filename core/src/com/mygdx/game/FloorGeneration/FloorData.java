@@ -1,6 +1,5 @@
 package com.mygdx.game.FloorGeneration;
 
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.utils.EntityPosition;

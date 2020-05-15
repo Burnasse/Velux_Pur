@@ -61,7 +61,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
-            player.attack();
+        player.attack();
         return true;
     }
 

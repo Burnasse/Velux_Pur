@@ -10,14 +10,14 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
-import com.mygdx.game.village.Village;
+import com.mygdx.game.gameGeneration.GenerateVillage;
 
 /**
  * The type Game screen.
  */
 public class GameScreen implements Screen, StageManager {
 
-    private Village village;
+    private GenerateVillage village;
 
     private MainMenu menu;
 
@@ -112,7 +112,7 @@ public class GameScreen implements Screen, StageManager {
     @Override
     public void initScreen() {
 
-        village = new Village(this,true);
+        village = new GenerateVillage(this,true);
         village.create();
 
         menu = new MainMenu(this, viewport, true);

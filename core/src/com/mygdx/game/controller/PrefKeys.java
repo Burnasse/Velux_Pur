@@ -2,7 +2,6 @@ package com.mygdx.game.controller;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-
 import java.util.HashMap;
 
 /**

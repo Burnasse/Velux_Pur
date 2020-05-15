@@ -2,7 +2,6 @@ package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -18,18 +17,18 @@ public class EntityObjects implements EntityInterface {
     private EntityInstance entityInstance;
 
     /**
-     *Instantiates a new Entity object. with a model as entry
+     * Instantiates a new Entity object. with a model as entry
      *
      * @param objectName the objectName name
-     * @param model   the model
+     * @param model      the model
      * @param shape      the shape
      * @param mass       the mass
-     * @param defaultPos   the position
+     * @param defaultPos the position
      */
-    public EntityObjects(String objectName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos){
+    public EntityObjects(String objectName, Model model, btCollisionShape shape, float mass, EntityPosition defaultPos) {
         this.objectName = objectName;
-        this.characteristics = new CharacteristicMonster(0,1);
-        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
+        this.characteristics = new CharacteristicMonster(0, 1);
+        entityInstance = new EntityInstance(model, shape, mass, defaultPos);
     }
 
     /**
@@ -39,17 +38,17 @@ public class EntityObjects implements EntityInterface {
      * @param fileName   the file name
      * @param shape      the shape
      * @param mass       the mass
-     * @param defaultPos   the position
+     * @param defaultPos the position
      */
-    public EntityObjects(String objectName, String fileName, btBoxShape shape, float mass, EntityPosition defaultPos){
+    public EntityObjects(String objectName, String fileName, btCollisionShape shape, float mass, EntityPosition defaultPos) {
         this.objectName = objectName;
-        this.characteristics = new CharacteristicMonster(0,1);
+        this.characteristics = new CharacteristicMonster(0, 1);
 
         AssetManager assets = new AssetManager();
-        assets.load(fileName,Model.class);
+        assets.load(fileName, Model.class);
         assets.finishLoading();
-        Model model = assets.get(fileName,Model.class);
-        entityInstance = new EntityInstance(model,shape,mass,defaultPos);
+        Model model = assets.get(fileName, Model.class);
+        entityInstance = new EntityInstance(model, shape, mass, defaultPos);
     }
 
     @Override
@@ -58,12 +57,12 @@ public class EntityObjects implements EntityInterface {
     }
 
     @Override
-    public EntityInstance getEntity(){
+    public EntityInstance getEntity() {
         return entityInstance;
     }
 
     @Override
-    public EntityInstance getEntity(EntityPosition position){
+    public EntityInstance getEntity(EntityPosition position) {
         entityInstance.move(position);
         return entityInstance;
     }

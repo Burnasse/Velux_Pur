@@ -1,4 +1,4 @@
-package com.mygdx.game.network;
+package com.mygdx.game.network.data;
 
 /**
  * The type Data position represent the position of an object.

@@ -9,13 +9,13 @@ import com.mygdx.game.Entity.utils.EntityPosition;
 /**
  * The interface Item ca c.
  */
-public class WeaponCaC implements Weapon,Item{
+public class WeaponCaC implements Weapon, Item {
 
-private EntityInstance weaponEntityInstance;
-/**
- * the range of Cac weapons will be fixed for now
- */
-private int dammages;
+    private EntityInstance weaponEntityInstance;
+    /**
+     * the range of Cac weapons will be fixed for now
+     */
+    private int dammages;
 
     /**
      * creates weapon with a file as model
@@ -25,13 +25,13 @@ private int dammages;
      * @param shape
      * @param spawningPos
      */
-    public WeaponCaC(int dammages, String fileName, btCollisionShape shape, EntityPosition spawningPos){
+    public WeaponCaC(int dammages, String fileName, btCollisionShape shape, EntityPosition spawningPos) {
         this.dammages = dammages;
         AssetManager assets = new AssetManager();
-        assets.load(fileName,Model.class);
+        assets.load(fileName, Model.class);
         assets.finishLoading();
-        Model model = assets.get(fileName,Model.class);
-        this.weaponEntityInstance = new EntityInstance(model,shape,0.02f,spawningPos);
+        Model model = assets.get(fileName, Model.class);
+        this.weaponEntityInstance = new EntityInstance(model, shape, 0.02f, spawningPos);
     }
 
     /**
@@ -42,19 +42,19 @@ private int dammages;
      * @param shape
      * @param spawningPos
      */
-    public WeaponCaC(int dammages, Model model, btCollisionShape shape, EntityPosition spawningPos){
+    public WeaponCaC(int dammages, Model model, btCollisionShape shape, EntityPosition spawningPos) {
         this.dammages = dammages;
-        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
+        this.weaponEntityInstance = new EntityInstance(model, shape, 1f, spawningPos);
     }
 
     @Override
-    public EntityInstance getEntity(){
+    public EntityInstance getEntity() {
         return weaponEntityInstance;
     }
 
 
     @Override
-    public int getDammage(){
+    public int getDammage() {
         return dammages;
     }
 

@@ -5,6 +5,9 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.mygdx.game.network.data.DataPlayer;
+import com.mygdx.game.network.data.DataPlayerPosition;
+import com.mygdx.game.network.data.DataPosition;
 
 import java.io.IOException;
 import java.util.ArrayList;
