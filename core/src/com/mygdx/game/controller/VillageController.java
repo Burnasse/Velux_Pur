@@ -12,23 +12,64 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 
+/**
+ * The type Village controller handle keyboard and gamepad input.
+ */
 public class VillageController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
     private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
-    private boolean lookLeft = true;
     private float speed = 0;
 
-    private Thread thread;
+    /**
+     * This thread is used in script method
+     */
+    private Thread scriptThread;
+
+    /**
+     * If the player is turned left.
+     */
+    private boolean lookLeft = true;
+
+    /**
+     * If a script wait a trigger to finish.
+     */
     public boolean waitTrigger = false;
 
+    /**
+     * If the player sprint
+     */
     private boolean isSprint = false;
+
+    /**
+     * If the controller is enable.
+     * It's used for disable the gamepad during the script.
+     */
     private boolean controllerEnable = true;
+
+    /**
+     * If the player can change layout.
+     * Used to move up and down when a trigger is triggered
+     */
     public boolean canChangeLayout = false;
+
+    /**
+     * If the player can move up.
+     * Used to specify if a trigger permit to move up or down
+     */
     public boolean canChangeUp = false;
+    /**
+     * The User value.
+     */
     public int userValue = -1;
 
+    /**
+     * Instantiates a new Village controller.
+     *
+     * @param player    the player
+     * @param animation the animation
+     */
     public VillageController(EntityPlayer player, AnimationController animation) {
         this.player = player;
         this.animation = animation;
@@ -51,16 +92,16 @@ public class VillageController implements InputProcessor, ControllerListener {
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up)) && player.getEntity().getController().onGround()
                 && canChangeLayout && canChangeUp) {
-            Script_ChangeLayout(false,true, 3);
+            Script_ChangeLayout(false, true, 3);
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down)) && player.getEntity().getController().onGround()
                 && canChangeLayout && !canChangeUp) {
-            Script_ChangeLayout(false,false, 3);
+            Script_ChangeLayout(false, false, 3);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && player.getEntity().getController().onGround()) {
-           jump();
+            jump();
         }
 
         setMovement(speed);
@@ -123,31 +164,28 @@ public class VillageController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        if (buttonCode == Xbox.A && player.getEntity().getController().onGround()){
+        if (buttonCode == Xbox.A && player.getEntity().getController().onGround()) {
             jump();
-            //setMovement(speed);
         }
 
-        if(buttonCode == Xbox.B){
+        if (buttonCode == Xbox.B) {
             isSprint = true;
         }
 
-
-        //setMovement(speed);
         return true;
     }
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
 
-        if(buttonCode == Xbox.B)
+        if (buttonCode == Xbox.B)
             isSprint = false;
         return true;
     }
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
-        if(!controllerEnable)
+        if (!controllerEnable)
             return false;
         if (axisCode == Xbox.L_STICK_HORIZONTAL_AXIS) {
             if (value == -1)
@@ -160,12 +198,10 @@ public class VillageController implements InputProcessor, ControllerListener {
         }
         if (axisCode == Xbox.L_STICK_VERTICAL_AXIS && player.getEntity().getController().onGround()
                 && canChangeLayout) {
-            if (value == -1  && canChangeUp){
-                Script_ChangeLayout(true,true, 3);
-            }
-
-            else if (value == 1  && !canChangeUp)
-                Script_ChangeLayout(true,false, 3);
+            if (value == -1 && canChangeUp) {
+                Script_ChangeLayout(true, true, 3);
+            } else if (value == 1 && !canChangeUp)
+                Script_ChangeLayout(true, false, 3);
         }
 
         return true;
@@ -204,22 +240,27 @@ public class VillageController implements InputProcessor, ControllerListener {
         controllerEnable = true;
     }
 
+    /**
+     * This method is used for move up and down in the village.
+     * A thread is used for wait when the player is in the right place.
+     *
+     * @param isGamepad if the method is call by the gamepad
+     * @param moveUp    if the player move up
+     * @param zTarget   the destination
+     */
     private void Script_ChangeLayout(final boolean isGamepad, final boolean moveUp, final float zTarget) {
         Gdx.input.setInputProcessor(null);
         controllerEnable = false;
         if (moveUp && lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, 1);
-        }
-        else if (moveUp) {
+        } else if (moveUp) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, 1);
-        }
-        else if (lookLeft) {
+        } else if (lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, -1);
-        }
-        else {
+        } else {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, -1);
         }
@@ -228,27 +269,26 @@ public class VillageController implements InputProcessor, ControllerListener {
         animation.animate("walk", -1, 1.0f, null, 0.2f);
         speed = 1.5f;
 
-        if(isGamepad)
+        if (isGamepad)
             setMovement(speed);
-        thread = new Thread(new Runnable() {
+        scriptThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 float zPos = player.getEntity().transform.getValues()[14];
 
-                synchronized (thread){
-                    if (moveUp){
-                        while (player.getEntity().transform.getValues()[14] < zPos + zTarget){
+                synchronized (scriptThread) {
+                    if (moveUp) {
+                        while (player.getEntity().transform.getValues()[14] < zPos + zTarget) {
                             try {
-                                thread.wait();
+                                scriptThread.wait();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                    else
-                        while (player.getEntity().transform.getValues()[14] > zPos - zTarget){
+                    } else
+                        while (player.getEntity().transform.getValues()[14] > zPos - zTarget) {
                             try {
-                                thread.wait();
+                                scriptThread.wait();
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
@@ -263,7 +303,8 @@ public class VillageController implements InputProcessor, ControllerListener {
                     player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
                 else if (lookLeft)
                     player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
-                else player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+                else
+                    player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
 
                 player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
                 player.getEntity().getController().setGravity(new Vector3(0, -10, 0));
@@ -274,23 +315,33 @@ public class VillageController implements InputProcessor, ControllerListener {
             }
         });
         waitTrigger = true;
-        thread.start();
+        scriptThread.start();
     }
 
-    public void notifyTrigger(){
-        synchronized (thread){
-            if(thread.isAlive())
-                thread.notify();
+    /**
+     * Notify trigger.
+     */
+    public void notifyTrigger() {
+        synchronized (scriptThread) {
+            if (scriptThread.isAlive())
+                scriptThread.notify();
         }
     }
 
-    public void setCanChangeLayout(int userValue, boolean canChangeUp){
+    /**
+     * Sets can change layout.
+     * Used by the trigger.
+     *
+     * @param userValue   the user value
+     * @param canChangeUp the can change up
+     */
+    public void setCanChangeLayout(int userValue, boolean canChangeUp) {
         this.canChangeUp = canChangeUp;
         canChangeLayout = true;
         this.userValue = userValue;
     }
 
-    private void moveLeft(boolean sprint){
+    private void moveLeft(boolean sprint) {
         if (!lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
 
@@ -307,7 +358,7 @@ public class VillageController implements InputProcessor, ControllerListener {
         }
     }
 
-    private void moveRight(boolean sprint){
+    private void moveRight(boolean sprint) {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
 
@@ -324,14 +375,14 @@ public class VillageController implements InputProcessor, ControllerListener {
         }
     }
 
-    private void jump(){
+    private void jump() {
         player.getEntity().getController().jump(new Vector3(0, 3, 0));
         animation.animate("jump", 1, 1.0f, new AnimationController.AnimationListener() {
             @Override
             public void onEnd(AnimationController.AnimationDesc anim) {
                 if (speed == 3)
                     animation.animate("running", -1, 1.0f, null, 0.2f);
-                else if(speed == 1.5f)
+                else if (speed == 1.5f)
                     animation.animate("walk", -1, 1.0f, null, 0.2f);
                 else
                     animation.animate("idle", -1, 1.0f, null, 0.2f);

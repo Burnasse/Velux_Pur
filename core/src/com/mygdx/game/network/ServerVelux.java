@@ -8,6 +8,9 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
+import com.mygdx.game.network.data.DataPlayer;
+import com.mygdx.game.network.data.DataPlayerPosition;
+import com.mygdx.game.network.data.DataPosition;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -23,7 +23,7 @@ import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.FloorGeneration.DynamicWorld;
+import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.controller.PlayerController;

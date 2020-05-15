@@ -29,10 +29,11 @@ import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.instances.EntityInstancePlayer;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.FloorGeneration.DynamicWorld;
+import com.mygdx.game.network.data.DataPlayerPosition;
+import com.mygdx.game.network.data.DataPosition;
+import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.PlayerController;
-import com.mygdx.game.screen.MainMenuScreen;
 
 import java.util.ArrayList;
 import java.util.HashMap;

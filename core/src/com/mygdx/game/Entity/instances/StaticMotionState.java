@@ -12,12 +12,14 @@ public class StaticMotionState {
     public static class MotionState extends btMotionState {
 
         Matrix4 transform;
+
         @Override
-        public void getWorldTransform (Matrix4 worldTrans) {
+        public void getWorldTransform(Matrix4 worldTrans) {
             worldTrans.set(transform);
         }
+
         @Override
-        public void setWorldTransform (Matrix4 worldTrans) {
+        public void setWorldTransform(Matrix4 worldTrans) {
             transform.set(worldTrans);
         }
     }

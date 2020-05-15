@@ -120,8 +120,7 @@ public class FloorGenerationTest extends ApplicationAdapter {
         EntityObjects box = new EntityObjects("box",model,shape,0f, new EntityPosition(0,0,0));
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
-                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
-                    objectsInstances.add(enemy.getEntity());
+
             }
             if(room instanceof SpawnRoom)
                 vaisseau.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),floor.getRooms().get(0).getCenter().getY(),0));
