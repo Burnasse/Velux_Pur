@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.FloorLayout.Position;
 import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.IA.SteeringAgent;
+import com.mygdx.game.IA.Zombie;
+
+import java.util.Random;
 
 /**
  * The type Entity monster.
@@ -38,10 +40,14 @@ public class EntityMonster implements EntityInterface {
     }
 
     public EntityMonster(String monsterName, Model model, btBoxShape shape, float mass, EntityPosition defaultPos, int x1, int y1, int x2, int y2) {
+        Random random = new Random();
         this.monsterName = monsterName;
         this.characteristics = new CharacteristicMonster(0, 1);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
-        behavior = new Gunner(entityInstance, x1, y1, x2, y2);
+        if (random.nextInt(2) == 1)
+            behavior = new Gunner(entityInstance, x1, y1, x2, y2);
+        else
+            behavior = new Zombie(entityInstance, x1, y1, x2, y2);
     }
 
     /**

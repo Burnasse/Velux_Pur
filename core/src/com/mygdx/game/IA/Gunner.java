@@ -1,7 +1,6 @@
 package com.mygdx.game.IA;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.ai.steer.behaviors.Evade;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -20,7 +19,7 @@ public class Gunner extends SteeringAgent {
 
     public Array<EntityInstance> getDoneProjectiles() {
 
-        for(EntityInstance entityInstance : doneProjectiles){
+        for (EntityInstance entityInstance : doneProjectiles) {
             entityInstance.dispose();
         }
 
@@ -31,11 +30,11 @@ public class Gunner extends SteeringAgent {
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
         super(object, x1, z1, x2, z2);
-        maxCoolDown = 1;
+        maxCoolDown = 0.1f;
         coolDown = maxCoolDown;
 
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(10, 10, 10);
+        linearVelocity = new Vector3(0, 0, 0);
 
         orientation = 1;
         maxLinearSpeed = 2f;
@@ -52,7 +51,7 @@ public class Gunner extends SteeringAgent {
 
         this.instance = object;
         position = object.transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(50, 50, 50);
+        linearVelocity = new Vector3(0, 0, 0);
 
         orientation = 1;
         maxLinearSpeed = 2;
@@ -78,9 +77,8 @@ public class Gunner extends SteeringAgent {
             setMaxLinearSpeed(5);
             setMaxLinearAcceleration(10);
 
-            if ((isAround(position, target.vector, weaponRange * 1.5f) && weaponRange < 1))
+            if ((isAround(position, target.vector, weaponRange * 1.5f)))
                 behavior = new Arrive<>(this, target);
-
             else
                 behavior = new Pursue<>(this, target, 0);
 
@@ -99,6 +97,7 @@ public class Gunner extends SteeringAgent {
                     @Override
                     public void run() {
                         generateRandomTarget();
+                        setMaxLinearAcceleration(2);
                         setMaxLinearSpeed(2);
                         behavior.setEnabled(true);
                         behavior = new Arrive<>(behavior.getOwner(), target);
@@ -107,7 +106,7 @@ public class Gunner extends SteeringAgent {
             }
         }
 
-        if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && !(behavior instanceof Evade)) {
+        if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
             if (coolDown >= maxCoolDown) {
                 target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
                 attack();
@@ -120,11 +119,11 @@ public class Gunner extends SteeringAgent {
     }
 
     protected void attack() {
-        projectilesShot.add(new Projectile(target.vector, 10f, position));
+        projectilesShot.add(new Projectile(target.vector, 10f, instance.transform.getTranslation(new Vector3())));
     }
 
-    private void checkProjectiles(){
-        for (Projectile projectile: projectilesShot) {
+    private void checkProjectiles() {
+        for (Projectile projectile : projectilesShot) {
             if (projectile.isDone())
                 doneProjectiles.add(projectile.getInstance());
         }
