@@ -5,7 +5,6 @@ import com.badlogic.gdx.ai.steer.behaviors.Evade;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ public class Gunner extends SteeringAgent {
         for(EntityInstance entityInstance : doneProjectiles){
             entityInstance.dispose();
         }
+
         Array<EntityInstance> temp = doneProjectiles;
         doneProjectiles.clear();
         return temp;
@@ -110,7 +110,7 @@ public class Gunner extends SteeringAgent {
         if ((isAround(position, target.vector, weaponRange) && playerInRoom()) && !(behavior instanceof Evade)) {
             if (coolDown >= maxCoolDown) {
                 target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-                shootProjectile();
+                attack();
                 coolDown = 0;
             }
         } else if (behavior != null) {
@@ -119,7 +119,7 @@ public class Gunner extends SteeringAgent {
         }
     }
 
-    private void shootProjectile() {
+    protected void attack() {
         projectilesShot.add(new Projectile(target.vector, 10f, position));
     }
 

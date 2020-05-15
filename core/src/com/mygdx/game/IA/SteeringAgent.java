@@ -233,4 +233,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     public void setPlayer(EntityPlayer player) {
         this.player = player;
     }
+
+    protected void attack() {
+    }
 }
