@@ -1,0 +1,76 @@
+
+UI.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+AnyConv.com__Quicksand_Book
+  rotate: false
+  xy: 1, 450
+  size: 506, 55
+  orig: 506, 55
+  offset: 0, 0
+  index: -1
+buttonNormal
+  rotate: false
+  xy: 403, 398
+  size: 100, 50
+  orig: 100, 50
+  offset: 0, 0
+  index: -1
+buttonSelect
+  rotate: false
+  xy: 403, 346
+  size: 100, 50
+  orig: 100, 50
+  offset: 0, 0
+  index: -1
+checkoff
+  rotate: false
+  xy: 403, 242
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+checkon
+  rotate: false
+  xy: 403, 190
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+knob
+  rotate: false
+  xy: 455, 230
+  size: 13, 62
+  orig: 13, 62
+  offset: 0, 0
+  index: -1
+listNormal
+  rotate: false
+  xy: 1, 139
+  size: 400, 107
+  orig: 400, 107
+  offset: 0, 0
+  index: -1
+listSelect
+  rotate: false
+  xy: 1, 30
+  size: 400, 107
+  orig: 400, 107
+  offset: 0, 0
+  index: -1
+slider
+  rotate: false
+  xy: 1, 248
+  size: 400, 200
+  orig: 400, 200
+  offset: 0, 0
+  index: -1
+vide
+  rotate: false
+  xy: 403, 294
+  size: 100, 50
+  orig: 100, 50
+  offset: 0, 0
+  index: -1

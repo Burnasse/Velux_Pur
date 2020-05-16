@@ -3,6 +3,7 @@ package com.mygdx.game.FloorGeneration;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,8 @@ public class FloorData {
      */
     public EntityPosition playerSpawnPosition;
 
+    public Minimap minimap;
+
     /**
      * Instantiates a new Floor data.
      *
@@ -31,9 +34,10 @@ public class FloorData {
      * @param entityMonsters      the entity monsters
      * @param playerSpawnPosition the player spawn position
      */
-    public FloorData(ArrayList<EntityInstance> objectsInstances, ArrayList<EntityMonster> entityMonsters, EntityPosition playerSpawnPosition) {
+    public FloorData(ArrayList<EntityInstance> objectsInstances, ArrayList<EntityMonster> entityMonsters, EntityPosition playerSpawnPosition, Minimap minimap) {
         this.objectsInstances = objectsInstances;
         this.entityMonsters = entityMonsters;
         this.playerSpawnPosition = playerSpawnPosition;
+        this.minimap = minimap;
     }
 }

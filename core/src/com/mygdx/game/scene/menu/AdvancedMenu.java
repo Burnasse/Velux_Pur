@@ -32,8 +32,8 @@ public class AdvancedMenu implements MenuStage {
         stage = new Stage(new ScreenViewport());
 
         Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
+        skin.load(Gdx.files.internal("menuAssets/UI.json"));
 
         CheckBox checkBox = new CheckBox("Fullscreen", skin);
 

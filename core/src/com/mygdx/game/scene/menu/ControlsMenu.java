@@ -30,11 +30,11 @@ public class ControlsMenu implements MenuStage {
     public ControlsMenu(final StageManager manager) {
         stage = new Stage();
 
-        Table table = createListKey();
-
         Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
+        skin.load(Gdx.files.internal("menuAssets/UI.json"));
+
+        Table table = createListKey(skin);
 
         TextButton buttonApply = new TextButton("Apply", skin);
 
@@ -66,16 +66,12 @@ public class ControlsMenu implements MenuStage {
         stage.act();
     }
 
-    private Table createListKey() {
+    private Table createListKey(Skin skin) {
         PreferencesManager pref = new PreferencesManager();
         final KeyBindingController controller = new KeyBindingController(pref);
 
         final HashMap<String, Integer> keyMap = PrefKeys.getKeyMap();
         System.out.println(keyMap.size());
-
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
 
         Table table = new Table();
 

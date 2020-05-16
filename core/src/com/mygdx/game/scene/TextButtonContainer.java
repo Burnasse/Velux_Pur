@@ -20,8 +20,8 @@ public class TextButtonContainer extends Container<VerticalGroup> {
      */
     public TextButtonContainer(String... names) {
         Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
+        skin.load(Gdx.files.internal("menuAssets/UI.json"));
 
         for (String currentName : names) {
             TextButton currentButton = new TextButton(currentName, skin);

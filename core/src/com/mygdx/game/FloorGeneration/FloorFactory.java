@@ -20,6 +20,7 @@ import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
+import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
 
@@ -50,6 +51,7 @@ public class FloorFactory {
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
+        Minimap minimap = new Minimap(floor.getLayout());
 
         btBoxShape shape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
@@ -132,7 +134,7 @@ public class FloorFactory {
 
         spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX() * blockSize, 5f, floor.getRooms().get(0).getCenter().getY() * blockSize);
 
-        return new FloorData(objectsInstances, entityMonsters, spawnPosition);
+        return new FloorData(objectsInstances, entityMonsters, spawnPosition, minimap);
 
     }
 }

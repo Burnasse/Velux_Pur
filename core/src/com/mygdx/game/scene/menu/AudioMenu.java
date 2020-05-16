@@ -29,8 +29,8 @@ public class AudioMenu implements MenuStage {
         stage = new Stage(new ScreenViewport());
 
         Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
+        skin.load(Gdx.files.internal("menuAssets/UI.json"));
 
         final Slider slider = new Slider(0, 100, 1, false, skin);
         slider.setValue(prefs.getPreferences().getInteger("volume"));
