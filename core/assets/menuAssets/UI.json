@@ -49,7 +49,7 @@ ListStyle: {
 		font: font
 		fontColorSelected: white
 		fontColorUnselected: white
-		selection: buttonNormal
+		selection: buttonSelect
 	}
 }
 ScrollPaneStyle: {

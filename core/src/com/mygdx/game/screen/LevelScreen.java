@@ -19,7 +19,7 @@ public class LevelScreen implements Screen, StageManager{
     /**
      * Used to display properly the menu
      */
-    private Viewport viewport = new ScreenViewport();
+    private ScreenViewport viewport = new ScreenViewport();
 
     private Boolean isInMenu = false;
 
@@ -92,5 +92,10 @@ public class LevelScreen implements Screen, StageManager{
         stageManager.addStage("Audio", new AudioMenu(this).getStage());
         stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
         stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return viewport;
     }
 }

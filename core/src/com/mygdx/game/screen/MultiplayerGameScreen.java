@@ -3,6 +3,7 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.network.ClientVelux;
 import com.mygdx.game.network.ConnectionState;
@@ -32,6 +33,11 @@ public class MultiplayerGameScreen implements Screen, StageManager {
 
         if (client.enableConnection())
             multiplayer.initLevel(client);
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return  null;
     }
 
     @Override

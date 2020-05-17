@@ -48,6 +48,11 @@ public class MainMenuScreen implements Screen, StageManager {
     }
 
     @Override
+    public ScreenViewport getViewport() {
+        return viewport;
+    }
+
+    @Override
     public void show() {
         initScreen();
         Gdx.input.setInputProcessor(stage);
