@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 
@@ -15,42 +16,84 @@ import com.mygdx.game.Entity.EntityPlayer;
 public class PlayerController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
+    private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
+    private float speed = 0;
+
+    /**
+     * If the player is turned left.
+     */
+    private boolean lookLeft = true;
+
+    /**
+     * If the player is turned left.
+     */
+    private boolean lookRight = false;
+
+    /**
+     * If the player is turned left.
+     */
+    private boolean lookUp = false;
+
+    /**
+     * If the player is turned left.
+     */
+    private boolean lookDown = false;
+
+    /**
+     * If the player sprint
+     */
+    private boolean isSprint = false;
+
 
     /**
      * Instantiates a new Player controller.
      *
      * @param player the player
      */
-    public PlayerController(EntityPlayer player) {
+    public PlayerController(EntityPlayer player,AnimationController animationController) {
         this.player = player;
+        this.animation = animationController;
     }
-
-    @Override
     public boolean keyDown(int keycode) {
-        if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR))
-            walkDirection.add(1, 0, 0);
-        if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR))
-            walkDirection.add(-1, 0, 0);
-        if (Gdx.input.isKeyPressed(PrefKeys.UP_ARR))
-            walkDirection.add(0, 0, 1);
-        if (Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR))
-            walkDirection.add(0, 0, -1);
 
-        setMovement();
+        speed = 0;
+
+        if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
+            moveLeft(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+        }
+
+        if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
+            moveRight(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+        }
+
+        if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up)) && player.getEntity().getController().onGround()) {
+            moveUp(Gdx.input.isKeyPressed(Input.Keys.UP));
+        }
+
+        if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down)) && player.getEntity().getController().onGround()) {
+            moveDown(Gdx.input.isKeyPressed(Input.Keys.DOWN));
+        }
+
+        setMovement(speed);
 
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (!Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
+        if (!player.getEntity().getController().onGround())
+            return false;
+        if (!Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) && !Gdx.input.isKeyPressed(PrefKeys.Left)
+                && !Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) && !Gdx.input.isKeyPressed(PrefKeys.Right)
+                && !Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) && !Gdx.input.isKeyPressed(PrefKeys.Down)
+                && !Gdx.input.isKeyPressed(PrefKeys.UP_ARR) && !Gdx.input.isKeyPressed(PrefKeys.Up)) {
             walkDirection.set(0, 0, 0);
-            setMovement();
+            animation.animate("idle", -1, 1.0f, null, 0.2f);
+            setMovement(0);
         }
-
-        return true;
+        return false;
     }
 
     @Override
@@ -60,7 +103,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
         player.attack();
         return true;
     }
@@ -72,6 +114,88 @@ public class PlayerController implements InputProcessor, ControllerListener {
         if (button == Input.Buttons.RIGHT)
             System.out.println("OUHOUHOUHOUH");
         return true;
+    }
+    private void moveLeft(boolean sprint) {
+        if (!lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+        lookLeft = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(10, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+
+    private void moveRight(boolean sprint) {
+        if (lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+        lookLeft = false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-10, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+    private void moveUp(boolean sprint) {
+        if (lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+
+        lookLeft = false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, 10);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+    private void moveDown(boolean sprint) {
+        if (lookLeft)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+
+        lookLeft = false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, -10);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+    }
+
+    private void dodge() {
+        player.getEntity().getController().jump(new Vector3(3, 0, 0));
+        animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
+            @Override
+            public void onEnd(AnimationController.AnimationDesc anim) {
+                if (speed == 3)
+                    animation.animate("running", -1, 1.0f, null, 0.2f);
+                else if (speed == 1.5f)
+                    animation.animate("walk", -1, 1.0f, null, 0.2f);
+                else
+                    animation.animate("idle", -1, 1.0f, null, 0.2f);
+            }
+
+            @Override
+            public void onLoop(AnimationController.AnimationDesc animation) {
+            }
+        }, 0.2f);
     }
 
     @Override
@@ -138,10 +262,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
     /**
      * Set movement
      */
-    private void setMovement() {
-        walkDirection.scl(4f * Gdx.graphics.getDeltaTime());
+    private void setMovement(float speed) {
+        walkDirection.scl(speed * Gdx.graphics.getDeltaTime());
         player.getEntity().getController().setWalkDirection(walkDirection);
-
     }
 
 }

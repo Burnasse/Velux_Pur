@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
@@ -105,6 +106,7 @@ public class RaphTests extends ApplicationAdapter {
     private EntityPlayer player;
     private PlayerController playerController;
     private RaphTests.MyContactListener contactListener;
+    private AnimationController animationController;
     /**
      * - toutes les Entity Instances a mettre en ejux doivent etre misent la dedans.
      * - les index des objets correpsondent a UserValue du body de l'objet
@@ -205,7 +207,9 @@ public class RaphTests extends ApplicationAdapter {
         cam.update();
 
 
-        playerController = new PlayerController(player);
+        animationController = new AnimationController(player.getEntity());
+        animationController.animate("idle", -1, 1.0f, null, 0.2f);
+        playerController = new PlayerController(player,animationController);
 
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();

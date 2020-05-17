@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -70,6 +71,7 @@ public class GenerateLevel {
     private EntityPlayer player;
     private PlayerController playerController;
     private MyContactListener contactListener;
+    private AnimationController animationController;
 
     private boolean playerPov = true;
     private int clock;
@@ -131,7 +133,9 @@ public class GenerateLevel {
 
         camController = new CameraInputController(cam);
 
-        playerController = new PlayerController(player);
+        animationController = new AnimationController(player.getEntity());
+        animationController.animate("idle", -1, 1.0f, null, 0.2f);
+        playerController = new PlayerController(player,animationController);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);
@@ -155,6 +159,7 @@ public class GenerateLevel {
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        animationController.update(Gdx.graphics.getDeltaTime());
         world.getDynamicsWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
 
         clock += 1; // add the time since the last frame
