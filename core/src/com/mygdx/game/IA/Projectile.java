@@ -5,23 +5,31 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.*;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorGeneration.DynamicWorld;
 
 public class Projectile {
 
     public EntityInstance instance;
     private Vector3 direction;
     private float speed;
-    private float remainingTime = 0.2f;
+    private float remainingTime = 1f;
     private boolean isDone = false;
 
-    public Projectile(Vector3 target, float speed, Vector3 initialPosition) {
+    public Projectile(Vector3 target, float speed, Vector3 initialPosition, DynamicWorld world) {
 
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
@@ -30,12 +38,16 @@ public class Projectile {
                 .box(0.1f, 0.1f, 0.1f);
         Model model = modelBuilder.end();
 
-        Bullet.init();
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
-        instance = new EntityInstance(model, btBoxShape, 50f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
+
+        instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
         direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);
         direction = direction.nor();
+        instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        world.addRigidBody((btRigidBody) instance.getBody());
+
+
 
         this.speed = speed;
     }
@@ -51,9 +63,15 @@ public class Projectile {
         }
     }
 
+    boolean checkCollision (EntityInstance mInstance){
+        return mInstance.model.calculateBoundingBox(new BoundingBox()).contains(instance.model.calculateBoundingBox(new BoundingBox()));
+    }
+
+
     public boolean isDone() {
         return isDone;
     }
+
 
     public EntityInstance getInstance() {
         return instance;

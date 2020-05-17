@@ -36,7 +36,6 @@ import com.mygdx.game.FloorGeneration.DynamicWorld;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.IA.Gunner;
-import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.controller.PlayerController;
 
 /**
@@ -81,7 +80,6 @@ public class AIWanderingTest extends ApplicationAdapter {
     private MyContactListener contactListener;
 
     private Array<EntityInstance> temp = new Array<>();
-    private Array<Projectile> aa = new Array<>();
 
     private boolean playerPov = true;
     private int clock;
@@ -131,10 +129,8 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         for (EntityMonster monster : floorData.entityMonsters) {
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            //monster.getEntity().getBody().setContactCallbackFlag(OBJECT_FLAG);
             monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
             world.addRigidBody((btRigidBody) monster.getEntity().getBody());
-            ;
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getEntity().getBody().setContactCallbackFilter(0);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
@@ -158,8 +154,10 @@ public class AIWanderingTest extends ApplicationAdapter {
         inputMultiplexer.addProcessor(playerController);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
-        for (EntityMonster foe : floorData.entityMonsters)
+        for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.setPlayer(player);
+            foe.behavior.world = world;
+        }
     }
 
 
@@ -200,12 +198,11 @@ public class AIWanderingTest extends ApplicationAdapter {
 
         for (EntityMonster foe : floorData.entityMonsters) {
             foe.behavior.update(delta);
-            if (foe.behavior instanceof Gunner){
-                ((Gunner) foe.behavior).projectiles().removeAll(((Gunner) foe.behavior).getDoneProjectiles(),true);
+            if (foe.behavior instanceof Gunner) {
+                ((Gunner) foe.behavior).projectiles().removeAll(((Gunner) foe.behavior).getDoneProjectiles(), true);
                 temp.addAll(((Gunner) foe.behavior).projectiles());
             }
         }
-
 
 
         Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);

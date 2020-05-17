@@ -19,10 +19,6 @@ public class Gunner extends SteeringAgent {
 
     public Array<EntityInstance> getDoneProjectiles() {
 
-        for (EntityInstance entityInstance : doneProjectiles) {
-            entityInstance.dispose();
-        }
-
         Array<EntityInstance> temp = doneProjectiles;
         doneProjectiles.clear();
         return temp;
@@ -30,7 +26,7 @@ public class Gunner extends SteeringAgent {
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
         super(object, x1, z1, x2, z2);
-        maxCoolDown = 0.1f;
+        maxCoolDown = 0.0001f;
         coolDown = maxCoolDown;
 
         position = object.transform.getTranslation(new Vector3());
@@ -119,7 +115,7 @@ public class Gunner extends SteeringAgent {
     }
 
     protected void attack() {
-        projectilesShot.add(new Projectile(target.vector, 10f, instance.transform.getTranslation(new Vector3())));
+        projectilesShot.add(new Projectile(target.vector, 5, instance.transform.getTranslation(new Vector3()), world));
     }
 
     private void checkProjectiles() {
@@ -131,10 +127,10 @@ public class Gunner extends SteeringAgent {
 
     private void updateProjectiles(float delta) {
         for (Projectile projectile : projectilesShot) {
-            if (projectile.isDone())
-                projectile.instance.dispose();
-            else projectile.update(delta);
+
+            projectile.update(delta);
         }
+
     }
 
     public Array<EntityInstance> projectiles() {

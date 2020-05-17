@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorGeneration.DynamicWorld;
 
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,6 +18,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     EntityPlayer player;
     EntityInstance instance;
+    public DynamicWorld world = null;
 
 
     float orientation;
