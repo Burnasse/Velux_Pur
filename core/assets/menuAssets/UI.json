@@ -49,24 +49,21 @@ ListStyle: {
 		font: font
 		fontColorSelected: white
 		fontColorUnselected: white
-		selection: listNormal
+		selection: buttonNormal
 	}
 }
 ScrollPaneStyle: {
 	default: {
-		background: listSelect
+		background: buttonNormal
 	}
 }
 SelectBoxStyle: {
 	default: {
 		font: font
 		fontColor: white
-		background: buttonSelect
+		background: selectselect
 		scrollStyle: default
 		listStyle: default
-		backgroundOver: listSelect
-		backgroundOpen: listSelect
-		backgroundDisabled: listSelect
 	}
 }
 SliderStyle: {
@@ -84,7 +81,7 @@ TextButtonStyle: {
 		over: buttonSelect
 		focused: buttonSelect
 		checked: buttonSelect
-		checkedOver: buttonNormal
+		checkedOver: buttonSelect
 		checkedFocused: buttonSelect
 		disabled: buttonSelect
 	}

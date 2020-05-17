@@ -6,70 +6,77 @@ filter: Linear,Linear
 repeat: none
 AnyConv.com__Quicksand_Book
   rotate: false
-  xy: 1, 450
+  xy: 1, 455
   size: 506, 55
   orig: 506, 55
   offset: 0, 0
   index: -1
 buttonNormal
   rotate: false
-  xy: 403, 398
+  xy: 403, 351
   size: 100, 50
   orig: 100, 50
   offset: 0, 0
   index: -1
 buttonSelect
   rotate: false
-  xy: 403, 346
+  xy: 403, 299
   size: 100, 50
   orig: 100, 50
   offset: 0, 0
   index: -1
 checkoff
   rotate: false
-  xy: 403, 242
-  size: 50, 50
-  orig: 50, 50
+  xy: 403, 272
+  size: 25, 25
+  orig: 25, 25
   offset: 0, 0
   index: -1
 checkon
   rotate: false
-  xy: 403, 190
-  size: 50, 50
-  orig: 50, 50
+  xy: 103, 8
+  size: 25, 25
+  orig: 25, 25
   offset: 0, 0
   index: -1
 knob
   rotate: false
-  xy: 455, 230
+  xy: 403, 208
   size: 13, 62
   orig: 13, 62
   offset: 0, 0
   index: -1
 listNormal
   rotate: false
-  xy: 1, 139
+  xy: 1, 346
   size: 400, 107
   orig: 400, 107
   offset: 0, 0
   index: -1
 listSelect
   rotate: false
-  xy: 1, 30
+  xy: 1, 237
   size: 400, 107
   orig: 400, 107
   offset: 0, 0
   index: -1
+selectselect
+  rotate: false
+  xy: 1, 1
+  size: 100, 32
+  orig: 100, 32
+  offset: 0, 0
+  index: -1
 slider
   rotate: false
-  xy: 1, 248
+  xy: 1, 35
   size: 400, 200
   orig: 400, 200
   offset: 0, 0
   index: -1
 vide
   rotate: false
-  xy: 403, 294
+  xy: 403, 403
   size: 100, 50
   orig: 100, 50
   offset: 0, 0

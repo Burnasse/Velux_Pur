@@ -3,10 +3,7 @@ package com.mygdx.game.gameGeneration;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -26,6 +23,7 @@ import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.physics.DynamicWorld;
+import com.mygdx.game.ui.HealthBar;
 import com.mygdx.game.ui.Minimap;
 
 /**
@@ -72,6 +70,7 @@ public class GenerateLevel {
     private PlayerController playerController;
     private MyContactListener contactListener;
     private Minimap minimap;
+    private HealthBar healthBar;
 
     private boolean playerPov = true;
     private int clock;
@@ -110,6 +109,8 @@ public class GenerateLevel {
         floorData = FloorFactory.create("Labyrinth", 20, 2, 3, 7, model);
 
         minimap = floorData.minimap;
+        healthBar = new HealthBar();
+
         player = PlayerFactory.create(floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
@@ -182,6 +183,7 @@ public class GenerateLevel {
         modelBatch.end();
 
         minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);
+        healthBar.render(player.getCharacteristics().getHealth(),100);
 
         if (DEBUG_MODE) {
             debugDrawer.begin(cam);
@@ -207,6 +209,6 @@ public class GenerateLevel {
         modelBatch.dispose();
         model.dispose();
         minimap.dispose();
-
+        healthBar.dispose();
     }
 }

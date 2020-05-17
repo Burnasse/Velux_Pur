@@ -18,4 +18,12 @@ public class CharacteristicPlayer implements Characteristic {
         this.attackDamage = attackDamage;
         this.health = health;
     }
+
+    public int getAttackDamage() {
+        return attackDamage;
+    }
+
+    public int getHealth() {
+        return health;
+    }
 }
