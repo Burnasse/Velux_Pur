@@ -1,5 +1,7 @@
 package com.mygdx.game.screen;
 
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
 /**
  * The interface Stage manager.
  */
@@ -22,4 +24,9 @@ public interface StageManager {
      * This method must be used only in the show() method
      */
     void initScreen();
+
+    /**
+     *
+     */
+    ScreenViewport getViewport();
 }

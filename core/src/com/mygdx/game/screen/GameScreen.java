@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -11,6 +12,7 @@ import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
 import com.mygdx.game.gameGeneration.GenerateVillage;
+import com.mygdx.game.ui.Minimap;
 
 /**
  * The type Game screen.
@@ -29,7 +31,7 @@ public class GameScreen implements Screen, StageManager {
     /**
      * Used to display properly the menu
      */
-    private Viewport viewport = new ScreenViewport();
+    private ScreenViewport viewport = new ScreenViewport();
 
     /**
      * Used to display all elements of the menu
@@ -111,7 +113,6 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void initScreen() {
-
         village = new GenerateVillage(this,true);
         village.create();
 
@@ -122,6 +123,11 @@ public class GameScreen implements Screen, StageManager {
         stageManager.addStage("Audio", new AudioMenu(this).getStage());
         stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
         stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return viewport;
     }
 
     public void goToLevel(){

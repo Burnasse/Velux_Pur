@@ -24,7 +24,6 @@ public class EntityPlayer implements EntityInterface {
     public Weapon equippedWeapon;
     private boolean isAttacking;
 
-
     /**
      * Instantiates a new Entity player. with a file as entry
      *
@@ -35,8 +34,7 @@ public class EntityPlayer implements EntityInterface {
     public EntityPlayer(String playerName, String fileName, EntityPosition position) {
         this.playerName = playerName;
 
-        this.characteristics = new CharacteristicPlayer(0, 1);
-
+        this.characteristics = new CharacteristicPlayer(0, 100);
 
         AssetManager assets = new AssetManager();
         assets.load(fileName, Model.class);
@@ -57,7 +55,7 @@ public class EntityPlayer implements EntityInterface {
      */
     public EntityPlayer(String playerName, Model model, EntityPosition position) {
         this.playerName = playerName;
-        this.characteristics = new CharacteristicPlayer(0, 1);
+        this.characteristics = new CharacteristicPlayer(0, 100);
         this.equippedWeapon = CreatedItems.getSword();
         this.entityInstance = new EntityInstancePlayer(model, position);
         this.isAttacking = false;
@@ -73,7 +71,7 @@ public class EntityPlayer implements EntityInterface {
      */
     public EntityPlayer(String playerName, Model model, float[] position) {
         this.playerName = playerName;
-        this.characteristics = new CharacteristicPlayer(0, 1);
+        this.characteristics = new CharacteristicPlayer(0, 100);
         this.equippedWeapon = CreatedItems.getSword();
         this.entityInstance = new EntityInstancePlayer(model, position);
     }
@@ -128,6 +126,9 @@ public class EntityPlayer implements EntityInterface {
         return entityInstance;
     }
 
+    public CharacteristicPlayer getCharacteristics() {
+        return characteristics;
+    }
 
     @Override
     public void dispose() {

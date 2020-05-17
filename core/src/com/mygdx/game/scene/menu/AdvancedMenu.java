@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.PreferencesManager;
@@ -32,10 +33,10 @@ public class AdvancedMenu implements MenuStage {
         stage = new Stage(new ScreenViewport());
 
         Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
+        skin.load(Gdx.files.internal("menuAssets/UI.json"));
 
-        CheckBox checkBox = new CheckBox("Fullscreen", skin);
+        CheckBox checkBox = new CheckBox(" Fullscreen", skin);
 
         if (prefs.getPreferences().getBoolean("isFullscreen"))
             checkBox.setChecked(true);
@@ -58,6 +59,7 @@ public class AdvancedMenu implements MenuStage {
         }
 
         selectBox.setItems(list);
+        selectBox.setAlignment(Align.center);
         String select = prefs.getPreferences().getInteger("width") + "x" + prefs.getPreferences().getInteger("height");
         selectBox.setSelected(select);
 
@@ -82,6 +84,7 @@ public class AdvancedMenu implements MenuStage {
         group.addActor(checkBox);
         group.addActor(selectBox);
         group.addActor(backButton);
+        group.space(10);
 
         Container<VerticalGroup> container = new Container<>();
         container.setActor(group);

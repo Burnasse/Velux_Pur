@@ -3,10 +3,7 @@ package com.mygdx.game.gameGeneration;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
@@ -26,6 +23,8 @@ import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.physics.DynamicWorld;
+import com.mygdx.game.ui.HealthBar;
+import com.mygdx.game.ui.Minimap;
 
 /**
  * The type Generate level.
@@ -70,6 +69,8 @@ public class GenerateLevel {
     private EntityPlayer player;
     private PlayerController playerController;
     private MyContactListener contactListener;
+    private Minimap minimap;
+    private HealthBar healthBar;
 
     private boolean playerPov = true;
     private int clock;
@@ -107,6 +108,9 @@ public class GenerateLevel {
 
         floorData = FloorFactory.create("Labyrinth", 20, 2, 3, 7, model);
 
+        minimap = floorData.minimap;
+        healthBar = new HealthBar();
+
         player = PlayerFactory.create(floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
@@ -141,7 +145,7 @@ public class GenerateLevel {
 
 
     private void camFollowPlayer() {
-        cam.position.set(new Vector3(player.getEntity().transform.getValues()[12] + 0.4531824f, player.getEntity().transform.getValues()[13] + 5.767706f, player.getEntity().transform.getValues()[14] + -5.032133f));
+        cam.position.set(player.getEntity().transform.getValues()[12] + 0.4531824f, player.getEntity().transform.getValues()[13] + 5.767706f, player.getEntity().transform.getValues()[14] + -5.032133f);
         float[] fov = {-0.9991338f, 3.6507862E-7f, -0.04161331f, 0.14425309f, -0.02119839f, 0.8605174f, 0.50898004f, -2.485553f, 0.035809156f, 0.5094212f, -0.85977185f, -7.252268f, 0.14425309f, -2.485553f, -7.252268f, 1.0f};
         cam.view.set(fov);
         cam.direction.set(-0.047802035f, -0.36853015f, 0.9283842f);
@@ -178,6 +182,9 @@ public class GenerateLevel {
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
+        minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);
+        healthBar.render(player.getCharacteristics().getHealth(),100);
+
         if (DEBUG_MODE) {
             debugDrawer.begin(cam);
             world.getDynamicsWorld().debugDrawWorld();
@@ -201,6 +208,7 @@ public class GenerateLevel {
 
         modelBatch.dispose();
         model.dispose();
-
+        minimap.dispose();
+        healthBar.dispose();
     }
 }
