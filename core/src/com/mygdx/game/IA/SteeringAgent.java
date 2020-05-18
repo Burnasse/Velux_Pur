@@ -19,41 +19,40 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class SteeringAgent implements Steerable<Vector3> {
 
-    EntityPlayer player;
-    EntityInstance instance;
+    protected EntityPlayer player;
+    protected EntityInstance instance;
     public DynamicWorld world = null;
 
 
-    float orientation;
-    static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
+    protected float orientation;
+    protected static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
 
-    Vector3 position;
+    protected Vector3 position;
 
-    Vector3 linearVelocity;
-    float maxLinearAcceleration;
-    float maxLinearSpeed;
+    protected Vector3 linearVelocity;
+    protected float maxLinearAcceleration;
+    protected float maxLinearSpeed;
 
-    float angularVelocity = 1;
-    float maxAngularAcceleration = 1;
-    float maxAngularSpeed = 1;
+    protected float angularVelocity = 1;
+    protected float maxAngularAcceleration = 1;
+    protected float maxAngularSpeed = 1;
 
-    float weaponRange;
+    protected float weaponRange;
 
-    SteeringBehavior<Vector3> behavior;
-    Target target = new Target(0, 0, 0);
+    protected SteeringBehavior<Vector3> behavior;
+    protected Target target = new Target(0, 0, 0);
 
-    boolean isTagged = false;
-    final boolean independentFacing = false;
+    private boolean isTagged = false;
 
-    int x1;
-    int x2;
-    int z1;
-    int z2;
+    private int x1;
+    private int x2;
+    private int z1;
+    private int z2;
 
-    Timer timer = new Timer();
+    protected Timer timer = new Timer();
 
-    float coolDown;
-    float maxCoolDown;
+    protected float coolDown;
+    protected float maxCoolDown;
 
     /**
      * Instantiates a new behavior.
@@ -103,34 +102,25 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     /**
      * apply the movement to the behavior
      *
-     * @param time     the time between this frame and the last
-     * @param steering the type of behavior
+     * @param time the time between this frame and the last
      */
 
-    void applySteering(SteeringAcceleration<Vector3> steering, float time) {
+    void applySteering(float time) {
 
         // Update position and linear velocity. Velocity is trimmed to maximum speed
         this.position.mulAdd(linearVelocity, time);
         instance.transform.translate(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
-        this.linearVelocity.mulAdd(steering.linear, time).limit(this.getMaxLinearSpeed());
+        this.linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
 
 
-        // Update orientation and angular velocity
-        if (independentFacing) {
-            this.orientation += angularVelocity * time;
-            this.angularVelocity += steering.angular * time;
-            instance.transform.rotateRad(instance.transform.getTranslation(new Vector3()), orientation);
+        // For non-independent facing we have to align orientation to linear velocity
+        float newOrientation = calculateOrientationFromLinearVelocity(this);
+        if (Math.round(newOrientation) != Math.round(this.orientation)) {
+            this.angularVelocity = (newOrientation - this.orientation) * time;
+            this.orientation = newOrientation;
+            instance.transform.rotateRad(new Vector3(0, 1, 0), orientation);
         }
 
-        if (!independentFacing) {
-            // For non-independent facing we have to align orientation to linear velocity
-            float newOrientation = calculateOrientationFromLinearVelocity(this);
-            if (Math.round(newOrientation) != Math.round(this.orientation)) {
-                this.angularVelocity = (newOrientation - this.orientation) * time;
-                this.orientation = newOrientation;
-                instance.transform.rotateRad(new Vector3(0, 1, 0), orientation);
-            }
-        }
         instance.body.proceedToTransform(instance.transform);
     }
 
@@ -149,7 +139,8 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     /**
      * Generates a new target within the room
      */
-    public void generateRandomTarget() {
+
+    protected void generateRandomTarget() {
         target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 0, ThreadLocalRandom.current().nextInt(z1, z2));
     }
 
@@ -157,7 +148,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      * checks if the player is in the room
      */
 
-    boolean playerInRoom() {
+    protected boolean playerInRoom() {
         Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
         return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 - 1 && playerPosition.z <= z2 + 1;
     }
@@ -167,7 +158,8 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      *
      * @param character the character from who the angle is taken
      */
-    public static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
+
+    protected static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
         // If we haven't got any velocity, then we can do nothing.
         if (character.getLinearVelocity().isZero(character.getZeroLinearSpeedThreshold()))
             return character.getOrientation();
@@ -236,6 +228,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      * @param outVector the vector to return
      * @param angle     the angle to convert
      */
+
     @Override
     public Vector3 angleToVector(Vector3 outVector, float angle) {
         outVector.x = -(float) Math.sin(angle);
@@ -310,6 +303,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      *
      * @param blockSize the size of the floor's blocks
      */
+
     public void adaptToFloor(int blockSize) {
         x1 = x1 * blockSize;
         z1 = z1 * blockSize;

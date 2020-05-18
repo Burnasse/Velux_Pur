@@ -14,11 +14,11 @@ public class Zombie extends SteeringAgent {
     /**
      * Instantiates a new zombie.
      *
-     * @param instance  the instance
-     * @param x1 the wandering limit
-     * @param x2 the wandering limit
-     * @param z1 the wandering limit
-     * @param z2 the wandering limit
+     * @param instance the instance
+     * @param x1       the wandering limit
+     * @param x2       the wandering limit
+     * @param z1       the wandering limit
+     * @param z2       the wandering limit
      */
 
     public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2) {
@@ -42,12 +42,12 @@ public class Zombie extends SteeringAgent {
     /**
      * Instantiates a new zombie.
      *
-     * @param instance  the instance
-     * @param x1 the wandering limit
-     * @param x2 the wandering limit
-     * @param z1 the wandering limit
-     * @param z2 the wandering limit
-     * @param damage the damage caused by the zombie
+     * @param instance the instance
+     * @param x1       the wandering limit
+     * @param x2       the wandering limit
+     * @param z1       the wandering limit
+     * @param z2       the wandering limit
+     * @param damage   the damage caused by the zombie
      */
 
     public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage) {
@@ -122,13 +122,14 @@ public class Zombie extends SteeringAgent {
             }
         } else if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
-            applySteering(steeringOutput, delta);
+            applySteering(delta);
         }
     }
 
     /**
      * the method called when the zombie attacks
      */
+    
     @Override
     protected void attack() {
         System.out.println("Tu prends " + damage + "dégats");

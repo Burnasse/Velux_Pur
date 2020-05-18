@@ -141,7 +141,7 @@ public class Gunner extends SteeringAgent {
             }
         } else if (behavior != null) {
             behavior.calculateSteering(steeringOutput);
-            applySteering(steeringOutput, delta);
+            applySteering(delta);
         }
 
     }
