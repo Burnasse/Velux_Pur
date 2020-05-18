@@ -4,6 +4,10 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector3;
 
+/**
+ * The target of the AI
+ */
+
 public class Target implements Steerable<Vector3> {
 
     Vector3 vector;
@@ -22,10 +26,22 @@ public class Target implements Steerable<Vector3> {
 
     public boolean isTagged = false;
 
+    /**
+     * creates a new target
+     *
+     * @param vector the position
+     */
+
     public Target(Vector3 vector) {
         this.vector = vector;
     }
-
+    /**
+     * creates a new target
+     *
+     * @param x the x position
+     * @param y the y position
+     * @param z the z position
+     */
     public Target(float x, float y, float z) {
         vector = new Vector3(x, y, z);
     }

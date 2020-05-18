@@ -88,6 +88,7 @@ public class AIWanderingTest extends ApplicationAdapter {
      * Create.
      */
     public void create() {
+
         Bullet.init();
 
         world = new DynamicWorld();
@@ -174,6 +175,7 @@ public class AIWanderingTest extends ApplicationAdapter {
      */
 
     public void render() {
+
         final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
 
         world.getDynamicsWorld().stepSimulation(delta, 5, 1f / 60f);

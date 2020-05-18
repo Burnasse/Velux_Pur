@@ -11,6 +11,16 @@ public class Zombie extends SteeringAgent {
 
     float damage;
 
+    /**
+     * Instantiates a new zombie.
+     *
+     * @param instance  the instance
+     * @param x1 the wandering limit
+     * @param x2 the wandering limit
+     * @param z1 the wandering limit
+     * @param z2 the wandering limit
+     */
+
     public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2) {
         super(instance, x1, z1, x2, z2);
         maxCoolDown = 1;
@@ -22,15 +32,48 @@ public class Zombie extends SteeringAgent {
         orientation = 1;
         maxLinearSpeed = 4f;
         maxLinearAcceleration = 3f;
-        weaponRange = 1f; //peut-être que ça deviendra la taille de la hitbox de l'arme
+        weaponRange = 0.8f;
+        damage = 1;
 
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
     }
 
-    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown) {
+    /**
+     * Instantiates a new zombie.
+     *
+     * @param instance  the instance
+     * @param x1 the wandering limit
+     * @param x2 the wandering limit
+     * @param z1 the wandering limit
+     * @param z2 the wandering limit
+     * @param damage the damage caused by the zombie
+     */
+
+    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage) {
         super(instance, x1, z1, x2, z2, maxCoolDown);
+
+        maxCoolDown = 1;
+        coolDown = maxCoolDown;
+
+        position = instance.transform.getTranslation(new Vector3());
+        linearVelocity = new Vector3(10, 10, 10);
+
+        orientation = 1;
+        maxLinearSpeed = 4f;
+        maxLinearAcceleration = 3f;
+        weaponRange = 0.8f;
+        this.damage = damage;
+
+        generateRandomTarget();
+        behavior = new Arrive<>(this, target);
     }
+
+    /**
+     * updates the Zombie
+     *
+     * @param delta the time between this frame and the last
+     */
 
     @Override
     public void update(float delta) {
@@ -83,8 +126,11 @@ public class Zombie extends SteeringAgent {
         }
     }
 
+    /**
+     * the method called when the zombie attacks
+     */
     @Override
     protected void attack() {
-        System.out.println("Tu prends un attaque au CàC");
+        System.out.println("Tu prends " + damage + "dégats");
     }
 }

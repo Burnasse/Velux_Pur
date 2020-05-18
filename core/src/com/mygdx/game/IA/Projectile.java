@@ -5,21 +5,20 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.*;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorGeneration.DynamicWorld;
+
+/**
+ * the Projectile class
+ */
 
 public class Projectile {
 
@@ -28,6 +27,15 @@ public class Projectile {
     private float speed;
     private float remainingTime = 1f;
     private boolean isDone = false;
+
+    /**
+     * Instanciates a new Projectile
+     *
+     * @param target the target of the shot
+     * @param speed projectile's speed
+     * @param initialPosition from where the projectile is shot
+     * @param world the world where the projectile wanders
+     */
 
     public Projectile(Vector3 target, float speed, Vector3 initialPosition, DynamicWorld world) {
 
@@ -48,25 +56,24 @@ public class Projectile {
         world.addRigidBody((btRigidBody) instance.getBody());
 
 
-
         this.speed = speed;
     }
+
+    /**
+     * updates the projectile
+     *
+     * @param deltaTime the time between this frame and the last
+     */
 
     void update(float deltaTime) {
         if (remainingTime > 0) {
             instance.transform.translate(new EntityPosition(direction.x * speed * deltaTime, 0, direction.z * speed * deltaTime));
             instance.body.proceedToTransform(instance.transform);
             remainingTime = remainingTime - deltaTime;
-        }
-        else{
+        } else {
             isDone = true;
         }
     }
-
-    boolean checkCollision (EntityInstance mInstance){
-        return mInstance.model.calculateBoundingBox(new BoundingBox()).contains(instance.model.calculateBoundingBox(new BoundingBox()));
-    }
-
 
     public boolean isDone() {
         return isDone;

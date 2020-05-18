@@ -9,8 +9,11 @@ import com.mygdx.game.Entity.instances.EntityInstance;
 import java.util.ArrayList;
 import java.util.TimerTask;
 
-public class Gunner extends SteeringAgent {
+/**
+ * The type of enemy that attacks from a certain distance
+ */
 
+public class Gunner extends SteeringAgent {
 
     float projectileDamage;
 
@@ -18,15 +21,24 @@ public class Gunner extends SteeringAgent {
     Array<EntityInstance> doneProjectiles = new Array<>();
 
     public Array<EntityInstance> getDoneProjectiles() {
-
         Array<EntityInstance> temp = doneProjectiles;
         doneProjectiles.clear();
         return temp;
     }
 
+    /**
+     * Instantiates a new Gunner.
+     *
+     * @param object  the instance
+     * @param x1 the wandering limit
+     * @param x2 the wandering limit
+     * @param z1 the wandering limit
+     * @param z2 the wandering limit
+     */
+
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
         super(object, x1, z1, x2, z2);
-        maxCoolDown = 0.0001f;
+        maxCoolDown = 1f;
         coolDown = maxCoolDown;
 
         position = object.transform.getTranslation(new Vector3());
@@ -36,10 +48,24 @@ public class Gunner extends SteeringAgent {
         maxLinearSpeed = 2f;
         maxLinearAcceleration = 2f;
         weaponRange = 3;
+        projectileDamage = 1;
 
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
     }
+
+    /**
+     * Instantiates a new Gunner.
+     *
+     * @param object  the instance
+     * @param x1 the wandering limit
+     * @param x2 the wandering limit
+     * @param z1 the wandering limit
+     * @param z2 the wandering limit
+     * @param maxCoolDown the coolDown of the attack
+     * @param weaponRange range of the attack
+     * @param projectileDamage damage caused by the Gunner
+     */
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2, float maxCoolDown, float weaponRange, float projectileDamage) {
         super(object, x1, z1, x2, z2, maxCoolDown);
@@ -60,6 +86,11 @@ public class Gunner extends SteeringAgent {
         coolDown = maxCoolDown;
     }
 
+    /**
+     * updates the Gunner
+     *
+     * @param delta the time between this frame and the last
+     */
 
     @Override
     public void update(float delta) {
@@ -112,11 +143,20 @@ public class Gunner extends SteeringAgent {
             behavior.calculateSteering(steeringOutput);
             applySteering(steeringOutput, delta);
         }
+
     }
+
+    /**
+     * the method called when the gunner attacks
+     */
 
     protected void attack() {
         projectilesShot.add(new Projectile(target.vector, 5, instance.transform.getTranslation(new Vector3()), world));
     }
+
+    /**
+     * the method called when the gunner attacks
+     */
 
     private void checkProjectiles() {
         for (Projectile projectile : projectilesShot) {
@@ -125,20 +165,27 @@ public class Gunner extends SteeringAgent {
         }
     }
 
+    /**
+     * updates the projectiles the Gunner shot
+     */
+
     private void updateProjectiles(float delta) {
         for (Projectile projectile : projectilesShot) {
 
             projectile.update(delta);
         }
-
     }
+
+    /**
+     * returns the instances of the projectiles the Gunner shot
+     */
 
     public Array<EntityInstance> projectiles() {
         Array<EntityInstance> instances = new Array<>();
-        for (Projectile projectile :
-                projectilesShot) {
+        for (Projectile projectile : projectilesShot) {
             instances.add(projectile.getInstance());
         }
         return instances;
     }
+
 }
