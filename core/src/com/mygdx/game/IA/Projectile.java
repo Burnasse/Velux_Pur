@@ -48,11 +48,15 @@ public class Projectile {
 
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
+int projectile = 50;
 
         instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
         direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);
         direction = direction.nor();
+        instance.getBody().setUserValue(1500);
         instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        instance.getBody().setContactCallbackFlag(projectile);
+        instance.getBody().setContactCallbackFilter(100);
         world.addRigidBody((btRigidBody) instance.getBody());
 
 

@@ -52,6 +52,8 @@ public class AIWanderingTest extends ApplicationAdapter {
      */
     final static short OBJECT_FLAG = 1 << 9;
 
+    final static short PLAYER_FLAG = 100;
+
     /**
      * The type My contact listener is called when there is a collision.
      */
@@ -61,9 +63,10 @@ public class AIWanderingTest extends ApplicationAdapter {
                                       int index1, boolean match1) {
             // Colore en blanc quand il y a une collision entre le joueur et un autre objets
             if (match0)
-                ((ColorAttribute) floorData.objectsInstances.get(userValue0).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.BLUE);
-            if (match1)
-                ((ColorAttribute) floorData.objectsInstances.get(userValue1).materials.get(0).get(ColorAttribute.Diffuse)).color.set(Color.WHITE);
+
+            if (match1){
+                System.out.println("touché");
+            }
             return true;
         }
     }
@@ -116,7 +119,7 @@ public class AIWanderingTest extends ApplicationAdapter {
         player = new EntityPlayer("Player", model1, floorData.playerSpawnPosition);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
-        player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
+        player.getEntity().getBody().setContactCallbackFlag(100);
         player.getEntity().getBody().setContactCallbackFilter(0);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
