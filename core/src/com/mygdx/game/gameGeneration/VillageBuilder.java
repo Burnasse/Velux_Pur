@@ -3,10 +3,14 @@ package com.mygdx.game.gameGeneration;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.AmbientCubemap;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
+import com.badlogic.gdx.graphics.g3d.environment.SpotLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -30,8 +34,13 @@ public class VillageBuilder {
 
     private DynamicWorld world;
     private Array<EntityInstance> objectsInstance;
+    private Array<ModelInstance> boxLightInstance;
+
     private ModelInstance sky;
     private ModelInstance background;
+
+    private Model groundModel;
+    private Model boxLightModel;
 
     /**
      * Instantiates a new Village builder.
@@ -53,6 +62,7 @@ public class VillageBuilder {
 
     private void init() {
         objectsInstance = new Array<>();
+        boxLightInstance = new Array<>();
 
         AssetManager assetManager = new AssetManager();
         assetManager.load("skyBox.g3db", Model.class);
@@ -65,6 +75,14 @@ public class VillageBuilder {
         Model backgroundModel = assetManager.get("groundG3D.g3db", Model.class);
         background = new ModelInstance(backgroundModel);
         background.transform.trn(5, -0.5f, 5);
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        groundModel = modelBuilder.createBox(10f, .5f, 1f,
+                new Material(ColorAttribute.createDiffuse(Color.GRAY)),
+                VertexAttributes.Usage.Position
+                        | VertexAttributes.Usage.Normal);
+
+        boxLightModel = new ModelBuilder().createBox(0.25f,0.25f,0.25f,new Material(new ColorAttribute(ColorAttribute.Emissive,new Color(0.9f,0.3f,0.3f,1))), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
 
     /**
@@ -113,21 +131,28 @@ public class VillageBuilder {
     /**
      * Create ground.
      *
-     * @param model the model
      * @param x     the x
      * @param y     the y
      * @param z     the z
      */
-    public void createGround(Model model, float x, float y, float z) {
+    public void createGround(float x, float y, float z) {
         btBoxShape invisibleWallShape = new btBoxShape(new Vector3(.1f, 1, .5f));
         btBoxShape groundShape = new btBoxShape(new Vector3(5f, .25f, .5f));
-        EntityObjects ground = new EntityObjects("ground", model, groundShape, 0f, new EntityPosition(x, y, z));
+        EntityObjects ground = new EntityObjects("ground", groundModel, groundShape, 0f, new EntityPosition(x, y, z));
         EntityObjects invisibleWallLeft = new EntityObjects("wall", new Model(), invisibleWallShape, 0f, new EntityPosition(x + 5f, y, z));
         EntityObjects invisibleWallRight = new EntityObjects("wall", new Model(), invisibleWallShape, 0f, new EntityPosition(x - 5f, y, z));
 
         addObjectInWorld(ground);
         addObjectInWorld(invisibleWallLeft);
         addObjectInWorld(invisibleWallRight);
+    }
+
+    public void createLightBox(Environment environment, float x, float y, float z, float rotation){
+        ModelInstance cubeLight = new ModelInstance(boxLightModel);
+        cubeLight.transform.trn(new Vector3(x,y,z));
+        if(rotation != 0) cubeLight.transform.rotate(Vector3.Y,rotation);
+        boxLightInstance.add(cubeLight);
+        environment.add(new PointLight().set(new Color(0.9f,0.3f,0.1f,1),new Vector3(x,y,z),10));
     }
 
     private void addObjectInWorld(EntityObjects obj) {
@@ -156,6 +181,16 @@ public class VillageBuilder {
         return objectsInstance;
     }
 
+
+    /**
+     * Gets box light instance.
+     *
+     * @return the box light instance
+     */
+    public Array<ModelInstance> getBoxLightInstance() {
+        return boxLightInstance;
+    }
+
     /**
      * Gets sky.
      *
@@ -182,6 +217,10 @@ public class VillageBuilder {
             world.getDynamicsWorld().removeRigidBody((btRigidBody) instance.getBody());
             instance.dispose();
         }
+
+
+        sky.model.dispose();
+        background.model.dispose();
         world.dispose();
     }
 

@@ -5,10 +5,10 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
@@ -83,6 +83,9 @@ public class GenerateVillage {
     private GameScreen screen;
     private boolean isDispose = false;
     private DebugDrawer debugDrawer;
+    private DirectionalShadowLight shadowLight;
+    private ModelBatch shadowBatch;
+    private FPSLogger fpsLogger;
 
     /**
      * Instantiates a new Village.
@@ -116,17 +119,23 @@ public class GenerateVillage {
         } else
             villageBuilder = new VillageBuilder();
 
+        fpsLogger = new FPSLogger();
         listener = new MyContactListener();
+
+        camera = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(0f, 2.5f, -4f);
+        camera.lookAt(0f, 1f, 0f);
+        camera.near = 0.5f;
+        camera.far = 1000f;
+        camera.update();
+
         modelBatch = new ModelBatch();
+
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.65f, 0.6f, 0.6f, 1f));
-        environment.add((new DirectionalShadowLight(1024, 1024, 60f, 60f, .1f, 50f)).set(1f, 1f, 1f, 40.0f, -35f, -35f));
-        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, -1f, -0.8f, -0.2f));
-        ModelBuilder modelBuilder = new ModelBuilder();
-        Model groundModel = modelBuilder.createBox(10f, .5f, 1f,
-                new Material(ColorAttribute.createDiffuse(Color.GRAY)),
-                VertexAttributes.Usage.Position
-                        | VertexAttributes.Usage.Normal);
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.3f, 0.5f, 1f));
+        environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 25, 25, 0.1f, 10)).set(0.4f, 0.5f, 0.7f, -10.0f, -35f, 50f));
+        environment.shadowMap = shadowLight;
+        shadowBatch = new ModelBatch(new DepthShaderProvider());
 
         /* Trigger: goToLevel() | index: 1 */
         villageBuilder.createTrigger(new EntityPosition(-4.5f, 0, 0), .5f, 1, .5f);
@@ -149,9 +158,9 @@ public class GenerateVillage {
         /* Trigger: changeLayout4 | index: 7 */
         villageBuilder.createTrigger(new EntityPosition(8f, 0.25f, 6), 0.5f, 0.25f, .5f);
 
-        villageBuilder.createGround(groundModel, 0, 0, 0);
-        villageBuilder.createGround(groundModel, 4, 0, 3f);
-        villageBuilder.createGround(groundModel, 8, 0, 6f);
+        villageBuilder.createGround(0, 0, 0);
+        villageBuilder.createGround(4, 0, 3f);
+        villageBuilder.createGround(8, 0, 6f);
 
         villageBuilder.createHouse(0, 1.5f, 2, 3, 2);
         villageBuilder.createHouse(-3, 1.5f, 1.5f, 3.5f, 2);
@@ -159,12 +168,9 @@ public class GenerateVillage {
         villageBuilder.createHouse(11, 4.5f, 2.5f, 4, 2);
         villageBuilder.createHouse(8, 7.5f, 5, 6, 2);
 
-        camera = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(0f, 3f, -4f);
-        camera.lookAt(0f, 1.5f, 0f);
-        camera.near = 0.5f;
-        camera.far = 1500f;
-        camera.update();
+        villageBuilder.createLightBox(environment, 4.75f,0.4f,0.25f,10);
+        villageBuilder.createLightBox(environment, -4.25f, 0.4f, 0.25f,-30);
+        villageBuilder.createLightBox(environment, 6f,0.4f,3.25f,10);
 
         player = PlayerFactory.create(new EntityPosition(0, 1f, 0));
 
@@ -184,30 +190,44 @@ public class GenerateVillage {
     }
 
     private void camFollowPlayer() {
-        camera.position.set(player.getEntity().transform.getValues()[12], camera.position.y, player.getEntity().transform.getValues()[14] - 4f);
+        camera.position.set(player.getEntity().transform.getValues()[12], camera.position.y, player.getEntity().transform.getValues()[14] - 3f);
     }
 
     /**
      * Render.
      */
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
+        Gdx.gl.glClearColor(0.2f, 0.3f, 0.4f, 1);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         animationController.update(Gdx.graphics.getDeltaTime());
 
+        fpsLogger.log();
         if (!isDispose)
             villageBuilder.getWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
 
         camFollowPlayer();
         camera.update();
 
+        shadowLight.begin(Vector3.Zero,camera.direction);
+        shadowBatch.begin(shadowLight.getCamera());
+        shadowBatch.render(villageBuilder.getObjectsInstance());
+        shadowBatch.render(player.getEntity());
+        shadowBatch.render(villageBuilder.getBackground());
+        shadowBatch.render(villageBuilder.getBoxLightInstance());
+        shadowBatch.end();
+        shadowLight.end();
+
         modelBatch.begin(camera);
         modelBatch.render(villageBuilder.getObjectsInstance(), environment);
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);
+        modelBatch.render(villageBuilder.getBoxLightInstance(), environment);
         modelBatch.end();
+
+        villageBuilder.getSky().transform.rotate(Vector3.X,0.02f);
 
         if (DEBUG_MODE) {
             debugDrawer.begin(camera);
