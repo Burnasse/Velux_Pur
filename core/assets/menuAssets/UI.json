@@ -91,4 +91,10 @@ TextTooltipStyle: {
 		label: default
 	}
 }
+WindowStyle: {
+	default: {
+		titleFont: font
+		titleFontColor: dark
+	}
+}
 }
