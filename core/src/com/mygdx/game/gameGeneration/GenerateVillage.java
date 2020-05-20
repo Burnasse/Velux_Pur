@@ -18,9 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.Entity.Pnj;
 import com.mygdx.game.controller.VillageController;
 import com.mygdx.game.physics.VillageContactListener;
 import com.mygdx.game.screen.GameScreen;
@@ -49,12 +51,15 @@ public class GenerateVillage {
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
 
+    private AnimationController pnjAnimation;
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
 
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
+
+    private Array<Pnj> pnjArray;
 
     /**
      * Instantiates a new Village.
@@ -131,7 +136,7 @@ public class GenerateVillage {
         villageBuilder.createGround(4, 0, 3f);
         villageBuilder.createGround(8, 0, 6f);
 
-        villageBuilder.createHouse(0, 1.5f, 2, 3, 2);
+        villageBuilder.createHouse(0, 1.5f, 2, 1, 2);
         villageBuilder.createHouse(-3, 1.5f, 1.5f, 3.5f, 2);
         villageBuilder.createHouse(4, 4.5f, 3, 2.5f, 2);
         villageBuilder.createHouse(11, 4.5f, 2.5f, 4, 2);
@@ -141,6 +146,11 @@ public class GenerateVillage {
         villageBuilder.createLightBox(environment, -4.25f, 0.4f, 0.25f,-30);
         villageBuilder.createLightBox(environment, 2.5f,0.4f,3.25f,10);
         villageBuilder.createLightBox(environment, 4f,0.4f,6.25f,10);
+
+        pnjArray = new Array<>();
+        Pnj pnj1 = new Pnj(new EntityPosition(0,1f,1.30f), Pnj.AnimationID.SITTING);
+        Pnj pnj2 = new Pnj(new EntityPosition(4.5f,1.75f,3.8f), Pnj.AnimationID.IDLE);
+        pnjArray.add(pnj1,pnj2);
 
         dialogHashMap = new HashMap<>();
         stage = new Stage();
@@ -211,6 +221,8 @@ public class GenerateVillage {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        for(Pnj pnj : pnjArray)
+            pnj.render();
         animationController.update(Gdx.graphics.getDeltaTime());
 
         villageBuilder.getWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
@@ -224,6 +236,7 @@ public class GenerateVillage {
         shadowBatch.render(player.getEntity());
         shadowBatch.render(villageBuilder.getBackground());
         shadowBatch.render(villageBuilder.getBoxLightInstance());
+        shadowBatch.render(pnjArray);
         shadowBatch.end();
         shadowLight.end();
 
@@ -233,6 +246,7 @@ public class GenerateVillage {
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);
         modelBatch.render(villageBuilder.getBoxLightInstance(), environment);
+        modelBatch.render(pnjArray,environment);
         modelBatch.end();
 
         stage.act();

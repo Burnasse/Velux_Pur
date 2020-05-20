@@ -3,6 +3,7 @@ package com.mygdx.game.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
@@ -25,10 +26,17 @@ public class UIDialog {
         yesButton.getLabel().setAlignment(Align.center);
         noButton.getLabel().setAlignment(Align.center);
 
-        dialog.setSize(200, 200);
-        dialog.setPosition(Gdx.graphics.getWidth()/2-100, Gdx.graphics.getHeight()/2-100);
+        dialog.getTitleLabel().setAlignment(Align.center);
+        dialog.setSize(300, 200);
+        dialog.setPosition(Gdx.graphics.getWidth()/2-150, Gdx.graphics.getHeight()/2-100);
 
-        dialog.text(text).getButtonTable().add(yesButton,noButton);
+        dialog.getButtonTable().add(yesButton,noButton);
+        yesButton.align(Align.left);
+        noButton.align(Align.right);
+        Label label = new Label(text,skin);
+        label.setAlignment(Align.center);
+        label.setWrap(true);
+        dialog.text(label);
     }
 
     public Dialog getDialog() {

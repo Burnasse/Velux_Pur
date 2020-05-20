@@ -93,8 +93,9 @@ TextTooltipStyle: {
 }
 WindowStyle: {
 	default: {
+		background: buttonTransparent
 		titleFont: font
-		titleFontColor: dark
+		titleFontColor: white
 	}
 }
 }

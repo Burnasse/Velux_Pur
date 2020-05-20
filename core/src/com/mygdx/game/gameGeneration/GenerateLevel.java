@@ -91,8 +91,6 @@ public class GenerateLevel {
 
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.1f,0.1f,0.1f,0.1f)));
-        //environment.set(new ColorAttribute(ColorAttribute.Fog, new Color(0.1f,0.1f,0.1f,1)));
-        //environment.add(new DirectionalLight().set(0.8f,0.8f,0.8f, -10f, -8f, -10f));
         environment.add(new DirectionalLight().set(new Color(0.1f,0.1f,0.1f,0.1f), 0, -10f, 0));
 
         followLight = new PointLight().set(new Color(1,0.6f,0.4f,1f),new Vector3(0,0,0),5f);
@@ -111,8 +109,6 @@ public class GenerateLevel {
         player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
         player.getEntity().getBody().setContactCallbackFilter(0);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
-
-        //environment.add(new PointLight().set(Color.ORANGE,new Vector3(floorData.playerSpawnPosition.x,8,floorData.playerSpawnPosition.z),150));
 
         for (EntityInstance obj : floorData.objectsInstances) {
             obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
@@ -169,7 +165,7 @@ public class GenerateLevel {
         modelBatch.end();
 
         minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);
-        healthBar.render(player.getCharacteristics().getHealth(),100);
+        healthBar.render(100, player.getCharacteristics().getHealth());
 
         if (DEBUG_MODE) {
             debugDrawer.begin(cam);
