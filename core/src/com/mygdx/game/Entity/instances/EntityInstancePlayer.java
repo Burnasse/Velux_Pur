@@ -36,7 +36,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
 
         ghostObject.setCollisionShape(ghostShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-        controller = new btKinematicCharacterController(ghostObject, ghostShape, 0f, Vector3.Y);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, 0.5f, Vector3.Y);
         controller.setGravity(new Vector3(0, -10, 0));
     }
 

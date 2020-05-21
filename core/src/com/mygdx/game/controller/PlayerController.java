@@ -68,12 +68,12 @@ public class PlayerController implements InputProcessor, ControllerListener {
             moveRight(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
-        if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up)) && player.getEntity().getController().onGround()) {
-            moveUp(Gdx.input.isKeyPressed(Input.Keys.UP));
+        if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up))) {
+            moveUp(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
-        if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down)) && player.getEntity().getController().onGround()) {
-            moveDown(Gdx.input.isKeyPressed(Input.Keys.DOWN));
+        if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down))) {
+            moveDown(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
         setMovement(speed);
@@ -118,9 +118,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private void moveLeft(boolean sprint) {
         if (!lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-        lookLeft = true;
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(10, 0, 0);
+        walkDirection.add(1, 0, 0);
 
         if (sprint || isSprint) {
             animation.animate("running", -1, 1.0f, null, 0.2f);
@@ -129,14 +128,107 @@ public class PlayerController implements InputProcessor, ControllerListener {
             animation.animate("walk", -1, 1.0f, null, 0.2f);
             speed = 1.5f;
         }
+
+        if (lookRight)
+            lookLeft = true;
+        lookRight = false;
+        player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookUp)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+        lookLeft = true;
+        lookUp = false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookDown)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
+        lookLeft = true;
+        lookDown= false;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
     }
 
     private void moveRight(boolean sprint) {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
         lookLeft = false;
+        lookRight = true;
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(-10, 0, 0);
+        walkDirection.add(-1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookRight)
+        lookLeft = false;
+        lookRight = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookUp)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
+        lookLeft = false;
+        lookUp = false;
+        lookRight = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-1, 0, 0);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookDown)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+        lookLeft = false;
+        lookDown= false;
+        lookRight = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-1, 0, 0);
 
         if (sprint || isSprint) {
             animation.animate("running", -1, 1.0f, null, 0.2f);
@@ -146,13 +238,61 @@ public class PlayerController implements InputProcessor, ControllerListener {
             speed = 1.5f;
         }
     }
+
+
     private void moveUp(boolean sprint) {
         if (lookLeft)
-            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
         lookLeft = false;
+        lookUp = true;
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, 10);
+        walkDirection.add(0, 0, 1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookRight)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+        lookLeft = false;
+        lookRight = false;
+        lookUp = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookUp)
+        lookLeft = false;
+        lookUp = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, 1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookDown)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+        lookLeft = false;
+        lookDown= false;
+        lookUp = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, 1);
 
         if (sprint || isSprint) {
             animation.animate("running", -1, 1.0f, null, 0.2f);
@@ -162,13 +302,57 @@ public class PlayerController implements InputProcessor, ControllerListener {
             speed = 1.5f;
         }
     }
+
     private void moveDown(boolean sprint) {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-
         lookLeft = false;
+        lookDown= true;
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, -10);
+        walkDirection.add(0, 0, -1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookRight)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
+        lookRight = false;
+        lookDown=true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, -1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookUp)
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -180);
+        lookUp = false;
+        lookDown = true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, -1);
+
+        if (sprint || isSprint) {
+            animation.animate("running", -1, 1.0f, null, 0.2f);
+            speed = 3f;
+        } else {
+            animation.animate("walk", -1, 1.0f, null, 0.2f);
+            speed = 1.5f;
+        }
+
+        if (lookDown)
+        lookDown= true;
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, -1);
 
         if (sprint || isSprint) {
             animation.animate("running", -1, 1.0f, null, 0.2f);
