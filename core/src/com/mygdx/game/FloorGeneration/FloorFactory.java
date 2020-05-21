@@ -1,6 +1,5 @@
 package com.mygdx.game.FloorGeneration;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.VertexAttributes;
@@ -64,7 +63,7 @@ public class FloorFactory {
         ModelBuilder modelBuilder = new ModelBuilder();
         modelBuilder.begin();
         modelBuilder.node().id = "box";
-        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position |VertexAttributes.Usage.Generic, new Material(ColorAttribute.createDiffuse(Color.RED)));
+        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Generic, new Material(ColorAttribute.createDiffuse(Color.RED)));
         BoxShapeBuilder.build(builder, 0.3f, 0.3f, 0.3f);
         Model enemyModel = modelBuilder.end();
 
@@ -75,7 +74,8 @@ public class FloorFactory {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, enemyShape, 15f, enemyPosition);
+                    EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, enemyShape, 15f, enemyPosition, "Gunner", room.getX1(), room.getY1(), room.getX2(), room.getY2());
+                    newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
                 }
@@ -86,12 +86,12 @@ public class FloorFactory {
         Model ground = assets.manager.get(Assets.groundLevel);
 
         btBoxShape wallShape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
-        btBoxShape groundShape = new btBoxShape(new Vector3( blockSize/2, blockSize / 4, blockSize/2));
+        btBoxShape groundShape = new btBoxShape(new Vector3(blockSize / 2, blockSize / 4, blockSize / 2));
 
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",ground,groundShape,0f,new EntityPosition(x,y+blockSize/2,z)).getEntity());
+                    objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition(x, y + blockSize / 2, z)).getEntity());
                     if (i == 0 || j == 0 || i == sizeOfFloor - 1 || j == sizeOfFloor - 1) {
                         EntityObjects s = new EntityObjects("box", wallModel, wallShape, 0f, new EntityPosition(x, y + blockSize, z));
                         objectsInstances.add(s.getEntity());

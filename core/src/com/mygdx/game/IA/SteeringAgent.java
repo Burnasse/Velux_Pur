@@ -3,12 +3,14 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.FloorGeneration.DynamicWorld;
+import com.mygdx.game.physics.DynamicWorld;
+
 
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
@@ -21,7 +23,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     protected EntityPlayer player;
     protected EntityInstance instance;
-    public DynamicWorld world = null;
+    private DynamicWorld world = null;
 
 
     protected float orientation;
@@ -54,6 +56,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     protected float coolDown;
     protected float maxCoolDown;
 
+    float blockSize = 1;
 
     /**
      * Instantiates a new behavior.
@@ -143,7 +146,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     protected void generateRandomTarget() {
-        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), 0, ThreadLocalRandom.current().nextInt(z1, z2));
+        target = new Target(ThreadLocalRandom.current().nextInt(x1, x2), blockSize, ThreadLocalRandom.current().nextInt(z1, z2));
     }
 
     /**
@@ -293,8 +296,13 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         this.maxAngularAcceleration = maxAngularAcceleration;
     }
 
-    public void setPlayer(EntityPlayer player) {
+    public DynamicWorld getWorld() {
+        return world;
+    }
+
+    public void Surroundings(EntityPlayer player, DynamicWorld world) {
         this.player = player;
+        this.world = world;
     }
 
     protected void attack() {
@@ -311,5 +319,9 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         z1 = z1 * blockSize;
         x2 = x2 * blockSize;
         z2 = z2 * blockSize;
+        this.blockSize = blockSize + 1;
+        position.y = blockSize + 1;
+        generateRandomTarget();
+        behavior = new Arrive<>(this, target);
     }
 }

@@ -10,10 +10,10 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.FloorGeneration.DynamicWorld;
+import com.mygdx.game.physics.DynamicWorld;
+
 
 /**
  * the Projectile class
@@ -50,13 +50,16 @@ public class Projectile {
         int projectile = 50;
 
         instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
-        direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);
+        direction = new Vector3(target.x - initialPosition.x, 0, target.z - initialPosition.z);
         direction = direction.nor();
+
         instance.getBody().setUserValue(1500);
         instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         instance.getBody().setContactCallbackFlag(projectile);
         instance.getBody().setContactCallbackFilter(100);
-        world.addRigidBody((btRigidBody) instance.getBody());
+
+
+        world.addRigidBody(instance.getBody());
 
 
         this.speed = speed;
@@ -71,7 +74,7 @@ public class Projectile {
     void update(float deltaTime) {
         if (remainingTime > 0) {
             instance.transform.translate(new EntityPosition(direction.x * speed * deltaTime, 0, direction.z * speed * deltaTime));
-            instance.body.proceedToTransform(instance.transform);
+            instance.getBody().proceedToTransform(instance.transform);
             remainingTime = remainingTime - deltaTime;
         } else {
             isDone = true;

@@ -2,27 +2,36 @@ package com.mygdx.game.gameGeneration;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-import com.badlogic.gdx.graphics.g3d.utils.*;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
-import com.badlogic.gdx.physics.bullet.collision.*;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.ContactListener;
+import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Collections;
 import com.mygdx.game.Assets;
-import com.mygdx.game.Entity.*;
+import com.mygdx.game.Entity.EntityMonster;
+import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.FrustumCulling;
+import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
@@ -63,6 +72,7 @@ public class GenerateLevel {
     private Environment environment;
     private PerspectiveCamera cam;
     private FrustumCulling frustum;
+    private FrustumCulling tempFrustum;
 
     private CameraInputController camController;
     private DynamicWorld world;
@@ -74,6 +84,8 @@ public class GenerateLevel {
     private HealthBar healthBar;
 
     private PointLight followLight;
+
+    Array<EntityInstance> temp = new Array<>();
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
@@ -99,10 +111,10 @@ public class GenerateLevel {
         modelBatch = new ModelBatch(new DefaultShaderProvider(config));
 
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.1f,0.1f,0.1f,0.1f)));
-        environment.add(new DirectionalLight().set(new Color(0.1f,0.1f,0.1f,0.1f), 0, -10f, 0));
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.1f, 0.1f, 0.1f, 0.1f)));
+        environment.add(new DirectionalLight().set(new Color(0.1f, 0.1f, 0.1f, 0.1f), 0, -10f, 0));
 
-        followLight = new PointLight().set(new Color(1,0.6f,0.4f,1f),new Vector3(0,0,0),5f);
+        followLight = new PointLight().set(new Color(1, 0.6f, 0.4f, 1f), new Vector3(0, 0, 0), 5f);
         environment.add(followLight);
 
         floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
@@ -127,17 +139,29 @@ public class GenerateLevel {
             world.addRigidBody((btRigidBody) obj.getBody());
         }
 
+        for (EntityMonster monster : floorData.entityMonsters) {
+            monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
+            world.addRigidBody((btRigidBody) monster.getEntity().getBody());
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+            monster.getEntity().getBody().setContactCallbackFilter(0);
+            monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+            monster.getBehavior().Surroundings(player, world);
+        }
+
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(player.getEntity().transform.getValues()[12],15,player.getEntity().transform.getValues()[14]-1);
-        cam.lookAt(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[13], player.getEntity().transform.getValues()[14]+1);
+        cam.position.set(player.getEntity().transform.getValues()[12], 15, player.getEntity().transform.getValues()[14] - 1);
+        cam.lookAt(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[13], player.getEntity().transform.getValues()[14] + 1);
         cam.near = 3f;
         cam.far = 300f;
         cam.update();
 
         Array<EntityInstance> instances = new Array<>();
-        for(EntityInstance instance : floorData.objectsInstances)
+        for (EntityInstance instance : floorData.objectsInstances)
             instances.add(instance);
-        frustum = new FrustumCulling(instances,environment,cam,modelBatch);
+
+        frustum = new FrustumCulling(instances, environment, cam, modelBatch);
+        tempFrustum = new FrustumCulling(temp, environment, cam, modelBatch);
 
         camController = new CameraInputController(cam);
 
@@ -151,7 +175,7 @@ public class GenerateLevel {
 
 
     private void camFollowPlayer() {
-        cam.position.set(player.getEntity().transform.getValues()[12], cam.position.y, player.getEntity().transform.getValues()[14]-1);
+        cam.position.set(player.getEntity().transform.getValues()[12], cam.position.y, player.getEntity().transform.getValues()[14] - 1);
     }
 
 
@@ -159,6 +183,16 @@ public class GenerateLevel {
      * Render.
      */
     public void render() {
+
+        temp.clear();
+        for (EntityMonster foe : floorData.entityMonsters) {
+            foe.getBehavior().update(Gdx.graphics.getDeltaTime());
+            if (foe.getBehavior() instanceof Gunner)
+                ((Gunner) foe.getBehavior()).projectiles().removeAll(((Gunner) foe.getBehavior()).getDoneProjectiles(), true);
+            temp.addAll(((Gunner) foe.getBehavior()).projectiles());
+        }
+
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -168,15 +202,17 @@ public class GenerateLevel {
         cam.update();
 
         followLight.position.x = player.getEntity().transform.getValues()[12];
-        followLight.position.y = player.getEntity().transform.getValues()[13]+1;
+        followLight.position.y = player.getEntity().transform.getValues()[13] + 1;
         followLight.position.z = player.getEntity().transform.getValues()[14];
 
         modelBatch.begin(cam);
         frustum.render();
+        tempFrustum.render();
+
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
-        minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);
+        minimap.render(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[14]);
         healthBar.render(100, player.getCharacteristics().getHealth());
 
         if (DEBUG_MODE) {
@@ -188,7 +224,7 @@ public class GenerateLevel {
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }
 
-    public void resize(int width, int height){
+    public void resize(int width, int height) {
         cam.viewportWidth = width;
         cam.viewportHeight = height;
     }

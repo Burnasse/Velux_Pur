@@ -34,9 +34,6 @@ public class Zombie extends SteeringAgent {
         maxLinearAcceleration = 3f;
         weaponRange = 0.5f;
         damage = 1;
-
-        generateRandomTarget();
-        behavior = new Arrive<>(this, target);
     }
 
     /**
@@ -123,7 +120,7 @@ public class Zombie extends SteeringAgent {
             }
         } else Move(delta);
 
-        instance.body.proceedToTransform(instance.transform);
+        instance.getBody().proceedToTransform(instance.transform);
     }
 
     /**

@@ -50,8 +50,6 @@ public class Gunner extends SteeringAgent {
         weaponRange = 3;
         projectileDamage = 1;
 
-        generateRandomTarget();
-        behavior = new Arrive<>(this, target);
     }
 
     /**
@@ -140,7 +138,7 @@ public class Gunner extends SteeringAgent {
             }
         } else Move(delta);
 
-        instance.body.proceedToTransform(instance.transform);
+        instance.getBody().proceedToTransform(instance.transform);
     }
 
     /**
@@ -149,7 +147,7 @@ public class Gunner extends SteeringAgent {
 
     protected void attack() {
         Turn();
-        projectilesShot.add(new Projectile(target.vector, 5, instance.transform.getTranslation(new Vector3()), world));
+        projectilesShot.add(new Projectile(player.getPosition(), 5, position, getWorld()));
     }
 
     /**
