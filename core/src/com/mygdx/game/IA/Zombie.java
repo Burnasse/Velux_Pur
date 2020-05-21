@@ -32,7 +32,7 @@ public class Zombie extends SteeringAgent {
         orientation = 1;
         maxLinearSpeed = 4f;
         maxLinearAcceleration = 3f;
-        weaponRange = 0.8f;
+        weaponRange = 0.5f;
         damage = 1;
 
         generateRandomTarget();
@@ -82,20 +82,18 @@ public class Zombie extends SteeringAgent {
         if (playerInRoom()) {
 
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            setMaxLinearSpeed(6);
+            setMaxLinearSpeed(4);
             setMaxLinearAcceleration(10);
+            behavior = new Pursue<>(this, target, 0);
 
             if ((isAround(position, target.vector, weaponRange * 3f)))
                 behavior = new Arrive<>(this, target);
-            else
-                behavior = new Pursue<>(this, target, 0);
-
         } else {
             if (behavior instanceof Pursue) {
                 setMaxLinearAcceleration(3);
                 generateRandomTarget();
                 behavior = new Arrive<>(behavior.getOwner(), target);
-                setMaxLinearSpeed(4);
+                setMaxLinearSpeed(3);
             } else if ((isAround(position, target.vector, 1)) && behavior.isEnabled()) {
 
                 behavior.setEnabled(false);
@@ -106,7 +104,7 @@ public class Zombie extends SteeringAgent {
                     public void run() {
                         generateRandomTarget();
                         setMaxLinearAcceleration(3);
-                        setMaxLinearSpeed(4);
+                        setMaxLinearSpeed(3);
                         behavior.setEnabled(true);
                         behavior = new Arrive<>(behavior.getOwner(), target);
                     }
@@ -129,7 +127,7 @@ public class Zombie extends SteeringAgent {
     /**
      * the method called when the zombie attacks
      */
-    
+
     @Override
     protected void attack() {
         System.out.println("Tu prends " + damage + "dégats");

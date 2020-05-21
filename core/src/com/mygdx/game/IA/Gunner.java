@@ -29,11 +29,11 @@ public class Gunner extends SteeringAgent {
     /**
      * Instantiates a new Gunner.
      *
-     * @param object  the instance
-     * @param x1 the wandering limit
-     * @param x2 the wandering limit
-     * @param z1 the wandering limit
-     * @param z2 the wandering limit
+     * @param object the instance
+     * @param x1     the wandering limit
+     * @param x2     the wandering limit
+     * @param z1     the wandering limit
+     * @param z2     the wandering limit
      */
 
     public Gunner(EntityInstance object, int x1, int z1, int x2, int z2) {
@@ -57,13 +57,13 @@ public class Gunner extends SteeringAgent {
     /**
      * Instantiates a new Gunner.
      *
-     * @param object  the instance
-     * @param x1 the wandering limit
-     * @param x2 the wandering limit
-     * @param z1 the wandering limit
-     * @param z2 the wandering limit
-     * @param maxCoolDown the coolDown of the attack
-     * @param weaponRange range of the attack
+     * @param object           the instance
+     * @param x1               the wandering limit
+     * @param x2               the wandering limit
+     * @param z1               the wandering limit
+     * @param z2               the wandering limit
+     * @param maxCoolDown      the coolDown of the attack
+     * @param weaponRange      range of the attack
      * @param projectileDamage damage caused by the Gunner
      */
 
@@ -93,7 +93,7 @@ public class Gunner extends SteeringAgent {
      */
 
     @Override
-    public void update(float delta) {
+    public void update(final float delta) {
         checkProjectiles();
         coolDown = coolDown + delta;
         updateProjectiles(delta);
@@ -101,13 +101,9 @@ public class Gunner extends SteeringAgent {
         if (playerInRoom()) {
 
             target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            setMaxLinearSpeed(5);
+            setMaxLinearSpeed(3);
             setMaxLinearAcceleration(10);
-
-            if ((isAround(position, target.vector, weaponRange * 1.5f)))
-                behavior = new Arrive<>(this, target);
-            else
-                behavior = new Pursue<>(this, target, 0);
+            behavior = new Pursue<>(this, target);
 
         } else {
             if (behavior instanceof Pursue) {

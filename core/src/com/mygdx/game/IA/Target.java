@@ -16,7 +16,7 @@ public class Target implements Steerable<Vector3> {
 
     private Vector3 position;
 
-    private Vector3 linearVelocity = new Vector3(1, 0, 1);
+    private final Vector3 linearVelocity = new Vector3(1, 0, 1);
     private float maxLinearAcceleration = 1;
     private float maxLinearSpeed = 1;
 
@@ -90,8 +90,7 @@ public class Target implements Steerable<Vector3> {
 
     @Override
     public float getAngularVelocity() {
-        float angularVelocity = 50;
-        return angularVelocity;
+        return 50;
     }
 
     @Override
