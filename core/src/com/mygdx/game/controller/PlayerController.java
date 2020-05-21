@@ -16,6 +16,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
     private Vector3 walkDirection = new Vector3();
+    private boolean playerPov;
 
     /**
      * Instantiates a new Player controller.
@@ -49,7 +50,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
             setMovement();
         }
 
-        return false;
+        return true;
     }
 
     @Override
@@ -59,12 +60,18 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+
+        player.attack();
+        return true;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if (button == PrefKeys.LeftClick)
+            System.out.println("AHAHAHAHAH");
+        if (button == Input.Buttons.RIGHT)
+            System.out.println("OUHOUHOUHOUH");
+        return true;
     }
 
     @Override
@@ -94,6 +101,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
+
         return false;
     }
 
@@ -133,6 +141,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private void setMovement() {
         walkDirection.scl(4f * Gdx.graphics.getDeltaTime());
         player.getEntity().getController().setWalkDirection(walkDirection);
+
     }
 
 }

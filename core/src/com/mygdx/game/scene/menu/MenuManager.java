@@ -48,4 +48,9 @@ public class MenuManager {
         return stage;
     }
 
+    public void dispose(){
+        for(Stage stage : map.values())
+            stage.dispose();
+    }
+
 }

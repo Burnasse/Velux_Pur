@@ -2,7 +2,6 @@ package com.mygdx.game.controller;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-
 import java.util.HashMap;
 
 /**
@@ -25,6 +24,9 @@ public class PrefKeys {
     public static int Down = Input.Keys.S;
     public static int Left = Input.Keys.Q;
     public static int Right = Input.Keys.D;
+
+    public static int C = Input.Keys.C;
+    public static int LeftClick = Input.Buttons.LEFT;
 
     /**
      * Init keys for retrieve all keys changed by the user.

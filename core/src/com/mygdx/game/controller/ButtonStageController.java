@@ -3,40 +3,37 @@ package com.mygdx.game.controller;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.mappings.Xbox;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.controller.MenuController;
 
 /**
  * The type Menu stage handle keyboard, mouse and gamepad for the menu.
  */
-public class ButtonStage extends Stage implements ControllerListener {
-    private MenuController menuController;
+public class ButtonStageController extends Stage implements ControllerListener {
+    private DisplayButtonHandler displayButtonHandler;
 
     /**
-     * Instantiates a new Menu stage.
+     * Instantiates a new Button stage controller.
      *
-     * @param viewport       the viewport
-     * @param menuController control the actions of the inputs on the menu
+     * @param viewport             the viewport
+     * @param displayButtonHandler control the actions of the inputs on the menu
      */
-    public ButtonStage(Viewport viewport, MenuController menuController) {
+    public ButtonStageController(Viewport viewport, DisplayButtonHandler displayButtonHandler) {
         super(viewport);
-        Controllers.addListener(this);
-        this.menuController = menuController;
+        this.displayButtonHandler = displayButtonHandler;
     }
 
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.DOWN)
-            menuController.downKeyPressed();
+            displayButtonHandler.downKeyPressed();
         if (keycode == Input.Keys.UP)
-            menuController.upKeyPressed();
+            displayButtonHandler.upKeyPressed();
         if (keycode == Input.Keys.ENTER)
-            menuController.enterKeyPressed();
+            displayButtonHandler.enterKeyPressed();
         return true;
     }
 
@@ -52,8 +49,9 @@ public class ButtonStage extends Stage implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        if (buttonCode == Xbox.A)
-            menuController.enterKeyPressed();
+        if (buttonCode == Xbox.A) {
+            displayButtonHandler.enterKeyPressed();
+        }
 
         return true;
     }
@@ -67,9 +65,9 @@ public class ButtonStage extends Stage implements ControllerListener {
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         if (axisCode == Xbox.L_STICK_VERTICAL_AXIS) {
             if (value == -1)
-                menuController.upKeyPressed();
+                displayButtonHandler.upKeyPressed();
             if (value == 1)
-                menuController.downKeyPressed();
+                displayButtonHandler.downKeyPressed();
         }
 
         return true;
@@ -78,9 +76,9 @@ public class ButtonStage extends Stage implements ControllerListener {
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {
         if (value.name().equals("south"))
-            menuController.downKeyPressed();
+            displayButtonHandler.downKeyPressed();
         if (value.name().equals("north"))
-            menuController.upKeyPressed();
+            displayButtonHandler.upKeyPressed();
         return true;
     }
 

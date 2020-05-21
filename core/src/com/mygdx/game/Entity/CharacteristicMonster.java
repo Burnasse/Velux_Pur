@@ -3,7 +3,7 @@ package com.mygdx.game.Entity;
 /**
  * The type Characteristic monster.
  */
-public class CharacteristicMonster implements Characteristic{
+public class CharacteristicMonster implements Characteristic {
 
     private int attackDamage;
     private int health;
@@ -14,8 +14,17 @@ public class CharacteristicMonster implements Characteristic{
      * @param attackDamage the attack damage
      * @param health       the health
      */
-    public CharacteristicMonster(int attackDamage, int health){
+    public CharacteristicMonster(int attackDamage, int health) {
         this.attackDamage = attackDamage;
         this.health = health;
     }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
 }

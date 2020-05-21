@@ -3,10 +3,7 @@ package com.mygdx.game.Entity.instances;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.btCapsuleShape;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btConvexShape;
-import com.badlogic.gdx.physics.bullet.collision.btPairCachingGhostObject;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btKinematicCharacterController;
 import com.badlogic.gdx.utils.Disposable;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -20,10 +17,6 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
     private btKinematicCharacterController controller;
     private btPairCachingGhostObject ghostObject;
     private btConvexShape ghostShape;
-    /**
-     * The Motion state.
-     */
-    public final StaticMotionState.MotionState motionState;
 
     /**
      * Instantiates a new Entity instance player.
@@ -35,14 +28,35 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
         super(model);
         transform.trn(defaultPosition);
         transform.rotate(Vector3.X, 90);
-        motionState = new StaticMotionState.MotionState();
-        motionState.transform = transform;
+        transform.rotate(Vector3.Y, 90);
+
         ghostObject = new btPairCachingGhostObject();
         ghostObject.setWorldTransform(transform);
-        ghostShape = new btCapsuleShape(0.1f, .5f);
+        ghostShape = new btBoxShape(new Vector3(0.25f, 1f, 0.25f));
+
         ghostObject.setCollisionShape(ghostShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f, Vector3.Y);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, 0.5f, Vector3.Y);
+        controller.setGravity(new Vector3(0, -10, 0));
+    }
+
+    /**
+     * Instantiates a new Entity instance player with float[] position.
+     * Mainly used in multiplayer
+     *
+     * @param model           the model
+     * @param defaultPosition the default position
+     */
+    public EntityInstancePlayer(Model model, float[] defaultPosition) {
+        super(model);
+        transform.set(defaultPosition);
+        transform.rotate(Vector3.X, 90);
+        ghostObject = new btPairCachingGhostObject();
+        ghostObject.setWorldTransform(transform);
+        ghostShape = new btCapsuleShape(0.1f, 1f);
+        ghostObject.setCollisionShape(ghostShape);
+        ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
+        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f);
     }
 
     @Override
@@ -55,9 +69,9 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
     /**
      * Get the ghost object (equivalent to RigidBody).
      *
-     * @return tthe ghost object
+     * @return the ghost object
      */
-    public btPairCachingGhostObject getGhostObject(){
+    public btPairCachingGhostObject getGhostObject() {
         return ghostObject;
     }
 
@@ -75,8 +89,7 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
      *
      * @param position the position
      */
-
-    public void move(EntityPosition position){
+    public void move(EntityPosition position) {
         controller.setWalkDirection(position);
     }
 

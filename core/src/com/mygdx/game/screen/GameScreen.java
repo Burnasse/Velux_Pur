@@ -3,28 +3,25 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.FloorGeneration.GenerateLevel;
 import com.mygdx.game.VeluxPurGame;
+import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
+import com.mygdx.game.gameGeneration.GenerateVillage;
+import com.mygdx.game.ui.Minimap;
 
 /**
  * The type Game screen.
  */
 public class GameScreen implements Screen, StageManager {
 
-    GenerateLevel level;
+    private GenerateVillage village;
+
+    private MainMenu menu;
 
     /**
      * Used to manage the menu
@@ -34,7 +31,7 @@ public class GameScreen implements Screen, StageManager {
     /**
      * Used to display properly the menu
      */
-    private Viewport viewport = new ScreenViewport();
+    private ScreenViewport viewport = new ScreenViewport();
 
     /**
      * Used to display all elements of the menu
@@ -52,26 +49,35 @@ public class GameScreen implements Screen, StageManager {
      */
     public GameScreen(VeluxPurGame manager) {
         this.manager = manager;
-
-        level = new GenerateLevel();
-        level.create();
-
-        stageManager = new MenuManager();
-        stageManager.addStage("Main", new MainMenu(this, viewport, true).getStage());
-        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
-        stageManager.addStage("Audio", new AudioMenu(this).getStage());
-        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
-
     }
 
     @Override
     public void show() {
+        initScreen();
     }
 
     @Override
     public void render(float delta) {
-        level.render();
+        village.render();
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            if (isInMenu) {
+                village.setController();
+                isInMenu = false;
+            } else {
+                stage = stageManager.getStageByName("Main");
+                Controllers.clearListeners();
+                Controllers.addListener((ButtonStageController)menu.getStage());
+                Gdx.input.setInputProcessor(stage);
+                isInMenu = true;
+            }
+        }
+
+        if (isInMenu) {
+            stage.act(delta);
+            stage.draw();
+        }
+
     }
 
     @Override
@@ -92,16 +98,39 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
-        stage.dispose();
-        level.dispose();
+        stageManager.dispose();
+        village.dispose();
     }
 
     @Override
-    public void show(String stageName) {
+    public void displayStage(String stageName) {
         stage = stageManager.changeStage(stageName, viewport);
     }
 
     @Override
     public void startGame() {
+    }
+
+    @Override
+    public void initScreen() {
+        village = new GenerateVillage(this,true);
+        village.create();
+
+        menu = new MainMenu(this, viewport, true);
+        stageManager = new MenuManager();
+        stageManager.addStage("Main", menu.getStage());
+        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
+        stageManager.addStage("Audio", new AudioMenu(this).getStage());
+        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
+        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return viewport;
+    }
+
+    public void goToLevel(){
+        manager.changeScreen(new LevelScreen(manager));
     }
 }

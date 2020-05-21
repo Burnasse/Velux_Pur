@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.controller.ButtonStage;
+import com.mygdx.game.controller.DisplayButtonHandler;
+import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.scene.TextButtonContainer;
 
@@ -16,7 +16,7 @@ import com.mygdx.game.scene.TextButtonContainer;
 public class SettingsMenu implements MenuStage {
 
     private TextButtonContainer container;
-    private ButtonStage stage;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Settings menu.
@@ -28,36 +28,36 @@ public class SettingsMenu implements MenuStage {
 
         container.getButtonByName("Back").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Main");
+                manager.displayStage("Main");
                 return true;
             }
         });
 
         container.getButtonByName("Audio").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Audio");
+                manager.displayStage("Audio");
                 return true;
             }
         });
 
         container.getButtonByName("Advanced").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Advanced");
+                manager.displayStage("Advanced");
                 return true;
             }
         });
 
         container.getButtonByName("Controls").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Controls");
+                manager.displayStage("Controls");
                 return true;
             }
         });
 
         TextButton[] buttons = container.getButtons().toArray();
-        MenuController menuController = new MenuController(buttons);
+        DisplayButtonHandler displayButtonHandler = new DisplayButtonHandler(buttons);
 
-        stage = new ButtonStage(new ScreenViewport(), menuController);
+        stage = new ButtonStageController(new ScreenViewport(), displayButtonHandler);
         stage.setKeyboardFocus(container.getActor());
         stage.addActor(container);
         stage.act();

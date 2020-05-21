@@ -2,16 +2,15 @@ package com.mygdx.game.controller;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-
 import java.util.Collections;
 import java.util.LinkedList;
 
 /**
- * The type Menu controller control the actions of the inputs on the menu.
+ * The type Display button manager control the actions of the inputs on the menu.
  */
-public class MenuController {
+public class DisplayButtonHandler {
 
-    private LinkedList<TextButton> buttonGroup = new LinkedList<>();
+    private LinkedList<TextButton> buttonGroup;
     private int currentButton = 0;
 
     /**
@@ -19,10 +18,17 @@ public class MenuController {
      *
      * @param buttons the buttons
      */
-    public MenuController(TextButton... buttons) {
+    public DisplayButtonHandler(TextButton... buttons) {
+        buttonGroup = new LinkedList<>();
         Collections.addAll(buttonGroup, buttons);
         buttonGroup.get(0).setChecked(true);
     }
+
+    public DisplayButtonHandler(LinkedList<TextButton> buttons) {
+        buttonGroup = buttons;
+        buttonGroup.get(0).setChecked(true);
+    }
+
 
     /**
      * Increment currentButton and Select the button on new currentButton index
@@ -64,6 +70,10 @@ public class MenuController {
         for (TextButton currentButton : buttonGroup) {
             currentButton.setChecked(false);
         }
+    }
+
+    public void addButton(TextButton button){
+        buttonGroup.add(button);
     }
 
 }

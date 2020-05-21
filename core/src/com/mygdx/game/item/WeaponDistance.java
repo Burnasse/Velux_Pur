@@ -9,7 +9,7 @@ import com.mygdx.game.Entity.utils.EntityPosition;
 /**
  * The interface Item distance.
  */
-public class WeaponDistance implements Weapon,Item{
+public class WeaponDistance implements Weapon, Item {
 
     private EntityInstance weaponEntityInstance;
 
@@ -28,13 +28,13 @@ public class WeaponDistance implements Weapon,Item{
      * @param shape
      * @param spawningPos
      */
-    public WeaponDistance(int dammages, String fileName, btCollisionShape shape, EntityPosition spawningPos){
+    public WeaponDistance(int dammages, String fileName, btCollisionShape shape, EntityPosition spawningPos) {
         this.dammages = dammages;
         AssetManager assets = new AssetManager();
-        assets.load(fileName,Model.class);
+        assets.load(fileName, Model.class);
         assets.finishLoading();
-        Model model = assets.get(fileName,Model.class);
-        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
+        Model model = assets.get(fileName, Model.class);
+        this.weaponEntityInstance = new EntityInstance(model, shape, 1f, spawningPos);
     }
 
     /**
@@ -45,13 +45,18 @@ public class WeaponDistance implements Weapon,Item{
      * @param shape
      * @param spawningPos
      */
-    public WeaponDistance(int dammages, Model model, btCollisionShape shape, EntityPosition spawningPos){
+    public WeaponDistance(int dammages, Model model, btCollisionShape shape, EntityPosition spawningPos) {
         this.dammages = dammages;
-        this.weaponEntityInstance = new EntityInstance(model,shape,1f,spawningPos);
+        this.weaponEntityInstance = new EntityInstance(model, shape, 1f, spawningPos);
     }
 
     @Override
-    public EntityInstance getEntity(){
+    public EntityInstance getEntity() {
         return weaponEntityInstance;
+    }
+
+    @Override
+    public int getDammage() {
+        return dammages;
     }
 }

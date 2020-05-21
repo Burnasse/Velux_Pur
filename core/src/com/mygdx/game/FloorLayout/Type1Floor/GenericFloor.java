@@ -2,7 +2,6 @@ package com.mygdx.game.FloorLayout.Type1Floor;
 
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.Position;
-
 import java.util.Random;
 
 public class GenericFloor extends Floor {

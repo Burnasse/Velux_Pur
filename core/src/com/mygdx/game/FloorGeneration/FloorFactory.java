@@ -1,18 +1,28 @@
 package com.mygdx.game.FloorGeneration;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
-import com.badlogic.gdx.utils.Array;
-import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
+import com.mygdx.game.ui.Minimap;
+
+import java.util.ArrayList;
 
 /**
  * The type Floor factory generate a floor.
@@ -30,72 +40,101 @@ public class FloorFactory {
      * @param model         the model
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Model model){
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Model model) {
+
         Floor floor;
 
-        if(floorType.equalsIgnoreCase("Labyrinth"))
-            floor = new Labyrinth(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
-        else
-            floor = new GenericFloor(sizeOfFloor,numberOfRooms,minRoomSize,maxRoomSize);
+        float blockSize = 10;
 
-        btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f));
-        Array<EntityInstance> objectsInstances = new Array<>();
-        Array<EntityMonster> entityMonsters = new Array<>();
+        if (floorType.equalsIgnoreCase("Labyrinth"))
+            floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
+        else
+            floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
+
+        Minimap minimap = new Minimap(floor.getLayout());
+
+        btBoxShape shape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
+        ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
+        ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
+
+        Model ground;
+        btBoxShape groundShape = new btBoxShape(new Vector3(sizeOfFloor * blockSize / 2, blockSize / 4, sizeOfFloor * blockSize / 2));
+
         EntityPosition spawnPosition;
 
         int x = 0;
         int y = 0;
         int z = 0;
 
+        ModelBuilder modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        modelBuilder.node().id = "box";
+        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.RED)));
+        BoxShapeBuilder.build(builder, 0.3f, 0.3f, 0.3f);
+        Model enemyModel = modelBuilder.end();
+
+        btBoxShape btBoxShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
+
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
-                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies()){
-                    entityMonsters.add(enemy);
-                    objectsInstances.add(enemy.getEntity());
+                for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
+                    EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, btBoxShape, 15f, enemyPosition);
+                    entityMonsters.add(newMonster);
+                    objectsInstances.add(newMonster.getEntity());
                 }
-
             }
         }
 
-        for (int i = 0; i < floor.getLayout().length; i++) {
-            for (int j = 0; j < floor.getLayout().length; j++) {
+        modelBuilder = new ModelBuilder();
+        modelBuilder.begin();
+        modelBuilder.node().id = "box";
+        builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.PINK)));
+        BoxShapeBuilder.build(builder, sizeOfFloor * blockSize, blockSize / 2, sizeOfFloor * blockSize);
+
+        ground = modelBuilder.end();
+
+
+        for (int i = 0; i < sizeOfFloor; i++) {
+            for (int j = 0; j < sizeOfFloor; j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
-                    objectsInstances.add(new EntityObjects("box",model,new btBoxShape(new Vector3(0.5f, 0.5f, 0.5f)),0f,new EntityPosition(x,y,z)).getEntity());
-                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor()-1) {
-                        objectsInstances.add(new EntityObjects("box",model,shape,0f, new EntityPosition(x,y + 1, z)).getEntity());
+                    if (i == 0 || j == 0 || i == sizeOfFloor - 1 || j == sizeOfFloor - 1) {
+                        objectsInstances.add(new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z)).getEntity());
                     } else {
                         if (floor.getLayout()[i - 1][j].getContent() == 'a') {
                             floor.getLayout()[i - 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x - 1, y + 1, z));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x - blockSize, y + blockSize, z));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i + 1][j].getContent() == 'a') {
                             floor.getLayout()[i + 1][j].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x + 1, y+ 1, z ));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x + blockSize, y + blockSize, z));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j - 1].getContent() == 'a') {
-                            floor.getLayout()[i][j-1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f, new EntityPosition(x, y +1, z -1));
+                            floor.getLayout()[i][j - 1].setContent('m');
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z - blockSize));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                         if (floor.getLayout()[i][j + 1].getContent() == 'a') {
                             floor.getLayout()[i][j + 1].setContent('m');
-                            EntityObjects newEntityObject = new EntityObjects("box",model,shape,0f,new EntityPosition(x,y+1,z+1));
+                            EntityObjects newEntityObject = new EntityObjects("box", model, shape, 0f, new EntityPosition(x, y + blockSize, z + blockSize));
                             objectsInstances.add(newEntityObject.getEntity());
                         }
                     }
 
                 }
-                z = z + 1;
+                z = (int) (z + blockSize);
             }
-            x = x + 1;
+            x = (int) (x + blockSize);
             z = 0;
         }
 
-        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY());
+        objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition((sizeOfFloor * blockSize / 2) - blockSize / 2, blockSize / 4, (sizeOfFloor * blockSize / 2) - blockSize / 2)).getEntity());
 
-        return new FloorData(objectsInstances,entityMonsters,spawnPosition);
+        spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX() * blockSize, 5f, floor.getRooms().get(0).getCenter().getY() * blockSize);
+
+        return new FloorData(objectsInstances, entityMonsters, spawnPosition, minimap);
 
     }
 }

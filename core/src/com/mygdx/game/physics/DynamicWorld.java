@@ -1,6 +1,7 @@
-package com.mygdx.game.FloorGeneration;
+package com.mygdx.game.physics;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.*;
 
@@ -13,7 +14,7 @@ public class DynamicWorld {
     private btDispatcher dispatcher;
     private btAxisSweep3 sweep;
     private btConstraintSolver constraintSolver;
-    private btDynamicsWorld dynamicsWorld;
+    public btDynamicsWorld dynamicsWorld;
     private btGhostPairCallback ghostPairCallback;;
 
     /**
@@ -28,6 +29,22 @@ public class DynamicWorld {
         ghostPairCallback = new btGhostPairCallback();
         sweep.getOverlappingPairCache().setInternalGhostPairCallback(ghostPairCallback);
         dynamicsWorld.setGravity(new Vector3(0, -10f,0));
+    }
+
+    /**
+     * Instantiates a new Dynamic world.
+     */
+    public DynamicWorld(DebugDrawer debugDrawer){
+        collisionConfig = new btDefaultCollisionConfiguration();
+        dispatcher = new btCollisionDispatcher(collisionConfig);
+        sweep = new btAxisSweep3(new Vector3(-1000, -1000, -1000), new Vector3(1000, 1000, 1000));
+        constraintSolver = new btSequentialImpulseConstraintSolver();
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, sweep,constraintSolver, collisionConfig);
+        ghostPairCallback = new btGhostPairCallback();
+        sweep.getOverlappingPairCache().setInternalGhostPairCallback(ghostPairCallback);
+        dynamicsWorld.setGravity(new Vector3(0, -10,0));
+
+        dynamicsWorld.setDebugDrawer(debugDrawer);
     }
 
     /**
@@ -57,5 +74,9 @@ public class DynamicWorld {
      */
     public void addRigidBody(btRigidBody body){
         dynamicsWorld.addRigidBody(body);
+    }
+
+    public void addRigidBody(btRigidBody body, int arg1, int arg2){
+        dynamicsWorld.addRigidBody(body,arg1,arg2);
     }
 }

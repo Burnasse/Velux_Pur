@@ -1,13 +1,15 @@
 package com.mygdx.game.scene.menu;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.controller.MenuController;
-import com.mygdx.game.controller.ButtonStage;
+import com.mygdx.game.controller.DisplayButtonHandler;
+import com.mygdx.game.controller.ButtonStageController;
+import com.mygdx.game.screen.MainMenuScreen;
 import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.scene.TextButtonContainer;
 
@@ -17,7 +19,7 @@ import com.mygdx.game.scene.TextButtonContainer;
 public class MainMenu implements MenuStage {
 
     private TextButtonContainer container;
-    private ButtonStage stage;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Main menu.
@@ -27,12 +29,20 @@ public class MainMenu implements MenuStage {
      * @param isInGame the boolean to know if the menu is display on the main menu or in the game
      */
     public MainMenu(final StageManager manager, Viewport viewport, Boolean isInGame) {
+
         if (!isInGame) {
-            container = new TextButtonContainer("Play", "Settings", "Quit");
+            container = new TextButtonContainer("Play", "Multiplayer", "Settings", "Quit");
 
             container.getButtonByName("Play").addListener(new InputListener() {
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                     manager.startGame();
+                    return true;
+                }
+            });
+
+            container.getButtonByName("Multiplayer").addListener(new InputListener() {
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    ((MainMenuScreen) manager).startMultiplayerGame();
                     return true;
                 }
             });
@@ -42,7 +52,7 @@ public class MainMenu implements MenuStage {
 
         container.getButtonByName("Settings").addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                manager.show("Settings");
+                manager.displayStage("Settings");
                 return true;
             }
         });
@@ -55,9 +65,9 @@ public class MainMenu implements MenuStage {
         });
 
         TextButton[] buttons = container.getButtons().toArray();
-        MenuController menuController = new MenuController(buttons);
+        DisplayButtonHandler displayButtonHandler = new DisplayButtonHandler(buttons);
 
-        stage = new ButtonStage(viewport, menuController);
+        stage = new ButtonStageController(viewport, displayButtonHandler);
         stage.setKeyboardFocus(container.getActor());
         stage.addActor(container);
 
@@ -67,5 +77,9 @@ public class MainMenu implements MenuStage {
     @Override
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose(){
+        Controllers.removeListener(stage);
     }
 }

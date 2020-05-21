@@ -2,6 +2,7 @@ package com.mygdx.game.Entity.instances;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
@@ -15,9 +16,9 @@ import com.mygdx.game.Entity.utils.EntityPosition;
  */
 public class EntityInstance extends ModelInstance implements Disposable, Entity {
 
-    public final btRigidBody body;
+    private final btRigidBody body;
     private final StaticMotionState.MotionState motionState;
-    private final btCollisionShape shape;
+    private btCollisionShape shape;
     private static Vector3 localInertia = new Vector3();
     private final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
     private float mass;
@@ -30,7 +31,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
      * @param mass     the mass
      * @param position the position
      */
-    public EntityInstance(Model model, btCollisionShape shape, float mass, EntityPosition position){
+    public EntityInstance(Model model, btCollisionShape shape, float mass, EntityPosition position) {
         super(model);
         this.mass = mass;
         this.shape = shape;
@@ -50,8 +51,8 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
 
     @Override
     public void dispose() {
-        body.dispose();
         shape.dispose();
+        body.dispose();
         motionState.dispose();
         constructionInfo.dispose();
     }
@@ -61,7 +62,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
      *
      * @param position the position
      */
-    public void move(EntityPosition position){
+    public void move(EntityPosition position) {
         super.transform.setTranslation(position);
         this.body.proceedToTransform(this.transform);
     }
@@ -69,5 +70,20 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
     @Override
     public btCollisionObject getBody() {
         return body;
+    }
+
+    public void setCollisionShape(btCollisionShape shape) {
+        this.shape = shape;
+        this.body.setCollisionShape(shape);
+    }
+
+    /**
+     * Set the entity position
+     * mainly used in multiplayer
+     *
+     * @param matrix4
+     */
+    public void setPosition(Matrix4 matrix4) {
+        transform.set(matrix4);
     }
 }

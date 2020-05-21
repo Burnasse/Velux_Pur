@@ -12,10 +12,10 @@ public class Labyrinth extends Floor {
     /**
      * generate this floor as a labyrinth made following Prim's algorithm
      *
-     * @param sizeOfFloor size of the grid
+     * @param sizeOfFloor   size of the grid
      * @param numberOfRooms number of rooms we will put in our labyrinth
-     * @param maxRoomSize the biggest the width/height of the room can get
-     * @param minRoomSize the smallest the width/height of the room can get
+     * @param maxRoomSize   the biggest the width/height of the room can get
+     * @param minRoomSize   the smallest the width/height of the room can get
      */
 
     public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
@@ -92,8 +92,9 @@ public class Labyrinth extends Floor {
 
     /**
      * checks the point in position x y for walls around it
-     * @param x x coordinate of our point
-     * @param y y coordinate of our point
+     *
+     * @param x     x coordinate of our point
+     * @param y     y coordinate of our point
      * @param walls the list we will fill with the walls
      */
 

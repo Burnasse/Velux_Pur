@@ -4,7 +4,6 @@ import com.mygdx.game.FloorLayout.Position;
 
 public abstract class Room {
 
-
     private int x1;
     private int y1;
     private int x2;

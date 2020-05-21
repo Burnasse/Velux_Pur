@@ -1,5 +1,6 @@
 package test;
 
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -25,10 +26,16 @@ import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
+import com.mygdx.game.FloorLayout.RoomTypes.SpawnRoom;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
-import test.utils.EntityPlayerTest;
 
-public class RaphTests extends ApplicationAdapter{
+
+/**
+ * Just a test to see if the floor is nicely generated
+ */
+
+public class FloorGenerationTest extends ApplicationAdapter {
+
     public CameraInputController camController;
 
     PerspectiveCamera cam;
@@ -45,18 +52,7 @@ public class RaphTests extends ApplicationAdapter{
 
     AssetManager assets;
 
-    /**
-     * the player
-     */
-    EntityPlayerTest player;
-    /**
-     * player instance
-     */
     EntityInstance vaisseau;
-    /**
-     *weapon instance
-     */
-    EntityInstance weapon;
 
     btCollisionConfiguration collisionConfig;
 
@@ -66,11 +62,9 @@ public class RaphTests extends ApplicationAdapter{
 
     btCollisionWorld collisionWorld;
 
-    private boolean playerPov = true;
+    private boolean playerPov =true;
 
     private int clock;
-
-
 
     @Override
     public void create() {
@@ -106,35 +100,30 @@ public class RaphTests extends ApplicationAdapter{
         broadphase = new btDbvtBroadphase();
         collisionWorld = new btCollisionWorld(dispatcher, broadphase, collisionConfig);
 
-        this.player = new EntityPlayerTest("ship","convertedship.g3db",new btBoxShape(new Vector3(1f,1f,1f)),new EntityPosition(0,0,0));
-        this.vaisseau = player.getEntity();
-        objectsInstances.add(this.vaisseau);
+        test.EntityPlayerTest ship = new test.EntityPlayerTest("ship", "convertedship.g3db",new btBoxShape(new Vector3(1f, 1f, 1f)),new EntityPosition(0,0,0));
+        this.vaisseau = ship.getEntity();
+        objectsInstances.add(vaisseau);
         collisionWorld.addCollisionObject(vaisseau.getBody());
 
-        weapon = player.getEntityWeapon();
-        weapon.move(new EntityPosition(0f,0.2f,0.3f));
-        objectsInstances.add(this.weapon);
         generateFloor();
-
-
     }
 
     /**
      * method that procedurally generates the floor in 3D
      */
-
     public void generateFloor() {
         btBoxShape shape = new btBoxShape(new Vector3(0.5f, 0.5f, 1f));
         GenericFloor floor = new GenericFloor(100, 8, 4, 9);
         int x = 0;
         int y = 0;
         int z = 0;
-        EntityObjects box = new EntityObjects("box",model,shape,1f, new EntityPosition(0,0,0));
+        EntityObjects box = new EntityObjects("box",model,shape,0f, new EntityPosition(0,0,0));
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
-                for (EntityMonster enemy : ((EnemyRoom) room).getEnemies())
-                    objectsInstances.add(enemy.getEntity());
+
             }
+            if(room instanceof SpawnRoom)
+                vaisseau.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),floor.getRooms().get(0).getCenter().getY(),0));
         }
         for (int i = 0; i < floor.getLayout().length; i++) {
             for (int j = 0; j < floor.getLayout().length; j++) {
@@ -167,15 +156,13 @@ public class RaphTests extends ApplicationAdapter{
             z = 0;
         }
         floor.printFloor();
-        vaisseau.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX(),1,floor.getRooms().get(0).getCenter().getY()));
-        weapon.move(new EntityPosition(floor.getRooms().get(0).getCenter().getX()+0.2f,1.2f,floor.getRooms().get(0).getCenter().getY()+0.2f));
     }
 
     /**
      * make it so the camera constantly follows the player
      */
 
-    private void playerPov(){
+    private void camFollowPlayer(){
         cam.position.set(new Vector3(vaisseau.transform.getValues()[12]+0.4531824f,vaisseau.transform.getValues()[13]+5.767706f,vaisseau.transform.getValues()[14]+-5.032133f));
         float[] fov = {-0.9991338f,3.6507862E-7f,-0.04161331f,0.14425309f,-0.02119839f,0.8605174f,0.50898004f,-2.485553f,0.035809156f,0.5094212f,-0.85977185f,-7.252268f,0.14425309f,-2.485553f,-7.252268f,1.0f};
         cam.view.set(fov);
@@ -188,28 +175,22 @@ public class RaphTests extends ApplicationAdapter{
 
     private void playerDeplacment(){
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            vaisseau.move(new EntityPosition(+0.2f, 0f, 0f));
-            weapon.move(new EntityPosition(+0.2f, 0f, 0f));
+            vaisseau.move(new EntityPosition(+1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            vaisseau.move(new EntityPosition(-0.2f, 0f, 0f));
-            weapon.move(new EntityPosition(-0.2f, 0f, 0f));
+            vaisseau.move(new EntityPosition(-1f, 0f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            vaisseau.move(new EntityPosition(0f, -0f, -0.2f));
-            weapon.move(new EntityPosition(0f, -0f, -0.2f));
+            vaisseau.move(new EntityPosition(0f, -1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            vaisseau.move(new EntityPosition(0f, 0f, +0.2f));
-            weapon.move(new EntityPosition(0f, 0f, +0.2f));
+            vaisseau.move(new EntityPosition(-0f, 1f, 0f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-            vaisseau.move(new EntityPosition(0f, +0.2f, 0f));
-            weapon.move(new EntityPosition(0f, +0.2f, 0f));
+            vaisseau.move(new EntityPosition(-0f, -0f, 1f));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.M)) {
-            vaisseau.move(new EntityPosition(0f, -0.2f, 0f));
-            weapon.move(new EntityPosition(0f, -0.2f, 0f));
+            vaisseau.move(new EntityPosition(-0f, -0f, -1f));
         }
 
     }
@@ -220,10 +201,16 @@ public class RaphTests extends ApplicationAdapter{
         playerDeplacment();
 
         clock += 1; // add the time since the last frame
-        if(Gdx.input.isKeyJustPressed(Input.Keys.F7))
-            playerPov=!playerPov;
+
+        if (clock > 10) {
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+                playerPov = !playerPov;
+            }
+            clock = 0; // reset your variable to 0
+        }
+
         if (playerPov){
-            playerPov();
+            camFollowPlayer();
             cam.update();
         }
         else{
@@ -249,6 +236,6 @@ public class RaphTests extends ApplicationAdapter{
 
     public static void main(String[] arg) {
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-        new LwjglApplication(new RaphTests(), config);
+        new LwjglApplication(new FloorGenerationTest(), config);
     }
 }

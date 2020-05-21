@@ -1,4 +1,4 @@
-package test.test;
+
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
