@@ -128,6 +128,9 @@ public class Gunner extends SteeringAgent {
                 }, 800);
             }
         }
+        behavior.calculateSteering(steeringOutput);
+
+        Turn();
 
         if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
             if (coolDown >= maxCoolDown) {
@@ -135,11 +138,9 @@ public class Gunner extends SteeringAgent {
                 attack();
                 coolDown = 0;
             }
-        } else if (behavior != null) {
-            behavior.calculateSteering(steeringOutput);
-            applySteering(delta);
-        }
+        } else Move(delta);
 
+        instance.body.proceedToTransform(instance.transform);
     }
 
     /**
@@ -147,6 +148,7 @@ public class Gunner extends SteeringAgent {
      */
 
     protected void attack() {
+        Turn();
         projectilesShot.add(new Projectile(target.vector, 5, instance.transform.getTranslation(new Vector3()), world));
     }
 

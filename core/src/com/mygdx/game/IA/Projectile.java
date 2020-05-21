@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -31,10 +30,10 @@ public class Projectile {
     /**
      * Instanciates a new Projectile
      *
-     * @param target the target of the shot
-     * @param speed projectile's speed
+     * @param target          the target of the shot
+     * @param speed           projectile's speed
      * @param initialPosition from where the projectile is shot
-     * @param world the world where the projectile wanders
+     * @param world           the world where the projectile wanders
      */
 
     public Projectile(Vector3 target, float speed, Vector3 initialPosition, DynamicWorld world) {
@@ -48,7 +47,7 @@ public class Projectile {
 
         btBoxShape btBoxShape = new btBoxShape(new Vector3(0.1f, 0.1f, 0.1f));
 
-int projectile = 50;
+        int projectile = 50;
 
         instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, 1, initialPosition.z));
         direction = new Vector3(target.x - initialPosition.x, target.y - initialPosition.y, target.z - initialPosition.z);

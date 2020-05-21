@@ -106,25 +106,25 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      * @param time the time between this frame and the last
      */
 
-    void applySteering(float time) {
-
-
+    void Move(float time) {
         instance.transform.trn(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
         position = instance.transform.getTranslation(new Vector3());
         linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
+    }
 
+    /**
+     * faces the target
+     */
 
-        float newOrientation = calculateOrientationFromLinearVelocity(this);
-
-        if (!(Math.abs(orientation) - Math.abs(newOrientation) <= 0.1 && Math.abs(orientation) - Math.abs(newOrientation) >= -0.1)) {
-            System.out.println(newOrientation + " " + orientation);
+    void Turn() {
+        Vector3 direction = new Vector3(target.vector.x - position.x, target.vector.y - position.y, target.vector.z - position.z);
+        direction = direction.nor();
+        float newOrientation = vectorToAngle(direction);
+        if (Math.round(orientation * 10) / 10 != Math.round(newOrientation * 10) / 10) {
             this.orientation = newOrientation;
             instance.transform.rotateRad(new Vector3(0, 1, 0), orientation);
         }
-
-        instance.body.proceedToTransform(instance.transform);
     }
-
 
     /**
      * check if position is in a circle that has target as a center

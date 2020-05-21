@@ -112,16 +112,18 @@ public class Zombie extends SteeringAgent {
             }
         }
 
+        behavior.calculateSteering(steeringOutput);
+
+        Turn();
+
         if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
             if (coolDown >= maxCoolDown) {
-                target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
                 attack();
                 coolDown = 0;
             }
-        } else if (behavior != null) {
-            behavior.calculateSteering(steeringOutput);
-            applySteering(delta);
-        }
+        } else Move(delta);
+
+        instance.body.proceedToTransform(instance.transform);
     }
 
     /**
