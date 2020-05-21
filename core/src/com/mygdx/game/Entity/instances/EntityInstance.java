@@ -80,7 +80,7 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
     }
 
     @Override
-    public btCollisionObject getBody() {
+    public btRigidBody getBody() {
         return body;
     }
 
