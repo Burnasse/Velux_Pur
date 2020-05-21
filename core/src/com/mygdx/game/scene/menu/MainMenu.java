@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.controller.DisplayButtonHandler;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.screen.MainMenuScreen;
@@ -28,10 +29,10 @@ public class MainMenu implements MenuStage {
      * @param viewport the viewport for display correctly the element on the screen
      * @param isInGame the boolean to know if the menu is display on the main menu or in the game
      */
-    public MainMenu(final StageManager manager, Viewport viewport, Boolean isInGame) {
+    public MainMenu(final StageManager manager, Viewport viewport, Boolean isInGame, Assets assets) {
 
         if (!isInGame) {
-            container = new TextButtonContainer("Play", "Multiplayer", "Settings", "Quit");
+            container = new TextButtonContainer(assets,"Play", "Multiplayer", "Settings", "Quit");
 
             container.getButtonByName("Play").addListener(new InputListener() {
                 public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -47,7 +48,7 @@ public class MainMenu implements MenuStage {
                 }
             });
         } else {
-            container = new TextButtonContainer("Settings", "Quit");
+            container = new TextButtonContainer(assets,"Settings", "Quit");
         }
 
         container.getButtonByName("Settings").addListener(new InputListener() {
@@ -81,5 +82,6 @@ public class MainMenu implements MenuStage {
 
     public void dispose(){
         Controllers.removeListener(stage);
+        stage.dispose();
     }
 }

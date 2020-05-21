@@ -1,10 +1,7 @@
 package com.mygdx.game.Entity;
 
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.utils.UBJsonReader;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
 /**
@@ -15,18 +12,17 @@ public class PlayerFactory {
     /**
      * Create entity player.
      *
+     * @param assets the assets
      * @param position the position
      * @return the entity player
      */
-    public static EntityPlayer create(EntityPosition position) {
+    public static EntityPlayer create(EntityPosition position, Assets assets) {
         EntityPlayer player;
 
-        UBJsonReader jsonReader = new UBJsonReader();
-        G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-        Model idleModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/idleG3D.g3db", Files.FileType.Internal));
-        Model runningModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/runningG3D.g3db", Files.FileType.Internal));
-        Model walkModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/walkG3D.g3db", Files.FileType.Internal));
-        Model jumpModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/jumpG3D.g3db", Files.FileType.Internal));
+        Model idleModel = assets.manager.get(Assets.playerIdleModel);
+        Model runningModel = assets.manager.get(Assets.playerRunningModel);
+        Model walkModel = assets.manager.get(Assets.playerWalkModel);
+        Model jumpModel = assets.manager.get(Assets.playerJumpModel);
 
         idleModel.animations.get(0).id = "idle";
         runningModel.animations.get(0).id = "running";
@@ -38,10 +34,6 @@ public class PlayerFactory {
         player.getEntity().copyAnimation(runningModel.animations.get(0));
         player.getEntity().copyAnimation(walkModel.animations.get(0));
         player.getEntity().copyAnimation(jumpModel.animations.get(0));
-
-        runningModel.dispose();
-        walkModel.dispose();
-        jumpModel.dispose();
 
         return player;
     }

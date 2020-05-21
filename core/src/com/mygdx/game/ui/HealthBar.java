@@ -16,7 +16,7 @@ public class HealthBar {
         fullHealthColor = new Color(0.2f,0.7f,0.2f,0.8f);
     }
 
-    public void render(int playerMaxLife, int playerLife){
+    public void render(float playerMaxLife, float playerLife){
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(backgroundColor);
         shapeRenderer.rect(50,Gdx.graphics.getHeight()-80,210,30);

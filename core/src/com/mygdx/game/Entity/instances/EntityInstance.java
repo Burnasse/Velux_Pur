@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -22,6 +23,12 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
     private static Vector3 localInertia = new Vector3();
     private final btRigidBody.btRigidBodyConstructionInfo constructionInfo;
     private float mass;
+
+    public final Vector3 center = new Vector3();
+    public final Vector3 dimensions = new Vector3();
+    public final float radius;
+
+    private final BoundingBox bounds = new BoundingBox();
 
     /**
      * Instantiates a new Entity instance.
@@ -45,6 +52,11 @@ public class EntityInstance extends ModelInstance implements Disposable, Entity 
         body = new btRigidBody(constructionInfo);
         body.setMotionState(motionState);
         body.setCollisionShape(shape);
+
+        calculateBoundingBox(bounds);
+        bounds.getCenter(center);
+        bounds.getDimensions(dimensions);
+        radius = dimensions.len() / 2f;
 
         move(position);
     }

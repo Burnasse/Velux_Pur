@@ -32,12 +32,12 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
 
         ghostObject = new btPairCachingGhostObject();
         ghostObject.setWorldTransform(transform);
-        ghostShape = new btBoxShape(new Vector3(0.25f, 1f, 0.25f));
+        ghostShape = new btCapsuleShape(0.25f,1.5f);
 
         ghostObject.setCollisionShape(ghostShape);
         ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
         controller = new btKinematicCharacterController(ghostObject, ghostShape, 0.5f, Vector3.Y);
-        controller.setGravity(new Vector3(0, -10, 0));
+        controller.setGravity(new Vector3(0, -5, 0));
     }
 
     /**

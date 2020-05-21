@@ -25,23 +25,30 @@ buttonSelect
   orig: 100, 50
   offset: 0, 0
   index: -1
-checkoff
+buttonTransparent
   rotate: false
-  xy: 403, 272
-  size: 25, 25
-  orig: 25, 25
+  xy: 403, 247
+  size: 100, 50
+  orig: 100, 50
   offset: 0, 0
   index: -1
-checkon
+checkoff
   rotate: false
   xy: 103, 8
   size: 25, 25
   orig: 25, 25
   offset: 0, 0
   index: -1
+checkon
+  rotate: false
+  xy: 403, 220
+  size: 25, 25
+  orig: 25, 25
+  offset: 0, 0
+  index: -1
 knob
   rotate: false
-  xy: 403, 208
+  xy: 403, 156
   size: 13, 62
   orig: 13, 62
   offset: 0, 0

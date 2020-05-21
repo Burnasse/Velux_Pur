@@ -11,6 +11,7 @@ import com.badlogic.gdx.controllers.mappings.Xbox;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.gameGeneration.GenerateVillage;
 
 /**
  * The type Village controller handle keyboard and gamepad input.
@@ -59,6 +60,11 @@ public class VillageController implements InputProcessor, ControllerListener {
      * Used to specify if a trigger permit to move up or down
      */
     public boolean canChangeUp = false;
+
+    private GenerateVillage village;
+
+    public String currentInteractTriggerName = "";
+
     /**
      * The User value.
      */
@@ -70,7 +76,8 @@ public class VillageController implements InputProcessor, ControllerListener {
      * @param player    the player
      * @param animation the animation
      */
-    public VillageController(EntityPlayer player, AnimationController animation) {
+    public VillageController(GenerateVillage village, EntityPlayer player, AnimationController animation) {
+        this.village = village;
         this.player = player;
         this.animation = animation;
         Controllers.clearListeners();
@@ -98,6 +105,10 @@ public class VillageController implements InputProcessor, ControllerListener {
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down)) && player.getEntity().getController().onGround()
                 && canChangeLayout && !canChangeUp) {
             Script_ChangeLayout(false, false, 3);
+        }
+
+        if(Gdx.input.isKeyPressed(Input.Keys.F) && !currentInteractTriggerName.isEmpty()){
+            village.showDialog(currentInteractTriggerName);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && player.getEntity().getController().onGround()) {
@@ -392,6 +403,10 @@ public class VillageController implements InputProcessor, ControllerListener {
             public void onLoop(AnimationController.AnimationDesc animation) {
             }
         }, 0.2f);
+    }
+
+    public void setInteractTrigger(String name){
+        currentInteractTriggerName = name;
     }
 
 }

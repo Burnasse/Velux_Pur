@@ -91,4 +91,11 @@ TextTooltipStyle: {
 		label: default
 	}
 }
+WindowStyle: {
+	default: {
+		background: buttonTransparent
+		titleFont: font
+		titleFontColor: white
+	}
+}
 }

@@ -61,8 +61,8 @@ public class Minimap{
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.circle(
-                (Gdx.graphics.getWidth()-texture.getWidth()*0.25f) - (playerX/floorLength)*(blockSize *2)-(blockSize /2),
-                (Gdx.graphics.getHeight()-texture.getHeight()*1.25f) + (playerZ/floorLength)*(blockSize *2)+(blockSize/2),
+                (Gdx.graphics.getWidth()-texture.getWidth()*0.25f) - (playerX/floorLength)*(blockSize *4)-(blockSize /2),
+                (Gdx.graphics.getHeight()-texture.getHeight()*1.25f) + (playerZ/floorLength)*(blockSize *4)+(blockSize/2),
                 blockSize/2
         );
         shapeRenderer.end();
