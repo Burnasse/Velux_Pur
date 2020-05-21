@@ -263,6 +263,11 @@ public class GenerateVillage {
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }
 
+    public void resize(int width, int height){
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+    }
+
     /**
      * Dispose.
      */

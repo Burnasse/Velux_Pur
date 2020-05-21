@@ -79,6 +79,8 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void resize(int width, int height) {
+        village.resize(width,height);
+        viewport.update(width,height,true);
     }
 
     @Override

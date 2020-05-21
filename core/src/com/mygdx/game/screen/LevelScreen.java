@@ -46,6 +46,8 @@ public class LevelScreen implements Screen, StageManager{
 
     @Override
     public void resize(int width, int height) {
+        level.resize(width,height);
+        viewport.update(width,height,true);
     }
 
     @Override

@@ -176,6 +176,11 @@ public class GenerateLevel {
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
     }
 
+    public void resize(int width, int height){
+        cam.viewportWidth = width;
+        cam.viewportHeight = height;
+    }
+
     /**
      * Dispose.
      */
