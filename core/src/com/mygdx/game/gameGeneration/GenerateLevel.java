@@ -1,26 +1,28 @@
 package com.mygdx.game.gameGeneration;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.graphics.g3d.utils.*;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Collections;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
+import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
@@ -47,11 +49,7 @@ public class GenerateLevel {
         @Override
         public boolean onContactAdded(int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1,
                                       int index1, boolean match1) {
-            // Colore en blanc quand il y a une collision entre le joueur et un autre objets
-            if (match0)
-                System.out.println("OH");
-            if (match1)
-                System.out.println("AH");
+
             return true;
         }
     }
@@ -59,10 +57,13 @@ public class GenerateLevel {
     private final boolean DEBUG_MODE;
     private DebugDrawer debugDrawer;
 
+    private Assets assets;
+
     private ModelBatch modelBatch;
-    private Model model;
     private Environment environment;
     private PerspectiveCamera cam;
+    private FrustumCulling frustum;
+
     private CameraInputController camController;
     private DynamicWorld world;
     private FloorData floorData;
@@ -72,11 +73,11 @@ public class GenerateLevel {
     private Minimap minimap;
     private HealthBar healthBar;
 
-    private boolean playerPov = true;
-    private int clock;
+    private PointLight followLight;
 
-    public GenerateLevel(boolean DEBUG_MODE) {
+    public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
+        this.assets = assets;
     }
 
     /**
@@ -92,26 +93,26 @@ public class GenerateLevel {
 
         contactListener = new MyContactListener();
 
-        modelBatch = new ModelBatch();
+        DefaultShader.Config config = new DefaultShader.Config();
+        config.numDirectionalLights = 2;
+        config.numPointLights = 1;
+        modelBatch = new ModelBatch(new DefaultShaderProvider(config));
 
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-        environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, new Color(0.1f,0.1f,0.1f,0.1f)));
+        environment.add(new DirectionalLight().set(new Color(0.1f,0.1f,0.1f,0.1f), 0, -10f, 0));
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
-        modelBuilder.node().id = "box";
-        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position
-                | VertexAttributes.Usage.Normal, new Material(ColorAttribute.createDiffuse(Color.GRAY)));
-        BoxShapeBuilder.build(builder, 10f, 10f, 10f);
-        model = modelBuilder.end();
+        followLight = new PointLight().set(new Color(1,0.6f,0.4f,1f),new Vector3(0,0,0),5f);
+        environment.add(followLight);
 
-        floorData = FloorFactory.create("Labyrinth", 20, 2, 3, 7, model);
+        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
 
         minimap = floorData.minimap;
         healthBar = new HealthBar();
 
-        player = PlayerFactory.create(floorData.playerSpawnPosition);
+        player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
+        System.out.println(floorData.playerSpawnPosition);
+
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
@@ -127,11 +128,16 @@ public class GenerateLevel {
         }
 
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(14f, 6f, 55f);
-        cam.lookAt(10f, 0, 30f);
-        cam.near = 1f;
+        cam.position.set(player.getEntity().transform.getValues()[12],15,player.getEntity().transform.getValues()[14]-1);
+        cam.lookAt(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[13], player.getEntity().transform.getValues()[14]+1);
+        cam.near = 3f;
         cam.far = 300f;
         cam.update();
+
+        Array<EntityInstance> instances = new Array<>();
+        for(EntityInstance instance : floorData.objectsInstances)
+            instances.add(instance);
+        frustum = new FrustumCulling(instances,environment,cam,modelBatch);
 
         camController = new CameraInputController(cam);
 
@@ -145,10 +151,7 @@ public class GenerateLevel {
 
 
     private void camFollowPlayer() {
-        cam.position.set(player.getEntity().transform.getValues()[12] + 0.4531824f, player.getEntity().transform.getValues()[13] + 5.767706f, player.getEntity().transform.getValues()[14] + -5.032133f);
-        float[] fov = {-0.9991338f, 3.6507862E-7f, -0.04161331f, 0.14425309f, -0.02119839f, 0.8605174f, 0.50898004f, -2.485553f, 0.035809156f, 0.5094212f, -0.85977185f, -7.252268f, 0.14425309f, -2.485553f, -7.252268f, 1.0f};
-        cam.view.set(fov);
-        cam.direction.set(-0.047802035f, -0.36853015f, 0.9283842f);
+        cam.position.set(player.getEntity().transform.getValues()[12], cam.position.y, player.getEntity().transform.getValues()[14]-1);
     }
 
 
@@ -156,34 +159,25 @@ public class GenerateLevel {
      * Render.
      */
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         world.getDynamicsWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
 
-        clock += 1; // add the time since the last frame
+        camFollowPlayer();
+        cam.update();
 
-        if (clock > 10) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                playerPov = !playerPov;
-            }
-            clock = 0; // reset your variable to 0
-        }
-
-        if (playerPov) {
-            camFollowPlayer();
-            cam.update();
-        } else {
-            camController.update();
-        }
+        followLight.position.x = player.getEntity().transform.getValues()[12];
+        followLight.position.y = player.getEntity().transform.getValues()[13]+1;
+        followLight.position.z = player.getEntity().transform.getValues()[14];
 
         modelBatch.begin(cam);
-        modelBatch.render(floorData.objectsInstances, environment);
+        frustum.render();
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
         minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);
-        healthBar.render(player.getCharacteristics().getHealth(),100);
+        healthBar.render(100, player.getCharacteristics().getHealth());
 
         if (DEBUG_MODE) {
             debugDrawer.begin(cam);
@@ -192,6 +186,11 @@ public class GenerateLevel {
         }
 
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
+    }
+
+    public void resize(int width, int height){
+        cam.viewportWidth = width;
+        cam.viewportHeight = height;
     }
 
     /**
@@ -207,7 +206,6 @@ public class GenerateLevel {
         contactListener.dispose();
 
         modelBatch.dispose();
-        model.dispose();
         minimap.dispose();
         healthBar.dispose();
     }

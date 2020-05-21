@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
@@ -123,6 +124,8 @@ public class RaphTests extends ApplicationAdapter {
     public void create() {
         Bullet.init();
 
+        Assets assets = new Assets();
+        assets.loadLevel();
         world = new DynamicWorld();
         contactListener = new RaphTests.MyContactListener();
 
@@ -141,7 +144,7 @@ public class RaphTests extends ApplicationAdapter {
         BoxShapeBuilder.build(builder,1f,1f,1f);
         model = modelBuilder.end();
 
-        floorData = FloorFactory.create("Generic", 50, 15 , 3 ,15, model);
+        floorData = FloorFactory.create("Generic", 50, 15 , 3 ,15, assets);
 
         ModelBuilder modelBuilder1 = new ModelBuilder();
         Model model1 = modelBuilder1.createCapsule(0.1f,0.5f,16, new Material(ColorAttribute.createDiffuse(Color.BLUE)),VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);

@@ -5,18 +5,36 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.Entity.NonPlayerCharacter;
 import com.mygdx.game.Entity.PlayerFactory;
+import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.controller.VillageController;
+import com.mygdx.game.physics.VillageContactListener;
 import com.mygdx.game.screen.GameScreen;
+import com.mygdx.game.ui.UIDialog;
+
+import java.util.HashMap;
 
 import static com.mygdx.game.physics.CallbackFlags.PLAYER_FLAG;
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
@@ -26,72 +44,40 @@ import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
  */
 public class GenerateVillage {
 
-    /**
-     * The type My contact listener is called when there is a collision.
-     */
-    class MyContactListener extends ContactListener {
-        @Override
-        public boolean onContactAdded(int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1,
-                                      int index1, boolean match1) {
-
-            if (match1) {
-                if (controller.waitTrigger && userValue1 != controller.userValue)
-                    controller.notifyTrigger();
-                if (userValue0 == 1)
-                    exitVillage();
-                if (userValue0 == 2)
-                    System.out.println("TRADER");
-                if (userValue0 == 3)
-                    System.out.println("SMITH");
-                if (userValue0 == 4 && !controller.waitTrigger)
-                    controller.setCanChangeLayout(userValue0, true);
-                if (userValue0 == 5 && !controller.waitTrigger)
-                    controller.setCanChangeLayout(userValue0, false);
-                if (userValue0 == 6 && !controller.waitTrigger)
-                    controller.setCanChangeLayout(userValue0, true);
-                if (userValue0 == 7 && !controller.waitTrigger)
-                    controller.setCanChangeLayout(userValue0, false);
-            }
-            return true;
-        }
-
-        @Override
-        public void onContactEnded(int userValue0, boolean match0, int userValue1, boolean match1) {
-            if (match0) {
-                if (userValue1 == 4)
-                    controller.canChangeLayout = false;
-                if (userValue1 == 5)
-                    controller.canChangeLayout = false;
-                if (userValue1 == 6)
-                    controller.canChangeLayout = false;
-                if (userValue1 == 7)
-                    controller.canChangeLayout = false;
-            }
-        }
-    }
-
     private final boolean DEBUG_MODE;
+    private DebugDrawer debugDrawer;
 
+    private final GameScreen screen;
+    private final Assets assets;
+
+    private VillageContactListener listener;
     private VillageBuilder villageBuilder;
     private Environment environment;
-    private MyContactListener listener;
+    private DirectionalShadowLight shadowLight;
+    private ModelBatch shadowBatch;
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
+    private FrustumCulling frustum;
+
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
-    private GameScreen screen;
-    private boolean isDispose = false;
-    private DebugDrawer debugDrawer;
+
+    private Stage stage;
+    private HashMap<String, UIDialog> dialogHashMap;
+    private Label interactLabel;
+
+    private Array<NonPlayerCharacter> npcArray;
 
     /**
      * Instantiates a new Village.
      *
      * @param screen the screen
      */
-    public GenerateVillage(GameScreen screen) {
+    public GenerateVillage(GameScreen screen, Assets assets) {
         DEBUG_MODE = false;
         this.screen = screen;
+        this.assets = assets;
     }
 
     /**
@@ -100,9 +86,10 @@ public class GenerateVillage {
      * @param screen     the screen
      * @param DEBUG_MODE the debug mode
      */
-    public GenerateVillage(GameScreen screen, boolean DEBUG_MODE) {
+    public GenerateVillage(GameScreen screen, Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
         this.screen = screen;
+        this.assets = assets;
     }
 
     /**
@@ -111,22 +98,30 @@ public class GenerateVillage {
     public void create() {
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
-            villageBuilder = new VillageBuilder(debugDrawer);
+            villageBuilder = new VillageBuilder(assets, debugDrawer);
             debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
         } else
-            villageBuilder = new VillageBuilder();
+            villageBuilder = new VillageBuilder(assets);
 
-        listener = new MyContactListener();
-        modelBatch = new ModelBatch();
+        camera = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.position.set(0f, 2.5f, -4f);
+        camera.lookAt(0f, 1f, 0f);
+        camera.near = 0.5f;
+        camera.far = 1000f;
+        camera.update();
+
+        DefaultShader.Config config = new DefaultShader.Config();
+        config.numDirectionalLights = 1;
+        config.numPointLights = 5;
+        modelBatch = new ModelBatch(new DefaultShaderProvider(config));
+
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.65f, 0.6f, 0.6f, 1f));
-        environment.add((new DirectionalShadowLight(1024, 1024, 60f, 60f, .1f, 50f)).set(1f, 1f, 1f, 40.0f, -35f, -35f));
-        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, -1f, -0.8f, -0.2f));
-        ModelBuilder modelBuilder = new ModelBuilder();
-        Model groundModel = modelBuilder.createBox(10f, .5f, 1f,
-                new Material(ColorAttribute.createDiffuse(Color.GRAY)),
-                VertexAttributes.Usage.Position
-                        | VertexAttributes.Usage.Normal);
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.2f, 0.3f, 0.5f, 1f));
+        environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 25, 25, 0.1f, 10)).set(0.4f, 0.5f, 0.7f, -15.0f, -35f, 30f));
+        environment.shadowMap = shadowLight;
+        shadowBatch = new ModelBatch(new DepthShaderProvider());
+
+        frustum = new FrustumCulling(villageBuilder.getObjectsInstance(),environment,camera,modelBatch,shadowBatch);
 
         /* Trigger: goToLevel() | index: 1 */
         villageBuilder.createTrigger(new EntityPosition(-4.5f, 0, 0), .5f, 1, .5f);
@@ -149,24 +144,73 @@ public class GenerateVillage {
         /* Trigger: changeLayout4 | index: 7 */
         villageBuilder.createTrigger(new EntityPosition(8f, 0.25f, 6), 0.5f, 0.25f, .5f);
 
-        villageBuilder.createGround(groundModel, 0, 0, 0);
-        villageBuilder.createGround(groundModel, 4, 0, 3f);
-        villageBuilder.createGround(groundModel, 8, 0, 6f);
+        villageBuilder.createGround(0, 0, 0);
+        villageBuilder.createGround(4, 0, 3f);
+        villageBuilder.createGround(8, 0, 6f);
 
-        villageBuilder.createHouse(0, 1.5f, 2, 3, 2);
+        villageBuilder.createHouse(0, 1.5f, 2, 1, 2);
         villageBuilder.createHouse(-3, 1.5f, 1.5f, 3.5f, 2);
         villageBuilder.createHouse(4, 4.5f, 3, 2.5f, 2);
         villageBuilder.createHouse(11, 4.5f, 2.5f, 4, 2);
         villageBuilder.createHouse(8, 7.5f, 5, 6, 2);
 
-        camera = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(0f, 3f, -4f);
-        camera.lookAt(0f, 1.5f, 0f);
-        camera.near = 0.5f;
-        camera.far = 1500f;
-        camera.update();
+        villageBuilder.createLightBox(environment, 4.75f,0.4f,0.25f,10);
+        villageBuilder.createLightBox(environment, -4.25f, 0.4f, 0.25f,-30);
+        villageBuilder.createLightBox(environment, 2.5f,0.4f,3.25f,10);
+        villageBuilder.createLightBox(environment, 4f,0.4f,6.25f,10);
 
-        player = PlayerFactory.create(new EntityPosition(0, 1f, 0));
+        npcArray = new Array<>();
+        NonPlayerCharacter nonPlayerCharacter1 = new NonPlayerCharacter(assets, new EntityPosition(0,1f,1.30f), NonPlayerCharacter.AnimationID.SITTING);
+        NonPlayerCharacter nonPlayerCharacter2 = new NonPlayerCharacter(assets, new EntityPosition(4.5f,1.75f,3.8f), NonPlayerCharacter.AnimationID.IDLE);
+        npcArray.add(nonPlayerCharacter1, nonPlayerCharacter2);
+
+        dialogHashMap = new HashMap<>();
+        stage = new Stage();
+        UIDialog traderDialog = new UIDialog("Trader", "ACHETE MA MERDE", assets);
+        UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?", assets);
+
+        traderDialog.getNoButton().addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                showDialog("");
+                return true;
+            }
+        });
+
+        exitDialog.getNoButton().addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                showDialog("");
+                return true;
+            }
+        });
+
+        exitDialog.getYesButton().addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                exitVillage();
+                return true;
+            }
+        });
+
+        stage.addActor(traderDialog.getDialog());
+        stage.addActor(exitDialog.getDialog());
+
+        dialogHashMap.put("Trader", traderDialog);
+        dialogHashMap.put("Exit", exitDialog);
+
+        for(Actor actor : stage.getActors()){
+            actor.setVisible(false);
+        }
+
+        interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
+        interactLabel.setVisible(false);
+        interactLabel.getStyle().fontColor.set(Color.WHITE);
+        interactLabel.setFontScale(1.1f);
+
+        interactLabel.setPosition(Gdx.graphics.getWidth()/2 - interactLabel.getWidth()/2, interactLabel.getHeight()*10);
+        stage.addActor(interactLabel);
+
+        stage.act();
+
+        player = PlayerFactory.create(new EntityPosition(0, 1f, 0), assets);
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
@@ -178,36 +222,57 @@ public class GenerateVillage {
         player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
-        controller = new VillageController(player, animationController);
+        controller = new VillageController(this, player, animationController);
+
+        listener = new VillageContactListener(this, controller);
 
         Gdx.input.setInputProcessor(controller);
     }
 
     private void camFollowPlayer() {
-        camera.position.set(player.getEntity().transform.getValues()[12], camera.position.y, player.getEntity().transform.getValues()[14] - 4f);
+        camera.position.set(player.getEntity().transform.getValues()[12], camera.position.y, player.getEntity().transform.getValues()[14] - 3f);
     }
 
     /**
      * Render.
      */
     public void render() {
-        Gdx.gl.glClearColor(0.2f, 0.6f, 0.9f, 1);
+        Gdx.gl.glClearColor(0.2f, 0.3f, 0.4f, 1);
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
+        for(NonPlayerCharacter nonPlayerCharacter : npcArray)
+            nonPlayerCharacter.render();
         animationController.update(Gdx.graphics.getDeltaTime());
 
-        if (!isDispose)
-            villageBuilder.getWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
+        villageBuilder.getWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
 
         camFollowPlayer();
         camera.update();
 
+        shadowLight.begin(Vector3.Zero,camera.direction);
+        shadowBatch.begin(shadowLight.getCamera());
+        frustum.renderShadow();
+        shadowBatch.render(player.getEntity());
+        shadowBatch.render(villageBuilder.getBackground());
+        shadowBatch.render(villageBuilder.getBoxLightInstance());
+        shadowBatch.render(npcArray);
+        shadowBatch.end();
+        shadowLight.end();
+
         modelBatch.begin(camera);
-        modelBatch.render(villageBuilder.getObjectsInstance(), environment);
+        frustum.render();
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);
+        modelBatch.render(villageBuilder.getBoxLightInstance(), environment);
+        modelBatch.render(npcArray,environment);
         modelBatch.end();
+
+        stage.act();
+        stage.draw();
+
+        villageBuilder.getSky().transform.rotate(Vector3.X,0.02f);
 
         if (DEBUG_MODE) {
             debugDrawer.begin(camera);
@@ -215,15 +280,18 @@ public class GenerateVillage {
             debugDrawer.end();
         }
 
-        if (!isDispose) player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
+        player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
+    }
 
+    public void resize(int width, int height){
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
     }
 
     /**
      * Dispose.
      */
     public void dispose() {
-        isDispose = true;
         modelBatch.dispose();
         villageBuilder.getWorld().removeAction(player.getEntity().getController());
         villageBuilder.getWorld().removeCollisionObject(player.getEntity().getGhostObject());
@@ -231,6 +299,7 @@ public class GenerateVillage {
         player.dispose();
         if (debugDrawer != null) debugDrawer.dispose();
         Controllers.removeListener(controller);
+        stage.dispose();
     }
 
     /**
@@ -244,6 +313,25 @@ public class GenerateVillage {
 
     public void exitVillage() {
         screen.goToLevel();
+    }
+
+    public void showDialog(String dialogName){
+        for(Actor actor : stage.getActors()){
+            actor.setVisible(false);
+        }
+
+        if(dialogName.isEmpty()) {
+            Gdx.input.setInputProcessor(controller);
+            return;
+        }
+
+        UIDialog dialog = dialogHashMap.get(dialogName);
+        dialog.getDialog().setVisible(true);
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    public void showInteract(boolean visible){
+        interactLabel.setVisible(visible);
     }
 
 }

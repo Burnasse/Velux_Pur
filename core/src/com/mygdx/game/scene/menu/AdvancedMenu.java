@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.screen.StageManager;
 
@@ -27,14 +28,13 @@ public class AdvancedMenu implements MenuStage {
      *
      * @param manager the manager
      */
-    public AdvancedMenu(final StageManager manager) {
+    public AdvancedMenu(final StageManager manager, Assets assets) {
         final PreferencesManager prefs = new PreferencesManager();
 
         stage = new Stage(new ScreenViewport());
 
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
-        skin.load(Gdx.files.internal("menuAssets/UI.json"));
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
         CheckBox checkBox = new CheckBox(" Fullscreen", skin);
 
@@ -96,5 +96,10 @@ public class AdvancedMenu implements MenuStage {
 
     public Stage getStage() {
         return stage;
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 }

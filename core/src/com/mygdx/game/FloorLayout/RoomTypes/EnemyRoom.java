@@ -1,6 +1,7 @@
 package com.mygdx.game.FloorLayout.RoomTypes;
 
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorGeneration.FloorFactory;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +29,7 @@ public class EnemyRoom extends Room {
         for (int i = 0; i < numberOfMonsters; i++) {
             currentMonsterXPosition = ThreadLocalRandom.current().nextInt(x1, x2);
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
-            enemiesPosition.add(new EntityPosition(currentMonsterXPosition, 1, currentMonsterZPosition));
+            enemiesPosition.add(new EntityPosition(currentMonsterXPosition, 3, currentMonsterZPosition));
         }
     }
 

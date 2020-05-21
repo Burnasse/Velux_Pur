@@ -13,4 +13,6 @@ public interface MenuStage {
      * @return the stage
      */
     Stage getStage();
+
+    void dispose();
 }

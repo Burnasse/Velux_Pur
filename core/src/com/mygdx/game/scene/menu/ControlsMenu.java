@@ -2,12 +2,12 @@ package com.mygdx.game.scene.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.mygdx.game.Assets;
 import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.controller.DisplayButtonHandler;
@@ -15,7 +15,6 @@ import com.mygdx.game.controller.KeyBindingController;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.screen.StageManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,19 +24,17 @@ import java.util.Map;
  */
 public class ControlsMenu implements MenuStage {
 
-    private Stage stage;
-    private ButtonStageController buttonStageController;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Controls menu.
      *
      * @param manager the manager
      */
-    public ControlsMenu(final StageManager manager) {
+    public ControlsMenu(final StageManager manager, Assets assets) {
 
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
-        skin.load(Gdx.files.internal("menuAssets/UI.json"));
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
         LinkedList<TextButton> buttons = new LinkedList<>();
 
@@ -113,5 +110,9 @@ public class ControlsMenu implements MenuStage {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose(){
+        stage.dispose();
     }
 }
