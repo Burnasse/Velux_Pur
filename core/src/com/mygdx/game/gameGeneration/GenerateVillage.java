@@ -18,6 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -59,6 +62,7 @@ public class GenerateVillage {
 
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
+    private Label interactLabel;
 
     private Array<NonPlayerCharacter> npcArray;
 
@@ -191,7 +195,13 @@ public class GenerateVillage {
             actor.setVisible(false);
         }
 
-        //Label interactLabel = new Label()
+        interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
+        interactLabel.setVisible(false);
+        interactLabel.getStyle().fontColor.set(Color.WHITE);
+        interactLabel.setFontScale(1.1f);
+
+        interactLabel.setPosition(Gdx.graphics.getWidth()/2 - interactLabel.getWidth()/2, interactLabel.getHeight()*10);
+        stage.addActor(interactLabel);
 
         stage.act();
 
@@ -209,7 +219,7 @@ public class GenerateVillage {
 
         controller = new VillageController(this, player, animationController);
 
-        listener = new VillageContactListener(controller);
+        listener = new VillageContactListener(this, controller);
 
         Gdx.input.setInputProcessor(controller);
     }
@@ -313,6 +323,10 @@ public class GenerateVillage {
         UIDialog dialog = dialogHashMap.get(dialogName);
         dialog.getDialog().setVisible(true);
         Gdx.input.setInputProcessor(stage);
+    }
+
+    public void showInteract(boolean visible){
+        interactLabel.setVisible(visible);
     }
 
 }
