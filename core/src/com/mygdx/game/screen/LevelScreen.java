@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.gameGeneration.GenerateLevel;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
@@ -23,6 +24,7 @@ public class LevelScreen implements Screen, StageManager{
     private Boolean isInMenu = false;
 
     private VeluxPurGame manager;
+    private Assets assets;
 
     /**
      * Instantiates a new GameScreen.
@@ -30,8 +32,11 @@ public class LevelScreen implements Screen, StageManager{
      *
      * @param manager the main class who manage all screen
      */
-    public LevelScreen(VeluxPurGame manager) {
+    public LevelScreen(VeluxPurGame manager, Assets assets) {
         this.manager = manager;
+        this.assets = assets;
+        assets.loadLevel();
+        assets.manager.finishLoading();
     }
 
     @Override
@@ -78,15 +83,15 @@ public class LevelScreen implements Screen, StageManager{
 
     @Override
     public void initScreen() {
-        level = new GenerateLevel(false);
+        level = new GenerateLevel(assets,false);
         level.create();
 
         menuManager = new MenuManager();
-        menuManager.addMenuStage("Main", new MainMenu(this, viewport, true));
-        menuManager.addMenuStage("Settings", new SettingsMenu(this));
-        menuManager.addMenuStage("Audio", new AudioMenu(this));
-        menuManager.addMenuStage("Advanced", new AdvancedMenu(this));
-        menuManager.addMenuStage("Controls", new ControlsMenu(this));
+        menuManager.addMenuStage("Main", new MainMenu(this, viewport, true, assets));
+        menuManager.addMenuStage("Settings", new SettingsMenu(this, assets));
+        menuManager.addMenuStage("Audio", new AudioMenu(this, assets));
+        menuManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
+        menuManager.addMenuStage("Controls", new ControlsMenu(this, assets));
     }
 
     @Override

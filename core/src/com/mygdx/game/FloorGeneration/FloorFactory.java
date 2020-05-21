@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.instances.EntityInstance;
@@ -42,7 +43,7 @@ public class FloorFactory {
      * @param maxRoomSize   the max room size
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets) {
 
         Floor floor;
 
@@ -81,14 +82,8 @@ public class FloorFactory {
             }
         }
 
-        AssetManager assetManager = new AssetManager();
-        assetManager.load("wallG3D.g3db", Model.class);
-        assetManager.finishLoading();
-        Model wallModel = assetManager.get("wallG3D.g3db", Model.class);
-
-        assetManager.load("ground.g3db", Model.class);
-        assetManager.finishLoading();
-        Model ground = assetManager.get("ground.g3db", Model.class);
+        Model wallModel = assets.manager.get(Assets.wallLevel);
+        Model ground = assets.manager.get(Assets.groundLevel);
 
         btBoxShape wallShape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
         btBoxShape groundShape = new btBoxShape(new Vector3( blockSize/2, blockSize / 4, blockSize/2));
@@ -129,8 +124,6 @@ public class FloorFactory {
             x = (int) (x + blockSize);
             z = 0;
         }
-
-        //objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition((sizeOfFloor * blockSize / 2) - blockSize / 2, blockSize / 4, (sizeOfFloor * blockSize / 2) - blockSize / 2)).getEntity());
 
         EntityPosition spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX() * blockSize, 5f, floor.getRooms().get(0).getCenter().getY() * blockSize);
 

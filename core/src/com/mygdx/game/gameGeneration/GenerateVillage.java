@@ -19,10 +19,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.Entity.NonPlayerCharacter;
 import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.utils.EntityPosition;
-import com.mygdx.game.Entity.Pnj;
 import com.mygdx.game.controller.VillageController;
 import com.mygdx.game.physics.VillageContactListener;
 import com.mygdx.game.screen.GameScreen;
@@ -41,7 +42,8 @@ public class GenerateVillage {
     private final boolean DEBUG_MODE;
     private DebugDrawer debugDrawer;
 
-    private GameScreen screen;
+    private final GameScreen screen;
+    private final Assets assets;
 
     private VillageContactListener listener;
     private VillageBuilder villageBuilder;
@@ -51,7 +53,6 @@ public class GenerateVillage {
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
 
-    private AnimationController pnjAnimation;
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
@@ -59,16 +60,17 @@ public class GenerateVillage {
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
 
-    private Array<Pnj> pnjArray;
+    private Array<NonPlayerCharacter> npcArray;
 
     /**
      * Instantiates a new Village.
      *
      * @param screen the screen
      */
-    public GenerateVillage(GameScreen screen) {
+    public GenerateVillage(GameScreen screen, Assets assets) {
         DEBUG_MODE = false;
         this.screen = screen;
+        this.assets = assets;
     }
 
     /**
@@ -77,9 +79,10 @@ public class GenerateVillage {
      * @param screen     the screen
      * @param DEBUG_MODE the debug mode
      */
-    public GenerateVillage(GameScreen screen, boolean DEBUG_MODE) {
+    public GenerateVillage(GameScreen screen, Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
         this.screen = screen;
+        this.assets = assets;
     }
 
     /**
@@ -88,10 +91,10 @@ public class GenerateVillage {
     public void create() {
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
-            villageBuilder = new VillageBuilder(debugDrawer);
+            villageBuilder = new VillageBuilder(assets, debugDrawer);
             debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
         } else
-            villageBuilder = new VillageBuilder();
+            villageBuilder = new VillageBuilder(assets);
 
         camera = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         camera.position.set(0f, 2.5f, -4f);
@@ -147,15 +150,15 @@ public class GenerateVillage {
         villageBuilder.createLightBox(environment, 2.5f,0.4f,3.25f,10);
         villageBuilder.createLightBox(environment, 4f,0.4f,6.25f,10);
 
-        pnjArray = new Array<>();
-        Pnj pnj1 = new Pnj(new EntityPosition(0,1f,1.30f), Pnj.AnimationID.SITTING);
-        Pnj pnj2 = new Pnj(new EntityPosition(4.5f,1.75f,3.8f), Pnj.AnimationID.IDLE);
-        pnjArray.add(pnj1,pnj2);
+        npcArray = new Array<>();
+        NonPlayerCharacter nonPlayerCharacter1 = new NonPlayerCharacter(assets, new EntityPosition(0,1f,1.30f), NonPlayerCharacter.AnimationID.SITTING);
+        NonPlayerCharacter nonPlayerCharacter2 = new NonPlayerCharacter(assets, new EntityPosition(4.5f,1.75f,3.8f), NonPlayerCharacter.AnimationID.IDLE);
+        npcArray.add(nonPlayerCharacter1, nonPlayerCharacter2);
 
         dialogHashMap = new HashMap<>();
         stage = new Stage();
-        UIDialog traderDialog = new UIDialog("Trader", "ACHETE MA MERDE");
-        UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?");
+        UIDialog traderDialog = new UIDialog("Trader", "ACHETE MA MERDE", assets);
+        UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?", assets);
 
         traderDialog.getNoButton().addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -188,9 +191,11 @@ public class GenerateVillage {
             actor.setVisible(false);
         }
 
+        //Label interactLabel = new Label()
+
         stage.act();
 
-        player = PlayerFactory.create(new EntityPosition(0, 1f, 0));
+        player = PlayerFactory.create(new EntityPosition(0, 1f, 0), assets);
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
@@ -221,8 +226,8 @@ public class GenerateVillage {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        for(Pnj pnj : pnjArray)
-            pnj.render();
+        for(NonPlayerCharacter nonPlayerCharacter : npcArray)
+            nonPlayerCharacter.render();
         animationController.update(Gdx.graphics.getDeltaTime());
 
         villageBuilder.getWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
@@ -236,7 +241,7 @@ public class GenerateVillage {
         shadowBatch.render(player.getEntity());
         shadowBatch.render(villageBuilder.getBackground());
         shadowBatch.render(villageBuilder.getBoxLightInstance());
-        shadowBatch.render(pnjArray);
+        shadowBatch.render(npcArray);
         shadowBatch.end();
         shadowLight.end();
 
@@ -246,7 +251,7 @@ public class GenerateVillage {
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);
         modelBatch.render(villageBuilder.getBoxLightInstance(), environment);
-        modelBatch.render(pnjArray,environment);
+        modelBatch.render(npcArray,environment);
         modelBatch.end();
 
         stage.act();

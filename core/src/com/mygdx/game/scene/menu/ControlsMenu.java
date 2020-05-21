@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.mygdx.game.Assets;
 import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.controller.DisplayButtonHandler;
@@ -30,11 +31,10 @@ public class ControlsMenu implements MenuStage {
      *
      * @param manager the manager
      */
-    public ControlsMenu(final StageManager manager) {
+    public ControlsMenu(final StageManager manager, Assets assets) {
 
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
-        skin.load(Gdx.files.internal("menuAssets/UI.json"));
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
         LinkedList<TextButton> buttons = new LinkedList<>();
 

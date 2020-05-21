@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -26,6 +27,8 @@ import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
  * The type Village builder.
  */
 public class VillageBuilder {
+
+    private Assets assets;
 
     private DynamicWorld world;
     private Array<EntityInstance> objectsInstance;
@@ -40,8 +43,9 @@ public class VillageBuilder {
     /**
      * Instantiates a new Village builder.
      */
-    public VillageBuilder() {
+    public VillageBuilder(Assets assets) {
         world = new DynamicWorld();
+        this.assets = assets;
         init();
     }
 
@@ -50,8 +54,9 @@ public class VillageBuilder {
      *
      * @param debugDrawer the debug drawer
      */
-    public VillageBuilder(DebugDrawer debugDrawer) {
+    public VillageBuilder(Assets assets, DebugDrawer debugDrawer) {
         world = new DynamicWorld(debugDrawer);
+        this.assets = assets;
         init();
     }
 
@@ -59,15 +64,10 @@ public class VillageBuilder {
         objectsInstance = new Array<>();
         boxLightInstance = new Array<>();
 
-        AssetManager assetManager = new AssetManager();
-        assetManager.load("skyBox.g3db", Model.class);
-        assetManager.finishLoading();
-        Model skyBox = assetManager.get("skyBox.g3db", Model.class);
+        Model skyBox = assets.manager.get(Assets.skyBoxVillage);
         sky = new ModelInstance(skyBox);
 
-        assetManager.load("groundG3D.g3db", Model.class);
-        assetManager.finishLoading();
-        Model backgroundModel = assetManager.get("groundG3D.g3db", Model.class);
+        Model backgroundModel = assets.manager.get(Assets.groundVillage);
         background = new ModelInstance(backgroundModel);
         background.transform.trn(5, -0.5f, 5);
 
@@ -213,9 +213,6 @@ public class VillageBuilder {
             instance.dispose();
         }
 
-
-        sky.model.dispose();
-        background.model.dispose();
         world.dispose();
     }
 

@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
@@ -53,6 +54,8 @@ public class GenerateLevel {
     private final boolean DEBUG_MODE;
     private DebugDrawer debugDrawer;
 
+    private Assets assets;
+
     private ModelBatch modelBatch;
     private Environment environment;
     private PerspectiveCamera cam;
@@ -67,8 +70,9 @@ public class GenerateLevel {
 
     private PointLight followLight;
 
-    public GenerateLevel(boolean DEBUG_MODE) {
+    public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
+        this.assets = assets;
     }
 
     /**
@@ -96,12 +100,12 @@ public class GenerateLevel {
         followLight = new PointLight().set(new Color(1,0.6f,0.4f,1f),new Vector3(0,0,0),5f);
         environment.add(followLight);
 
-        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7);
+        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
 
         minimap = floorData.minimap;
         healthBar = new HealthBar();
 
-        player = PlayerFactory.create(floorData.playerSpawnPosition);
+        player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
         System.out.println(floorData.playerSpawnPosition);
 
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);

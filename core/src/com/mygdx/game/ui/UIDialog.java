@@ -1,12 +1,13 @@
 package com.mygdx.game.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Align;
+import com.mygdx.game.Assets;
 
 public class UIDialog {
 
@@ -14,10 +15,9 @@ public class UIDialog {
     private TextButton yesButton;
     private TextButton noButton;
 
-    public UIDialog(String title, String text){
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("menuAssets/UI.atlas")));
-        skin.load(Gdx.files.internal("menuAssets/UI.json"));
+    public UIDialog(String title, String text, Assets assets){
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
         dialog = new Dialog(title, skin);
         yesButton = new TextButton("Yes", skin);
@@ -34,6 +34,7 @@ public class UIDialog {
         Label label = new Label(text,skin);
         label.setAlignment(Align.center);
         label.setWrap(true);
+        label.getStyle().fontColor.set(Color.WHITE);
         dialog.text(label);
     }
 

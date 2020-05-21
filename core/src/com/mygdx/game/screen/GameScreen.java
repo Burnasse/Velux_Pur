@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
@@ -37,6 +38,7 @@ public class GameScreen implements Screen, StageManager {
     private Boolean isInMenu = false;
 
     private VeluxPurGame manager;
+    private Assets assets;
 
     /**
      * Instantiates a new GameScreen.
@@ -44,8 +46,12 @@ public class GameScreen implements Screen, StageManager {
      *
      * @param manager the main class who manage all screen
      */
-    public GameScreen(VeluxPurGame manager) {
+    public GameScreen(VeluxPurGame manager, Assets assets) {
         this.manager = manager;
+        this.assets = assets;
+        assets.loadGame();
+        assets.loadVillage();
+        assets.manager.finishLoading();
     }
 
     @Override
@@ -112,16 +118,16 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void initScreen() {
-        village = new GenerateVillage(this,false);
+        village = new GenerateVillage(this,assets,false);
         village.create();
 
-        menu = new MainMenu(this, viewport, true);
+        menu = new MainMenu(this, viewport, true, assets);
         stageManager = new MenuManager();
         stageManager.addMenuStage("Main", menu);
-        stageManager.addMenuStage("Settings", new SettingsMenu(this));
-        stageManager.addMenuStage("Audio", new AudioMenu(this));
-        stageManager.addMenuStage("Advanced", new AdvancedMenu(this));
-        stageManager.addMenuStage("Controls", new ControlsMenu(this));
+        stageManager.addMenuStage("Settings", new SettingsMenu(this, assets));
+        stageManager.addMenuStage("Audio", new AudioMenu(this, assets));
+        stageManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
+        stageManager.addMenuStage("Controls", new ControlsMenu(this, assets));
     }
 
     @Override
@@ -130,6 +136,7 @@ public class GameScreen implements Screen, StageManager {
     }
 
     public void goToLevel(){
-        manager.changeScreen(new LevelScreen(manager));
+        assets.unloadVillage();
+        manager.changeScreen(new LevelScreen(manager, assets));
     }
 }

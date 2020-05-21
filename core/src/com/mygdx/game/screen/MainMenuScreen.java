@@ -7,6 +7,7 @@ import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
 import com.mygdx.game.ui.HealthBar;
@@ -17,6 +18,7 @@ import com.mygdx.game.ui.HealthBar;
 public class MainMenuScreen implements Screen, StageManager {
 
     private VeluxPurGame manager;
+    private Assets assets;
     private Stage stage;
     private ScreenViewport viewport = new ScreenViewport();
     private MenuManager menuManager;
@@ -28,12 +30,13 @@ public class MainMenuScreen implements Screen, StageManager {
      *
      * @param manager the main class who manage all screen
      */
-    public MainMenuScreen(final VeluxPurGame manager) {
+    public MainMenuScreen(final VeluxPurGame manager, Assets assets) {
         this.manager = manager;
+        this.assets = assets;
     }
 
     public void initScreen() {
-        mainMenu = new MainMenu(this,viewport,false);
+        mainMenu = new MainMenu(this,viewport,false, assets);
         Controllers.addListener((ControllerListener) mainMenu.getStage());
         this.stage = mainMenu.getStage();
 
@@ -41,10 +44,10 @@ public class MainMenuScreen implements Screen, StageManager {
 
         menuManager = new MenuManager();
         menuManager.addMenuStage("Main", mainMenu);
-        menuManager.addMenuStage("Settings", new SettingsMenu(this));
-        menuManager.addMenuStage("Audio", new AudioMenu(this));
-        menuManager.addMenuStage("Advanced", new AdvancedMenu(this));
-        menuManager.addMenuStage("Controls", new ControlsMenu(this));
+        menuManager.addMenuStage("Settings", new SettingsMenu(this, assets));
+        menuManager.addMenuStage("Audio", new AudioMenu(this, assets));
+        menuManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
+        menuManager.addMenuStage("Controls", new ControlsMenu(this, assets));
     }
 
     @Override
@@ -97,11 +100,11 @@ public class MainMenuScreen implements Screen, StageManager {
     }
 
     public void startGame() {
-        manager.changeScreen(new GameScreen(manager));
+        manager.changeScreen(new GameScreen(manager, assets));
     }
 
     public void startMultiplayerGame() {
-        manager.setScreen(new MultiplayerGameScreen(manager));
+        manager.setScreen(new MultiplayerGameScreen(manager, assets));
     }
 
 }

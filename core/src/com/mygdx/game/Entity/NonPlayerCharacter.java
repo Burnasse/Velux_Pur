@@ -1,14 +1,13 @@
 package com.mygdx.game.Entity;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
-public class Pnj extends ModelInstance{
+public class NonPlayerCharacter extends ModelInstance{
 
     public enum AnimationID{
         IDLE,
@@ -17,21 +16,16 @@ public class Pnj extends ModelInstance{
 
     private AnimationController controller;
 
-    public Pnj(EntityPosition entityPosition, AnimationID defaultAnimation){
-        super(init());
+    public NonPlayerCharacter(Assets assets, EntityPosition entityPosition, AnimationID defaultAnimation){
+        super(init(assets));
         controller = new AnimationController(this);
         transform.trn(entityPosition).rotate(Vector3.Y,180);
         controller.animate(defaultAnimation.name().toLowerCase(), -1, 1.0f, null, 0.2f);
     }
 
-    private static ModelInstance init(){
-        AssetManager assetManager = new AssetManager();
-        assetManager.load("Pnj/pnj.g3db", Model.class);
-        assetManager.load("Pnj/sittingPnj.g3db", Model.class);
-        assetManager.finishLoading();
-
-        ModelInstance modelInstance = new ModelInstance(assetManager.get("Pnj/pnj.g3db",Model.class));
-        modelInstance.copyAnimation(assetManager.get("Pnj/sittingPnj.g3db", Model.class).animations.get(0));
+    private static ModelInstance init(Assets assets){
+        ModelInstance modelInstance = new ModelInstance(assets.manager.get(Assets.npcModel));
+        modelInstance.copyAnimation(assets.manager.get(Assets.sittingNpcModel).animations.get(0));
         modelInstance.animations.get(0).id = "idle";
         modelInstance.animations.get(1).id = "sitting";
 
