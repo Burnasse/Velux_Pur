@@ -14,12 +14,15 @@ import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Collections;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.*;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
+import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
@@ -59,6 +62,8 @@ public class GenerateLevel {
     private ModelBatch modelBatch;
     private Environment environment;
     private PerspectiveCamera cam;
+    private FrustumCulling frustum;
+
     private CameraInputController camController;
     private DynamicWorld world;
     private FloorData floorData;
@@ -129,6 +134,11 @@ public class GenerateLevel {
         cam.far = 300f;
         cam.update();
 
+        Array<EntityInstance> instances = new Array<>();
+        for(EntityInstance instance : floorData.objectsInstances)
+            instances.add(instance);
+        frustum = new FrustumCulling(instances,environment,cam,modelBatch);
+
         camController = new CameraInputController(cam);
 
         playerController = new PlayerController(player);
@@ -162,10 +172,8 @@ public class GenerateLevel {
         followLight.position.z = player.getEntity().transform.getValues()[14];
 
         modelBatch.begin(cam);
-        modelBatch.render(floorData.objectsInstances, environment);
-
+        frustum.render();
         modelBatch.render(player.getEntity(), environment);
-
         modelBatch.end();
 
         minimap.render(player.getEntity().transform.getValues()[12],player.getEntity().transform.getValues()[14]);

@@ -26,7 +26,9 @@ import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.NonPlayerCharacter;
 import com.mygdx.game.Entity.PlayerFactory;
+import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.controller.VillageController;
 import com.mygdx.game.physics.VillageContactListener;
 import com.mygdx.game.screen.GameScreen;
@@ -55,6 +57,7 @@ public class GenerateVillage {
     private ModelBatch shadowBatch;
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
+    private FrustumCulling frustum;
 
     private AnimationController animationController;
     private VillageController controller;
@@ -117,6 +120,8 @@ public class GenerateVillage {
         environment.add((shadowLight = new DirectionalShadowLight(4096, 4096, 25, 25, 0.1f, 10)).set(0.4f, 0.5f, 0.7f, -15.0f, -35f, 30f));
         environment.shadowMap = shadowLight;
         shadowBatch = new ModelBatch(new DepthShaderProvider());
+
+        frustum = new FrustumCulling(villageBuilder.getObjectsInstance(),environment,camera,modelBatch,shadowBatch);
 
         /* Trigger: goToLevel() | index: 1 */
         villageBuilder.createTrigger(new EntityPosition(-4.5f, 0, 0), .5f, 1, .5f);
@@ -247,7 +252,7 @@ public class GenerateVillage {
 
         shadowLight.begin(Vector3.Zero,camera.direction);
         shadowBatch.begin(shadowLight.getCamera());
-        shadowBatch.render(villageBuilder.getObjectsInstance());
+        frustum.renderShadow();
         shadowBatch.render(player.getEntity());
         shadowBatch.render(villageBuilder.getBackground());
         shadowBatch.render(villageBuilder.getBoxLightInstance());
@@ -256,7 +261,7 @@ public class GenerateVillage {
         shadowLight.end();
 
         modelBatch.begin(camera);
-        modelBatch.render(villageBuilder.getObjectsInstance(), environment);
+        frustum.render();
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);
