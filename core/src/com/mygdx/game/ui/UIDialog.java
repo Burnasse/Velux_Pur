@@ -31,8 +31,6 @@ public class UIDialog {
         dialog.setPosition(Gdx.graphics.getWidth()/2-150, Gdx.graphics.getHeight()/2-100);
 
         dialog.getButtonTable().add(yesButton,noButton);
-        yesButton.align(Align.left);
-        noButton.align(Align.right);
         Label label = new Label(text,skin);
         label.setAlignment(Align.center);
         label.setWrap(true);

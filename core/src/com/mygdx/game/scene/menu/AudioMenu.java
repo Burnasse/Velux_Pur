@@ -71,4 +71,9 @@ public class AudioMenu implements MenuStage {
     public Stage getStage() {
         return stage;
     }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+    }
 }

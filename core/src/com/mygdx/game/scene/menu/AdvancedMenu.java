@@ -97,4 +97,9 @@ public class AdvancedMenu implements MenuStage {
     public Stage getStage() {
         return stage;
     }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+    }
 }

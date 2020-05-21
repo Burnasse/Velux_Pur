@@ -81,5 +81,6 @@ public class MainMenu implements MenuStage {
 
     public void dispose(){
         Controllers.removeListener(stage);
+        stage.dispose();
     }
 }

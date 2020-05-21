@@ -40,11 +40,11 @@ public class MainMenuScreen implements Screen, StageManager {
         healthBar = new HealthBar();
 
         menuManager = new MenuManager();
-        menuManager.addStage("Main", stage);
-        menuManager.addStage("Settings", new SettingsMenu(this).getStage());
-        menuManager.addStage("Audio", new AudioMenu(this).getStage());
-        menuManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        menuManager.addStage("Controls", new ControlsMenu(this).getStage());
+        menuManager.addMenuStage("Main", mainMenu);
+        menuManager.addMenuStage("Settings", new SettingsMenu(this));
+        menuManager.addMenuStage("Audio", new AudioMenu(this));
+        menuManager.addMenuStage("Advanced", new AdvancedMenu(this));
+        menuManager.addMenuStage("Controls", new ControlsMenu(this));
     }
 
     @Override
@@ -89,7 +89,6 @@ public class MainMenuScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
-        mainMenu.dispose();
         menuManager.dispose();
     }
 

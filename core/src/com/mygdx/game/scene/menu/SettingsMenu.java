@@ -66,4 +66,9 @@ public class SettingsMenu implements MenuStage {
     public Stage getStage() {
         return stage;
     }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+    }
 }

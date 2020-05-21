@@ -2,7 +2,6 @@ package com.mygdx.game.scene.menu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -15,7 +14,6 @@ import com.mygdx.game.controller.KeyBindingController;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.screen.StageManager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,8 +23,7 @@ import java.util.Map;
  */
 public class ControlsMenu implements MenuStage {
 
-    private Stage stage;
-    private ButtonStageController buttonStageController;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Controls menu.
@@ -113,5 +110,9 @@ public class ControlsMenu implements MenuStage {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose(){
+        stage.dispose();
     }
 }

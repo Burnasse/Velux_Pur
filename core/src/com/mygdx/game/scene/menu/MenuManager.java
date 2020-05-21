@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class MenuManager {
 
-    private HashMap<String, Stage> map = new HashMap<>();
+    private HashMap<String, MenuStage> map = new HashMap<>();
 
     /**
      * Add stage.
@@ -19,7 +19,7 @@ public class MenuManager {
      * @param name  the name of the stage to find him
      * @param stage the stage
      */
-    public void addStage(String name, Stage stage) {
+    public void addMenuStage(String name, MenuStage stage) {
         map.put(name, stage);
     }
 
@@ -29,7 +29,7 @@ public class MenuManager {
      * @param name the name of the stage
      * @return the stage
      */
-    public Stage getStageByName(String name) {
+    public MenuStage getStageByName(String name) {
         return map.get(name);
     }
 
@@ -41,15 +41,15 @@ public class MenuManager {
      * @return the stage
      */
     public Stage changeStage(String stageName, Viewport viewport) {
-        Stage stage = getStageByName(stageName);
-        Gdx.input.setInputProcessor(stage);
-        stage.setViewport(viewport);
+        MenuStage menuStage = getStageByName(stageName);
+        Gdx.input.setInputProcessor(menuStage.getStage());
+        menuStage.getStage().setViewport(viewport);
 
-        return stage;
+        return menuStage.getStage();
     }
 
     public void dispose(){
-        for(Stage stage : map.values())
+        for(MenuStage stage : map.values())
             stage.dispose();
     }
 

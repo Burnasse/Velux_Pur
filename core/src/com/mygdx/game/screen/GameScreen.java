@@ -4,15 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
 import com.mygdx.game.gameGeneration.GenerateVillage;
-import com.mygdx.game.ui.Minimap;
 
 /**
  * The type Game screen.
@@ -65,7 +62,7 @@ public class GameScreen implements Screen, StageManager {
                 village.setController();
                 isInMenu = false;
             } else {
-                stage = stageManager.getStageByName("Main");
+                stage = stageManager.getStageByName("Main").getStage();
                 Controllers.clearListeners();
                 Controllers.addListener((ButtonStageController)menu.getStage());
                 Gdx.input.setInputProcessor(stage);
@@ -118,11 +115,11 @@ public class GameScreen implements Screen, StageManager {
 
         menu = new MainMenu(this, viewport, true);
         stageManager = new MenuManager();
-        stageManager.addStage("Main", menu.getStage());
-        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
-        stageManager.addStage("Audio", new AudioMenu(this).getStage());
-        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+        stageManager.addMenuStage("Main", menu);
+        stageManager.addMenuStage("Settings", new SettingsMenu(this));
+        stageManager.addMenuStage("Audio", new AudioMenu(this));
+        stageManager.addMenuStage("Advanced", new AdvancedMenu(this));
+        stageManager.addMenuStage("Controls", new ControlsMenu(this));
     }
 
     @Override

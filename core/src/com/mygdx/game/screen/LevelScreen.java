@@ -13,7 +13,7 @@ public class LevelScreen implements Screen, StageManager{
     /**
      * Used to manage the menu
      */
-    private MenuManager stageManager;
+    private MenuManager menuManager;
 
     /**
      * Used to display properly the menu
@@ -63,7 +63,7 @@ public class LevelScreen implements Screen, StageManager{
     @Override
     public void dispose() {
         level.dispose();
-        stageManager.dispose();
+        menuManager.dispose();
     }
 
     @Override
@@ -79,12 +79,12 @@ public class LevelScreen implements Screen, StageManager{
         level = new GenerateLevel(false);
         level.create();
 
-        stageManager = new MenuManager();
-        stageManager.addStage("Main", new MainMenu(this, viewport, true).getStage());
-        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
-        stageManager.addStage("Audio", new AudioMenu(this).getStage());
-        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+        menuManager = new MenuManager();
+        menuManager.addMenuStage("Main", new MainMenu(this, viewport, true));
+        menuManager.addMenuStage("Settings", new SettingsMenu(this));
+        menuManager.addMenuStage("Audio", new AudioMenu(this));
+        menuManager.addMenuStage("Advanced", new AdvancedMenu(this));
+        menuManager.addMenuStage("Controls", new ControlsMenu(this));
     }
 
     @Override
