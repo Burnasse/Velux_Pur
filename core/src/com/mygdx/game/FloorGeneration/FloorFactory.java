@@ -1,14 +1,6 @@
 package com.mygdx.game.FloorGeneration;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Assets;
@@ -61,14 +53,10 @@ public class FloorFactory {
         int y = 0;
         int z = 0;
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
-        modelBuilder.node().id = "box";
-        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Generic, new Material(ColorAttribute.createDiffuse(Color.RED)));
-        BoxShapeBuilder.build(builder, 0.3f, 0.3f, 0.3f);
-        Model enemyModel = modelBuilder.end();
+        Model enemyModel = assets.manager.get(Assets.enemyModel);
 
         btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
+
 
         EntityPosition exitPosition = null;
 
@@ -78,6 +66,12 @@ public class FloorFactory {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
                     EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, enemyShape, 15f, enemyPosition, "Gunner", room.getX1(), room.getY1(), room.getX2(), room.getY2());
+                    newMonster.getEntity().copyAnimation(assets.manager.get(Assets.enemyRun).animations.get(0));
+                    newMonster.getEntity().copyAnimation(assets.manager.get(Assets.enemyFire).animations.get(0));
+                    newMonster.getEntity().animations.get(0).id = "run";
+                    newMonster.getEntity().animations.get(1).id = "fire";
+                    newMonster.getAnimationController().animate("run", -1, 1.0f, null, 0.2f);
+                    newMonster.getEntity().transform.rotate(Vector3.Y,180);
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());

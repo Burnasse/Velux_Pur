@@ -125,7 +125,7 @@ public class GenerateLevel {
         followLight = new PointLight().set(new Color(1, 0.6f, 0.4f, 1f), new Vector3(0, 0, 0), 5f);
         environment.add(followLight);
 
-        floorData = FloorFactory.create("Labyrinth", 30, 4, 3, 7, assets);
+        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
         System.out.println(floorData.playerSpawnPosition);
         minimap = floorData.minimap;
         healthBar = new HealthBar();
@@ -206,6 +206,9 @@ public class GenerateLevel {
 
         camFollowPlayer();
         cam.update();
+
+        for(EntityMonster monster : floorData.entityMonsters)
+            monster.getAnimationController().update(Gdx.graphics.getDeltaTime());
 
         followLight.position.x = player.getEntity().transform.getValues()[12];
         followLight.position.y = player.getEntity().transform.getValues()[13] + 1;

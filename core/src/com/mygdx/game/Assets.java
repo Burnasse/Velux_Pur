@@ -51,6 +51,16 @@ public class Assets {
     public static final AssetDescriptor<Model> groundLevel =
             new AssetDescriptor<Model>("ground.g3db", Model.class);
 
+    /* Load enemy*/
+    public static final AssetDescriptor<Model> enemyModel =
+            new AssetDescriptor<Model>("enemies/enemyG3D.g3db", Model.class);
+
+    public static final AssetDescriptor<Model> enemyRun =
+            new AssetDescriptor<Model>("enemies/enemyRunG3D.g3db", Model.class);
+
+    public static final AssetDescriptor<Model> enemyFire =
+            new AssetDescriptor<Model>("enemies/enemyFireG3D.g3db", Model.class);
+
     /**
      * Load elements specific to the menu
      */
@@ -83,6 +93,9 @@ public class Assets {
     public void loadLevel(){
         manager.load(wallLevel);
         manager.load(groundLevel);
+        manager.load(enemyModel);
+        manager.load(enemyRun);
+        manager.load(enemyFire);
     }
 
     /**

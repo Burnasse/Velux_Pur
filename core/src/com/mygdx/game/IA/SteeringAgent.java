@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -24,7 +25,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     protected EntityPlayer player;
     protected EntityInstance instance;
     private DynamicWorld world = null;
-
+    private AnimationController controller;
 
     protected float orientation;
     protected static final SteeringAcceleration<Vector3> steeringOutput = new SteeringAcceleration<>(new Vector3());
@@ -323,5 +324,13 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         position.y = blockSize + 1;
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
+    }
+
+    public void setAnimationController(AnimationController controller){
+        this.controller = controller;
+    }
+
+    public AnimationController getController() {
+        return controller;
     }
 }

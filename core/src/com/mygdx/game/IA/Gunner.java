@@ -132,11 +132,15 @@ public class Gunner extends SteeringAgent {
 
         if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
             if (coolDown >= maxCoolDown) {
+                getController().animate("fire", -1, 1.0f, null, 0.2f);
                 target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
                 attack();
                 coolDown = 0;
             }
-        } else Move(delta);
+        } else{
+            Move(delta);
+            getController().animate("run", -1, 1.0f, null, 0.2f);
+        }
 
         instance.getBody().proceedToTransform(instance.transform);
     }
