@@ -13,7 +13,6 @@ import com.mygdx.game.item.Weapon;
 /**
  * The type Entity monster.
  */
-/* Commentaires d'expliquation dans l'interface */
 public class EntityMonster implements EntityInterface {
 
     private String monsterName;
