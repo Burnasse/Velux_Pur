@@ -47,6 +47,7 @@ public class Assets {
     /* Load floor */
     public static final AssetDescriptor<Model> wallLevel =
             new AssetDescriptor<Model>("wallG3D.g3db", Model.class);
+
     public static final AssetDescriptor<Model> groundLevel =
             new AssetDescriptor<Model>("ground.g3db", Model.class);
 

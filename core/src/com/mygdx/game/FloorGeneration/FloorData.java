@@ -25,6 +25,8 @@ public class FloorData {
      */
     public EntityPosition playerSpawnPosition;
 
+    public EntityPosition exitPositon;
+
     public Minimap minimap;
 
     /**
@@ -34,10 +36,11 @@ public class FloorData {
      * @param entityMonsters      the entity monsters
      * @param playerSpawnPosition the player spawn position
      */
-    public FloorData(ArrayList<EntityInstance> objectsInstances, ArrayList<EntityMonster> entityMonsters, EntityPosition playerSpawnPosition, Minimap minimap) {
+    public FloorData(ArrayList<EntityInstance> objectsInstances, ArrayList<EntityMonster> entityMonsters, EntityPosition playerSpawnPosition, EntityPosition exitPositon, Minimap minimap) {
         this.objectsInstances = objectsInstances;
         this.entityMonsters = entityMonsters;
         this.playerSpawnPosition = playerSpawnPosition;
+        this.exitPositon = exitPositon;
         this.minimap = minimap;
     }
 }

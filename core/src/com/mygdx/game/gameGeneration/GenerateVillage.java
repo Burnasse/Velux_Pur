@@ -29,6 +29,8 @@ import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FrustumCulling;
+import com.mygdx.game.Trigger;
+import com.mygdx.game.TriggersManager;
 import com.mygdx.game.controller.VillageController;
 import com.mygdx.game.physics.VillageContactListener;
 import com.mygdx.game.screen.GameScreen;
@@ -68,6 +70,7 @@ public class GenerateVillage {
     private Label interactLabel;
 
     private Array<NonPlayerCharacter> npcArray;
+    private TriggersManager triggersManager;
 
     /**
      * Instantiates a new Village.
@@ -123,26 +126,14 @@ public class GenerateVillage {
 
         frustum = new FrustumCulling(villageBuilder.getObjectsInstance(),environment,camera,modelBatch,shadowBatch);
 
-        /* Trigger: goToLevel() | index: 1 */
-        villageBuilder.createTrigger(new EntityPosition(-4.5f, 0, 0), .5f, 1, .5f);
-
-        /* Trigger: trader() | index: 2 */
-        villageBuilder.createTrigger(new EntityPosition(-0, 0, 0), .5f, 1, .5f);
-
-        /* Trigger: smith() | index: 3 */
-        villageBuilder.createTrigger(new EntityPosition(-5.5f, 0, 0), .5f, 1, .5f);
-
-        /* Trigger: changeLayout1 | index: 4 */
-        villageBuilder.createTrigger(new EntityPosition(4.0f, 0.25f, 0), 0.5f, 0.25f, .5f);
-
-        /* Trigger: changeLayout2 | index: 5 */
-        villageBuilder.createTrigger(new EntityPosition(4.0f, 0.25f, 3f), 0.5f, 0.25f, .5f);
-
-        /* Trigger: changeLayout3 | index: 6 */
-        villageBuilder.createTrigger(new EntityPosition(8f, 0.25f, 3), 0.5f, 0.25f, .5f);
-
-        /* Trigger: changeLayout4 | index: 7 */
-        villageBuilder.createTrigger(new EntityPosition(8f, 0.25f, 6), 0.5f, 0.25f, .5f);
+        triggersManager = new TriggersManager(villageBuilder.getWorld());
+        triggersManager.add("goToLevel",new Trigger(.5f, 1, .5f,new EntityPosition(-4.5f, 0, 0)));
+        triggersManager.add("trader",new Trigger(.5f, 1, .5f,new EntityPosition(-0, 0, 0)));
+        triggersManager.add("smith",new Trigger(.5f, 1, .5f,new EntityPosition(-5.5f, 0, 0)));
+        triggersManager.add("changeLayout1",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 0)));
+        triggersManager.add("changeLayout2",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 3f)));
+        triggersManager.add("changeLayout3",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(8f, 0.25f, 3)));
+        triggersManager.add("changeLayout4",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(8f, 0.25f, 6)));
 
         villageBuilder.createGround(0, 0, 0);
         villageBuilder.createGround(4, 0, 3f);
@@ -224,7 +215,7 @@ public class GenerateVillage {
 
         controller = new VillageController(this, player, animationController);
 
-        listener = new VillageContactListener(this, controller);
+        listener = new VillageContactListener(this, controller,triggersManager);
 
         Gdx.input.setInputProcessor(controller);
     }

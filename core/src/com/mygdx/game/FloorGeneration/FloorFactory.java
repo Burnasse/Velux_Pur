@@ -24,6 +24,7 @@ import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
 import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The type Floor factory generate a floor.
@@ -69,6 +70,8 @@ public class FloorFactory {
 
         btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
 
+        EntityPosition exitPosition = null;
+
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
@@ -78,6 +81,13 @@ public class FloorFactory {
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
+                }
+
+                if(exitPosition == null){
+                    exitPosition = new EntityPosition(
+                            ThreadLocalRandom.current().nextInt(room.getX1(), room.getX2())*blockSize,
+                            blockSize,
+                            ThreadLocalRandom.current().nextInt(room.getY1(), room.getY2())*blockSize);
                 }
             }
         }
@@ -127,7 +137,7 @@ public class FloorFactory {
 
         EntityPosition spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX() * blockSize, 5f, floor.getRooms().get(0).getCenter().getY() * blockSize);
 
-        return new FloorData(objectsInstances, entityMonsters, spawnPosition, minimap);
+        return new FloorData(objectsInstances, entityMonsters, spawnPosition, exitPosition, minimap);
 
     }
 }

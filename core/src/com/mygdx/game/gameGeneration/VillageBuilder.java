@@ -98,7 +98,7 @@ public class VillageBuilder {
                 | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE
                 | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         trigger.getEntity().getBody().setContactCallbackFlag(TRIGGER_FLAG);
-        world.addRigidBody((btRigidBody) trigger.getEntity().getBody());
+        world.addRigidBody(trigger.getEntity().getBody());
     }
 
     /**
@@ -155,7 +155,7 @@ public class VillageBuilder {
         obj.getEntity().getBody().setUserValue(objectsInstance.indexOf(obj.getEntity(), false) + 1);
         obj.getEntity().getBody().setCollisionFlags(obj.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         obj.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
-        world.addRigidBody((btRigidBody) obj.getEntity().getBody());
+        world.addRigidBody(obj.getEntity().getBody());
     }
 
     /**
