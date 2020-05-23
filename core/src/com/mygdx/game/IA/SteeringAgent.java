@@ -4,13 +4,13 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.math.Vector;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.physics.DynamicWorld;
-
 
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
@@ -110,7 +110,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     void Move(float time) {
-        instance.transform.trn(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+        instance.transform.trn(new EntityPosition(linearVelocity.x * time, 0, linearVelocity.z * time));
         position = instance.transform.getTranslation(new Vector3());
         linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
     }
@@ -120,12 +120,13 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     void Turn() {
-        Vector3 direction = new Vector3(target.vector.x - position.x, target.vector.y - position.y, target.vector.z - position.z);
-        direction = direction.nor();
+        Vector3 direction = new Vector3(target.vector.x - position.x, 0, target.vector.z - position.z);
+
         float newOrientation = vectorToAngle(direction);
-        if (Math.round(orientation * 10) / 10 != Math.round(newOrientation * 10) / 10) {
+
+        if (orientation != newOrientation) {
             this.orientation = newOrientation;
-            instance.transform.rotateRad(new Vector3(0, 1, 0), orientation);
+            instance.transform.set(instance.transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  180 - orientation));
         }
     }
 
@@ -156,20 +157,6 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     protected boolean playerInRoom() {
         Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
         return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 - 1 && playerPosition.z <= z2 + 1;
-    }
-
-    /**
-     * return an angle from characters linear velocity
-     *
-     * @param character the character from who the angle is taken
-     */
-
-    protected static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
-        // If we haven't got any velocity, then we can do nothing.
-        if (character.getLinearVelocity().isZero(character.getZeroLinearSpeedThreshold()))
-            return character.getOrientation();
-
-        return character.vectorToAngle(character.getLinearVelocity());
     }
 
     @Override
@@ -224,7 +211,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.z) * MathUtils.radiansToDegrees;
     }
 
     /**

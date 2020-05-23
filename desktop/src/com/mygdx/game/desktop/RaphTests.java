@@ -208,7 +208,7 @@ public class RaphTests extends ApplicationAdapter {
         cam.update();
 
 
-        playerController = new PlayerController(player);
+        playerController = new PlayerController(player,cam);
 
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();

@@ -23,7 +23,7 @@ public class Projectile {
 
     public EntityInstance instance;
     private Vector3 direction;
-    private float speed;
+    private final float speed;
     private float remainingTime = 1f;
     private boolean isDone = false;
 
