@@ -6,7 +6,6 @@ import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
@@ -158,20 +157,6 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
     protected boolean playerInRoom() {
         Vector3 playerPosition = player.getEntity().transform.getTranslation(new Vector3());
         return playerPosition.x >= x1 && playerPosition.x <= x2 && playerPosition.z >= z1 - 1 && playerPosition.z <= z2 + 1;
-    }
-
-    /**
-     * return an angle from characters linear velocity
-     *
-     * @param character the character from who the angle is taken
-     */
-
-    protected static <T extends Vector<T>> float calculateOrientationFromLinearVelocity(Steerable<T> character) {
-        // If we haven't got any velocity, then we can do nothing.
-        if (character.getLinearVelocity().isZero(character.getZeroLinearSpeedThreshold()))
-            return character.getOrientation();
-
-        return character.vectorToAngle(character.getLinearVelocity());
     }
 
     @Override
