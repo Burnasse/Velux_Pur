@@ -28,12 +28,14 @@ public class PlayerFactory {
         Model walkModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/walkG3D.g3db", Files.FileType.Internal));
         Model jumpModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/jumpG3D.g3db", Files.FileType.Internal));
         Model dodgeModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dodgeG3D.g3db", Files.FileType.Internal));
+        Model danceModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance.g3db", Files.FileType.Internal));
 
         idleModel.animations.get(0).id = "idle";
         runningModel.animations.get(0).id = "running";
         walkModel.animations.get(0).id = "walk";
         jumpModel.animations.get(0).id = "jump";
         dodgeModel.animations.get(0).id = "dodge";
+        danceModel.animations.get(0).id = "dance";
 
         player = new EntityPlayer("Player", idleModel, position);
 
@@ -41,11 +43,13 @@ public class PlayerFactory {
         player.getEntity().copyAnimation(walkModel.animations.get(0));
         player.getEntity().copyAnimation(jumpModel.animations.get(0));
         player.getEntity().copyAnimation(dodgeModel.animations.get(0));
+        player.getEntity().copyAnimation(danceModel.animations.get(0));
 
         runningModel.dispose();
         walkModel.dispose();
         jumpModel.dispose();
         dodgeModel.dispose();
+        danceModel.dispose();
 
         return player;
     }

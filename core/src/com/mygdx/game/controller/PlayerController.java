@@ -75,6 +75,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
             dodge();
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.H) && player.getEntity().getController().onGround()) {
+            dance();
+        }
         setMovement(speed);
 
         return true;
@@ -249,6 +252,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
             player.getEntity().getController().jump(new Vector3(8, 0, 0));
             dodgeAnimate();
         }
+    }
+    private void dance(){
+        animation.animate("dance", -1, 1.0f, null, 0.2f);
     }
 
     private void dodgeAnimate() {
