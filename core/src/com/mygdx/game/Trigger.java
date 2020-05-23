@@ -42,4 +42,8 @@ public class Trigger {
     public int getUserValue() {
         return userValue;
     }
+
+    public void dispose(){
+        instance.dispose();
+    }
 }

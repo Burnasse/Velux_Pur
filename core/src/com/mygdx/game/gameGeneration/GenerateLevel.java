@@ -20,6 +20,8 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
@@ -33,6 +35,7 @@ import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.Trigger;
 import com.mygdx.game.controller.PlayerController;
+import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
 import com.mygdx.game.ui.Minimap;
@@ -61,11 +64,21 @@ public class GenerateLevel {
         public boolean onContactAdded(int userValue0, int partId0, int index0, boolean match0, int userValue1, int partId1,
                                       int index1, boolean match1) {
 
-            if(match1){
-                if (userValue0 == exitTrigger.getUserValue())
-                    System.out.println("EXIT");
+            if (match1) {
+                if (userValue0 == exitTrigger.getUserValue()) {
+                    interactLabel.setVisible(true);
+                }
             }
             return true;
+        }
+
+        @Override
+        public void onContactEnded(int userValue0, boolean match0, int userValue1, boolean match1) {
+            if (match1) {
+                if (userValue0 == exitTrigger.getUserValue()) {
+                    interactLabel.setVisible(false);
+                }
+            }
         }
     }
 
@@ -93,7 +106,12 @@ public class GenerateLevel {
 
     private Trigger exitTrigger;
 
-    Array<EntityInstance> temp = new Array<>();
+    private Stage stage;
+    private Label interactLabel;
+
+    private Array<EntityInstance> temp;
+
+    private volatile boolean onLoad = false;
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
@@ -125,12 +143,14 @@ public class GenerateLevel {
         followLight = new PointLight().set(new Color(1, 0.6f, 0.4f, 1f), new Vector3(0, 0, 0), 5f);
         environment.add(followLight);
 
+        healthBar = new HealthBar();
+
         floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
         System.out.println(floorData.playerSpawnPosition);
         minimap = floorData.minimap;
-        healthBar = new HealthBar();
 
-        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel),2.5f,2.5f,2.5f, floorData.exitPositon);
+
+        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
         exitTrigger.addInWorld(world.dynamicsWorld);
 
         player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
@@ -158,6 +178,16 @@ public class GenerateLevel {
             monster.getBehavior().Surroundings(player, world);
         }
 
+        stage = new Stage();
+        interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
+        interactLabel.setVisible(false);
+        interactLabel.getStyle().fontColor.set(Color.WHITE);
+        interactLabel.setFontScale(1.1f);
+
+        interactLabel.setPosition(Gdx.graphics.getWidth() / 2 - interactLabel.getWidth() / 2, interactLabel.getHeight() * 10);
+        stage.addActor(interactLabel);
+        stage.act();
+
         cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(player.getEntity().transform.getValues()[12], 15, player.getEntity().transform.getValues()[14] - 1);
         cam.lookAt(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[13], player.getEntity().transform.getValues()[14] + 1);
@@ -169,6 +199,7 @@ public class GenerateLevel {
         for (EntityInstance instance : floorData.objectsInstances)
             instances.add(instance);
 
+        temp = new Array<>();
         frustum = new FrustumCulling(instances, environment, cam, modelBatch);
         tempFrustum = new FrustumCulling(temp, environment, cam, modelBatch);
 
@@ -190,6 +221,8 @@ public class GenerateLevel {
      * Render.
      */
     public void render() {
+        if (onLoad)
+            return;
 
         temp.clear();
         for (EntityMonster foe : floorData.entityMonsters) {
@@ -207,7 +240,7 @@ public class GenerateLevel {
         camFollowPlayer();
         cam.update();
 
-        for(EntityMonster monster : floorData.entityMonsters)
+        for (EntityMonster monster : floorData.entityMonsters)
             monster.getAnimationController().update(Gdx.graphics.getDeltaTime());
 
         followLight.position.x = player.getEntity().transform.getValues()[12];
@@ -221,6 +254,9 @@ public class GenerateLevel {
         modelBatch.render(player.getEntity(), environment);
         modelBatch.end();
 
+        stage.act();
+        stage.draw();
+
         minimap.render(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[14]);
         healthBar.render(100, player.getCharacteristics().getHealth());
 
@@ -231,6 +267,17 @@ public class GenerateLevel {
         }
 
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
+
+        if (interactLabel.isVisible() && Gdx.input.isKeyPressed(PrefKeys.Interact)) {
+            interactLabel.setVisible(false);
+            Gdx.app.postRunnable(new Runnable() {
+                @Override
+                public void run() {
+                    goToNextLevel();
+                }
+            });
+
+        }
     }
 
     public void resize(int width, int height) {
@@ -253,5 +300,63 @@ public class GenerateLevel {
         modelBatch.dispose();
         minimap.dispose();
         healthBar.dispose();
+    }
+
+    public void goToNextLevel() {
+        onLoad = true;
+
+
+        for (EntityInstance obj : floorData.objectsInstances) {
+            world.getDynamicsWorld().removeRigidBody(obj.getBody());
+            obj.dispose();
+        }
+
+        for(EntityInstance obj : temp){
+            world.getDynamicsWorld().removeRigidBody(obj.getBody());
+            obj.dispose();
+        }
+
+        temp.clear();
+        floorData.objectsInstances.clear();
+        minimap.dispose();
+
+        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
+        minimap = floorData.minimap;
+        minimap.clear();
+        player.getEntity().transform.trn(floorData.playerSpawnPosition);
+
+        //exitTrigger.getEntity().transform.trn(floorData.exitPositon);
+        world.getDynamicsWorld().removeRigidBody(exitTrigger.getEntity().getBody());
+        exitTrigger.dispose();
+        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
+        exitTrigger.addInWorld(world.dynamicsWorld);
+
+        for (EntityInstance obj : floorData.objectsInstances) {
+            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
+            obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            obj.getBody().setContactCallbackFlag(OBJECT_FLAG);
+            obj.getBody().setContactCallbackFilter(GROUND_FLAG);
+            world.addRigidBody(obj.getBody());
+        }
+
+        for (EntityMonster monster : floorData.entityMonsters) {
+            monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            monster.getEntity().getBody().setContactCallbackFilter(GROUND_FLAG);
+            world.addRigidBody(monster.getEntity().getBody());
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+            monster.getEntity().getBody().setContactCallbackFilter(0);
+            monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+            monster.getBehavior().Surroundings(player, world);
+        }
+
+        Array<EntityInstance> instances = new Array<>();
+        for (EntityInstance instance : floorData.objectsInstances)
+            instances.add(instance);
+
+        //temp = new Array<>();
+        frustum = new FrustumCulling(instances, environment, cam, modelBatch);
+        tempFrustum = new FrustumCulling(temp, environment, cam, modelBatch);
+
+        onLoad = false;
     }
 }

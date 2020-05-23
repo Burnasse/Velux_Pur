@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
+import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Position;
 
 import java.util.ArrayList;
@@ -30,15 +31,19 @@ public class Minimap {
     private final SpriteBatch spriteBatch;
     private final Texture wallTexture;
     private final Texture playerTexture;
+    private final Texture exitTexture;
     private Circle circle;
 
     private final float minimapSize = 150;
     private final float blockSize;
     private float realFloorSize;
+    private EntityPosition exitPosition;
+    private boolean exitIsVisible = false;
 
     ArrayList<CellMap> list = new ArrayList<>();
 
-    public Minimap(Position[][] level) {
+    public Minimap(Position[][] level, EntityPosition exitPosition) {
+        this.exitPosition = exitPosition;
         spriteBatch = new SpriteBatch();
         realFloorSize = level.length * 5;
         blockSize = minimapSize / level.length;
@@ -52,6 +57,11 @@ public class Minimap {
         pixmap.setColor(Color.RED);
         pixmap.fill();
         playerTexture = new Texture(pixmap);
+
+        pixmap = new Pixmap((int)blockSize,(int)blockSize, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.GREEN);
+        pixmap.fill();
+        exitTexture = new Texture(pixmap);
 
         pixmap.dispose();
 
@@ -69,8 +79,10 @@ public class Minimap {
     }
 
     public void render(float playerX, float playerZ) {
-        spriteBatch.begin();
 
+        float exitPosMapX = (Gdx.graphics.getWidth() - minimapSize-50 ) + minimapSize - ((exitPosition.x / realFloorSize) * minimapSize) - (blockSize);
+        float exitPosMapY = (Gdx.graphics.getHeight() - minimapSize-50 ) + ((exitPosition.z / realFloorSize) * minimapSize);
+        spriteBatch.begin();
         circle.setPosition(
                 (Gdx.graphics.getWidth() - minimapSize-50 ) + minimapSize - ((playerX / realFloorSize) * minimapSize) - (blockSize/2f),
                 (Gdx.graphics.getHeight() - minimapSize-50 ) + ((playerZ / realFloorSize) * minimapSize) + (blockSize/2f)
@@ -83,13 +95,23 @@ public class Minimap {
                 spriteBatch.draw(wallTexture, (Gdx.graphics.getWidth() - minimapSize - 50) + cell.x, (Gdx.graphics.getHeight() - minimapSize - 50) + cell.y);
         }
 
+        if(circle.contains(exitPosMapX, exitPosMapY))
+            exitIsVisible = true;
+
+        if(exitIsVisible)
+            spriteBatch.draw(exitTexture, exitPosMapX, exitPosMapY);
+
         spriteBatch.draw(playerTexture,circle.x-(blockSize/2f),circle.y-(blockSize/2f));
         spriteBatch.end();
-
     }
 
     public void dispose() {
         spriteBatch.dispose();
+    }
+
+    public void clear(){
+        for(CellMap cell : list)
+            cell.isVisibile = false;
     }
 }
 

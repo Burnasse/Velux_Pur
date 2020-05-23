@@ -25,4 +25,11 @@ public class TriggersManager {
     public int getUserValueOf(String name){
         return triggerList.get(name).getUserValue();
     }
+
+    public void dispose(){
+        for(Trigger trigger : triggerList.values()){
+            world.removeRigidBody(trigger.getEntity().getBody());
+            trigger.dispose();
+        }
+    }
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.MonsterFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Floor;
@@ -44,19 +45,12 @@ public class FloorFactory {
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
-        Minimap minimap = new Minimap(floor.getLayout());
-
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
 
         int x = 0;
         int y = 0;
         int z = 0;
-
-        Model enemyModel = assets.manager.get(Assets.enemyModel);
-
-        btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
-
 
         EntityPosition exitPosition = null;
 
@@ -65,13 +59,7 @@ public class FloorFactory {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, enemyShape, 15f, enemyPosition, "Gunner", room.getX1(), room.getY1(), room.getX2(), room.getY2());
-                    newMonster.getEntity().copyAnimation(assets.manager.get(Assets.enemyRun).animations.get(0));
-                    newMonster.getEntity().copyAnimation(assets.manager.get(Assets.enemyFire).animations.get(0));
-                    newMonster.getEntity().animations.get(0).id = "run";
-                    newMonster.getEntity().animations.get(1).id = "fire";
-                    newMonster.getAnimationController().animate("run", -1, 1.0f, null, 0.2f);
-                    newMonster.getEntity().transform.rotate(Vector3.Y,180);
+                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(),room.getY1(),room.getX2(),room.getY2());
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
@@ -85,6 +73,8 @@ public class FloorFactory {
                 }
             }
         }
+
+        Minimap minimap = new Minimap(floor.getLayout(), exitPosition);
 
         Model wallModel = assets.manager.get(Assets.wallLevel);
         Model ground = assets.manager.get(Assets.groundLevel);
