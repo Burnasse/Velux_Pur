@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
@@ -11,7 +12,6 @@ import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.physics.DynamicWorld;
-
 
 import java.util.Timer;
 import java.util.concurrent.ThreadLocalRandom;
@@ -111,7 +111,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     void Move(float time) {
-        instance.transform.trn(new EntityPosition(linearVelocity.x * time, linearVelocity.y * time, linearVelocity.z * time));
+        instance.transform.trn(new EntityPosition(linearVelocity.x * time, 0, linearVelocity.z * time));
         position = instance.transform.getTranslation(new Vector3());
         linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
     }
@@ -121,13 +121,13 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     void Turn() {
-        Vector3 direction = new Vector3(target.vector.x - position.x, target.vector.y - position.y, target.vector.z - position.z);
+        Vector3 direction = new Vector3(target.vector.x - position.x, 0, target.vector.z - position.z);
 
         float newOrientation = vectorToAngle(direction);
-        if (Math.round(orientation * 10) / 10 != Math.round(newOrientation * 10) / 10) {
+
+        if (orientation != newOrientation) {
             this.orientation = newOrientation;
-            instance.transform.set(position, new Quaternion(new Vector3(0, 1, 0), (float) ( newOrientation*57.2958)));
-            //body.setTransform(body.getPosition(),myDesiredAngle);
+            instance.transform.set(instance.transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  180 - orientation));
         }
     }
 
@@ -226,7 +226,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     @Override
     public float vectorToAngle(Vector3 vector) {
-        return (float) Math.atan2(-vector.x, vector.z);
+        return (float) Math.atan2(-vector.x, vector.z) * MathUtils.radiansToDegrees;
     }
 
     /**
