@@ -41,11 +41,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
      */
     private boolean lookDown = false;
 
-    /**
-     * If the player sprint
-     */
-    private boolean isSprint = false;
-
 
     /**
      * Instantiates a new Player controller.
@@ -61,19 +56,19 @@ public class PlayerController implements InputProcessor, ControllerListener {
         speed = 0;
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
-            moveLeft(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            moveLeft();
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
-            moveRight(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            moveRight();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up))) {
-            moveUp(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            moveUp();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down))) {
-            moveDown(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            moveDown();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.X) && player.getEntity().getController().onGround()) {
@@ -119,336 +114,189 @@ public class PlayerController implements InputProcessor, ControllerListener {
             System.out.println("OUHOUHOUHOUH");
         return true;
     }
-    private void moveLeft(boolean sprint) {
-        if (!lookLeft)
-            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-        lookLeft = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(1, 0, 0);
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+
+    private void moveLeft() {
+        if (lookLeft)
+            lookLeft = true;
+            animationRunLeft();
+
 
         if (lookRight)
             lookLeft = true;
-        lookRight = false;
-        player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(1, 0, 0);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookRight = false;
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+            animationRunLeft();
 
         if (lookUp)
-            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-        lookLeft = true;
-        lookUp = false;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(1, 0, 0);
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
+            lookLeft = true;
+            lookUp = false;
+            animationRunLeft();
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
 
         if (lookDown)
-            player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
-        lookLeft = true;
-        lookDown= false;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(1, 0, 0);
+            player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
+            lookLeft = true;
+            lookDown= false;
+            animationRunLeft();
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
 
     }
 
-    private void moveRight(boolean sprint) {
+
+    private void moveRight() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-        lookLeft = false;
-        lookRight = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(-1, 0, 0);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookRight = true;
+            animationRunRight();
 
         if (lookRight)
-        lookLeft = false;
-        lookRight = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(-1, 0, 0);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookRight = true;
+            animationRunRight();
 
         if (lookUp)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
-        lookLeft = false;
-        lookUp = false;
-        lookRight = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(-1, 0, 0);
+            lookLeft = false;
+            lookUp = false;
+            lookRight = true;
+            animationRunRight();
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
 
         if (lookDown)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-        lookLeft = false;
-        lookDown= false;
-        lookRight = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(-1, 0, 0);
+            lookLeft = false;
+            lookDown= false;
+            lookRight = true;
+            animationRunRight();
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
     }
 
 
-    private void moveUp(boolean sprint) {
+    private void moveUp() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
-        lookLeft = false;
-        lookUp = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, 1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookUp = true;
+            animationRunUp();
 
         if (lookRight)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-        lookLeft = false;
-        lookRight = false;
-        lookUp = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(1, 0, 1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookRight = false;
+            lookUp = true;
+            animationRunUp();
 
         if (lookUp)
-        lookLeft = false;
-        lookUp = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, 1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookUp = true;
+            animationRunUp();
 
         if (lookDown)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
-        lookLeft = false;
-        lookDown= false;
-        lookUp = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, 1);
+            lookLeft = false;
+            lookDown= false;
+            lookUp = true;
+            animationRunUp();
 
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
     }
 
-    private void moveDown(boolean sprint) {
+    private void moveDown() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
-        lookLeft = false;
-        lookDown= true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, -1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookLeft = false;
+            lookDown= true;
+            animationRunDown();
 
         if (lookRight)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
-        lookRight = false;
-        lookDown=true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, -1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookRight = false;
+            lookDown=true;
+            animationRunDown();
 
         if (lookUp)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), -180);
-        lookUp = false;
-        lookDown = true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, -1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
-        }
+            lookUp = false;
+            lookDown = true;
+            animationRunDown();
 
         if (lookDown)
-        lookDown= true;
-        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
-        walkDirection.add(0, 0, -1);
-
-        if (sprint || isSprint) {
-            animation.animate("running", -1, 1.0f, null, 0.2f);
-            speed = 3f;
-        } else {
-            animation.animate("walk", -1, 1.0f, null, 0.2f);
-            speed = 1.5f;
+            lookDown= true;
+            animationRunDown();
         }
-    }
 
 
 
     private void dodge() {
         if(lookRight){
-        player.getEntity().getController().jump(new Vector3(-5, 0, 0));
+            player.getEntity().getController().jump(new Vector3(-8, 0, 0));
+            dodgeAnimate();
+        }
+
+        if(lookUp){
+            player.getEntity().getController().jump(new Vector3(0, 0, 8));
+            dodgeAnimate();
+        }
+
+        if(lookDown){
+            player.getEntity().getController().jump(new Vector3(0, 0, -8));
+            dodgeAnimate();
+        }
+
+        if(lookLeft){
+            player.getEntity().getController().jump(new Vector3(8, 0, 0));
+            dodgeAnimate();
+        }
+    }
+
+    private void dodgeAnimate() {
         animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
             @Override
             public void onEnd(AnimationController.AnimationDesc anim) {
                 if (speed == 3)
                     animation.animate("running", -1, 1.0f, null, 0.2f);
-                else if (speed == 1.5f)
-                    animation.animate("walk", -1, 1.0f, null, 0.2f);
                 else
                     animation.animate("idle", -1, 1.0f, null, 0.2f);
+
                 setMovement(speed);
             }
 
             @Override
             public void onLoop(AnimationController.AnimationDesc animation) {
             }
-        }, 0.2f);}
+        }, 0.2f);
+    }
 
-        if(lookUp){
-            player.getEntity().getController().jump(new Vector3(0, 0, 5));
-            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
-                @Override
-                public void onEnd(AnimationController.AnimationDesc anim) {
-                    if (speed == 3)
-                        animation.animate("running", -1, 1.0f, null, 0.2f);
-                    else if (speed == 1.5f)
-                        animation.animate("walk", -1, 1.0f, null, 0.2f);
-                    else
-                        animation.animate("idle", -1, 1.0f, null, 0.2f);
+    private void animationRunLeft(){
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(1, 0, 0);
+        animation.animate("running", -1, 1.0f, null, 0.2f);
+        speed = 3f;
 
-                    setMovement(speed);
-                }
+    }
 
-                @Override
-                public void onLoop(AnimationController.AnimationDesc animation) {
-                }
-            }, 0.2f);}
+    private void animationRunRight(){
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(-1, 0, 0);
+        animation.animate("running", -1, 1.0f, null, 0.2f);
+        speed = 3f;
 
-        if(lookDown){
-            player.getEntity().getController().jump(new Vector3(0, 0, -5));
-            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
-                @Override
-                public void onEnd(AnimationController.AnimationDesc anim) {
-                    if (speed == 3)
-                        animation.animate("running", -1, 1.0f, null, 0.2f);
-                    else if (speed == 1.5f)
-                        animation.animate("walk", -1, 1.0f, null, 0.2f);
-                    else
-                        animation.animate("idle", -1, 1.0f, null, 0.2f);
+    }
+    private void animationRunUp(){
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, 1);
+        animation.animate("running", -1, 1.0f, null, 0.2f);
+        speed = 3f;
 
-                    setMovement(speed);
-                }
+    }
+    private void animationRunDown(){
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
+        walkDirection.add(0, 0, -1);
+        animation.animate("running", -1, 1.0f, null, 0.2f);
+        speed = 3f;
 
-                @Override
-                public void onLoop(AnimationController.AnimationDesc animation) {
-                }
-            }, 0.2f);}
-
-        if(lookLeft){
-            player.getEntity().getController().jump(new Vector3(5, 0, 0));
-            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
-                @Override
-                public void onEnd(AnimationController.AnimationDesc anim) {
-                    if (speed == 3)
-                        animation.animate("running", -1, 1.0f, null, 0.2f);
-                    else if (speed == 1.5f)
-                        animation.animate("walk", -1, 1.0f, null, 0.2f);
-                    else
-                        animation.animate("idle", -1, 1.0f, null, 0.2f);
-
-                    setMovement(speed);
-                }
-
-                @Override
-                public void onLoop(AnimationController.AnimationDesc animation) {
-                }
-            }, 0.2f);}
     }
 
     @Override
