@@ -76,6 +76,10 @@ public class PlayerController implements InputProcessor, ControllerListener {
             moveDown(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.X) && player.getEntity().getController().onGround()) {
+            dodge();
+        }
+
         setMovement(speed);
 
         return true;
@@ -118,6 +122,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private void moveLeft(boolean sprint) {
         if (!lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
+        lookLeft = true;
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         walkDirection.add(1, 0, 0);
 
@@ -363,8 +368,11 @@ public class PlayerController implements InputProcessor, ControllerListener {
         }
     }
 
+
+
     private void dodge() {
-        player.getEntity().getController().jump(new Vector3(3, 0, 0));
+        if(lookRight){
+        player.getEntity().getController().jump(new Vector3(-5, 0, 0));
         animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
             @Override
             public void onEnd(AnimationController.AnimationDesc anim) {
@@ -374,12 +382,73 @@ public class PlayerController implements InputProcessor, ControllerListener {
                     animation.animate("walk", -1, 1.0f, null, 0.2f);
                 else
                     animation.animate("idle", -1, 1.0f, null, 0.2f);
+                setMovement(speed);
             }
 
             @Override
             public void onLoop(AnimationController.AnimationDesc animation) {
             }
-        }, 0.2f);
+        }, 0.2f);}
+
+        if(lookUp){
+            player.getEntity().getController().jump(new Vector3(0, 0, 5));
+            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
+                @Override
+                public void onEnd(AnimationController.AnimationDesc anim) {
+                    if (speed == 3)
+                        animation.animate("running", -1, 1.0f, null, 0.2f);
+                    else if (speed == 1.5f)
+                        animation.animate("walk", -1, 1.0f, null, 0.2f);
+                    else
+                        animation.animate("idle", -1, 1.0f, null, 0.2f);
+
+                    setMovement(speed);
+                }
+
+                @Override
+                public void onLoop(AnimationController.AnimationDesc animation) {
+                }
+            }, 0.2f);}
+
+        if(lookDown){
+            player.getEntity().getController().jump(new Vector3(0, 0, -5));
+            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
+                @Override
+                public void onEnd(AnimationController.AnimationDesc anim) {
+                    if (speed == 3)
+                        animation.animate("running", -1, 1.0f, null, 0.2f);
+                    else if (speed == 1.5f)
+                        animation.animate("walk", -1, 1.0f, null, 0.2f);
+                    else
+                        animation.animate("idle", -1, 1.0f, null, 0.2f);
+
+                    setMovement(speed);
+                }
+
+                @Override
+                public void onLoop(AnimationController.AnimationDesc animation) {
+                }
+            }, 0.2f);}
+
+        if(lookLeft){
+            player.getEntity().getController().jump(new Vector3(5, 0, 0));
+            animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
+                @Override
+                public void onEnd(AnimationController.AnimationDesc anim) {
+                    if (speed == 3)
+                        animation.animate("running", -1, 1.0f, null, 0.2f);
+                    else if (speed == 1.5f)
+                        animation.animate("walk", -1, 1.0f, null, 0.2f);
+                    else
+                        animation.animate("idle", -1, 1.0f, null, 0.2f);
+
+                    setMovement(speed);
+                }
+
+                @Override
+                public void onLoop(AnimationController.AnimationDesc animation) {
+                }
+            }, 0.2f);}
     }
 
     @Override
