@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -121,11 +122,12 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
     void Turn() {
         Vector3 direction = new Vector3(target.vector.x - position.x, target.vector.y - position.y, target.vector.z - position.z);
-        direction = direction.nor();
+
         float newOrientation = vectorToAngle(direction);
         if (Math.round(orientation * 10) / 10 != Math.round(newOrientation * 10) / 10) {
             this.orientation = newOrientation;
-            instance.transform.rotateRad(new Vector3(0, 1, 0), orientation);
+            instance.transform.set(position, new Quaternion(new Vector3(0, 1, 0), (float) ( newOrientation*57.2958)));
+            //body.setTransform(body.getPosition(),myDesiredAngle);
         }
     }
 
