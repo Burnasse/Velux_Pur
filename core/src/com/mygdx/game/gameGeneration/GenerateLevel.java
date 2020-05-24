@@ -106,7 +106,10 @@ public class GenerateLevel {
     private PlayerController playerController;
     private MyContactListener contactListener;
     private AnimationController animationController;
+
     private Music musicLevel;
+    private Music ambianceDungeon;
+
     private Minimap minimap;
     private HealthBar healthBar;
 
@@ -133,8 +136,14 @@ public class GenerateLevel {
 
         musicLevel =Gdx.audio.newMusic(Gdx.files.internal("musicLevel.mp3"));
         musicLevel.setLooping(true);
-        musicLevel.setVolume(0.05f);
+        musicLevel.setVolume(0.06f);
         musicLevel.play();
+
+        ambianceDungeon =Gdx.audio.newMusic(Gdx.files.internal("ambianceDungeon.wav"));
+        ambianceDungeon.setLooping(true);
+        ambianceDungeon.setVolume(0.1f);
+        ambianceDungeon.play();
+
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
             world = new DynamicWorld(debugDrawer);
@@ -320,6 +329,7 @@ public class GenerateLevel {
         minimap.dispose();
         healthBar.dispose();
         musicLevel.dispose();
+        ambianceDungeon.dispose();
     }
 
     public void goToNextLevel() {

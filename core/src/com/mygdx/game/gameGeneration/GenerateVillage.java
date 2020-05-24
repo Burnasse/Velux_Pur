@@ -62,7 +62,10 @@ public class GenerateVillage {
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
+
     private Music musicVillage;
+    private Music ambianceVillage;
+
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
     private Label interactLabel;
@@ -100,8 +103,13 @@ public class GenerateVillage {
 
         musicVillage =Gdx.audio.newMusic(Gdx.files.internal("musicVillage.mp3"));
         musicVillage.setLooping(true);
-        musicVillage.setVolume(0.05f);
+        musicVillage.setVolume(0.1f);
         musicVillage.play();
+
+        ambianceVillage =Gdx.audio.newMusic(Gdx.files.internal("ambianceVillage.wav"));
+        ambianceVillage.setLooping(true);
+        ambianceVillage.setVolume(0.05f);
+        ambianceVillage.play();
         
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
@@ -295,6 +303,7 @@ public class GenerateVillage {
         triggersManager.dispose();
         villageBuilder.dispose();
         musicVillage.dispose();
+        ambianceVillage.dispose();
         player.dispose();
         if (debugDrawer != null) debugDrawer.dispose();
         Controllers.removeListener(controller);
