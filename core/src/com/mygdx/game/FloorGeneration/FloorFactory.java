@@ -1,19 +1,12 @@
 package com.mygdx.game.FloorGeneration;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
+import com.mygdx.game.Entity.MonsterFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Floor;
@@ -24,6 +17,7 @@ import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
 import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The type Floor factory generate a floor.
@@ -51,8 +45,6 @@ public class FloorFactory {
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
-        Minimap minimap = new Minimap(floor.getLayout());
-
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
 
@@ -60,27 +52,29 @@ public class FloorFactory {
         int y = 0;
         int z = 0;
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-        modelBuilder.begin();
-        modelBuilder.node().id = "box";
-        MeshPartBuilder builder = modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Generic, new Material(ColorAttribute.createDiffuse(Color.RED)));
-        BoxShapeBuilder.build(builder, 0.3f, 0.3f, 0.3f);
-        Model enemyModel = modelBuilder.end();
-
-        btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
+        EntityPosition exitPosition = null;
 
         for (Room room : floor.getRooms()) {
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = new EntityMonster("méchant monsieur", enemyModel, enemyShape, 15f, enemyPosition, "Gunner", room.getX1(), room.getY1(), room.getX2(), room.getY2());
+                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(),room.getY1(),room.getX2(),room.getY2());
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
                 }
+
+                if(exitPosition == null){
+                    exitPosition = new EntityPosition(
+                            ThreadLocalRandom.current().nextInt(room.getX1(), room.getX2())*blockSize,
+                            blockSize,
+                            ThreadLocalRandom.current().nextInt(room.getY1(), room.getY2())*blockSize);
+                }
             }
         }
+
+        Minimap minimap = new Minimap(floor.getLayout(), exitPosition);
 
         Model wallModel = assets.manager.get(Assets.wallLevel);
         Model ground = assets.manager.get(Assets.groundLevel);
@@ -127,7 +121,7 @@ public class FloorFactory {
 
         EntityPosition spawnPosition = new EntityPosition(floor.getRooms().get(0).getCenter().getX() * blockSize, 5f, floor.getRooms().get(0).getCenter().getY() * blockSize);
 
-        return new FloorData(objectsInstances, entityMonsters, spawnPosition, minimap);
+        return new FloorData(objectsInstances, entityMonsters, spawnPosition, exitPosition, minimap);
 
     }
 }

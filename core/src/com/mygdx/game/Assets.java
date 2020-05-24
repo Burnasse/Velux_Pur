@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -9,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class Assets {
 
     public AssetManager manager = new AssetManager();
+
+    public static final AssetDescriptor<Texture> mainBackground =
+            new AssetDescriptor<Texture>("PhotoMenuVelux.jpeg", Texture.class);
 
     /* Load UI */
     public static final AssetDescriptor<TextureAtlas> menuTextureAltas =
@@ -47,13 +51,25 @@ public class Assets {
     /* Load floor */
     public static final AssetDescriptor<Model> wallLevel =
             new AssetDescriptor<Model>("wallG3D.g3db", Model.class);
+
     public static final AssetDescriptor<Model> groundLevel =
             new AssetDescriptor<Model>("ground.g3db", Model.class);
+
+    /* Load enemy*/
+    public static final AssetDescriptor<Model> enemyModel =
+            new AssetDescriptor<Model>("enemies/enemyG3D.g3db", Model.class);
+
+    public static final AssetDescriptor<Model> enemyRun =
+            new AssetDescriptor<Model>("enemies/enemyRunG3D.g3db", Model.class);
+
+    public static final AssetDescriptor<Model> enemyFire =
+            new AssetDescriptor<Model>("enemies/enemyFireG3D.g3db", Model.class);
 
     /**
      * Load elements specific to the menu
      */
     public void loadMenu(){
+        manager.load(mainBackground);
         manager.load(menuSkin);
         manager.load(menuTextureAltas);
     }
@@ -82,6 +98,9 @@ public class Assets {
     public void loadLevel(){
         manager.load(wallLevel);
         manager.load(groundLevel);
+        manager.load(enemyModel);
+        manager.load(enemyRun);
+        manager.load(enemyFire);
     }
 
     /**

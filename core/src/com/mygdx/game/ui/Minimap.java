@@ -5,72 +5,113 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorLayout.Position;
 
-public class Minimap{
+import java.util.ArrayList;
 
-    private final Texture texture;
+public class Minimap {
+
+    static class CellMap{
+        public float x;
+        public float y;
+        public boolean isVisibile = false;
+
+        public CellMap(float x, float y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public void setVisibile(){
+            isVisibile = true;
+        }
+    }
+
     private final SpriteBatch spriteBatch;
-    private final ShapeRenderer shapeRenderer;
+    private final Texture wallTexture;
+    private final Texture playerTexture;
+    private final Texture exitTexture;
+    private Circle circle;
 
-    private final int floorLength;
-    private final int minimapSize = 150;
-    private final int blockSize;
+    private final float minimapSize = 150;
+    private final float blockSize;
+    private float realFloorSize;
+    private EntityPosition exitPosition;
+    private boolean exitIsVisible = false;
 
-    public Minimap(Position[][] level){
-        shapeRenderer = new ShapeRenderer();
+    ArrayList<CellMap> list = new ArrayList<>();
+
+    public Minimap(Position[][] level, EntityPosition exitPosition) {
+        this.exitPosition = exitPosition;
         spriteBatch = new SpriteBatch();
-        floorLength = level.length;
-        blockSize = minimapSize/level.length;
-        Pixmap pixmap = new Pixmap(2+minimapSize, 2+minimapSize, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+        realFloorSize = level.length * 5;
+        blockSize = minimapSize / level.length;
+
+        Pixmap pixmap = new Pixmap((int)blockSize+1,(int)blockSize+1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        wallTexture = new Texture(pixmap);
+
+        pixmap = new Pixmap((int)blockSize,(int)blockSize, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.RED);
+        pixmap.fill();
+        playerTexture = new Texture(pixmap);
+
+        pixmap = new Pixmap((int)blockSize,(int)blockSize, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.GREEN);
+        pixmap.fill();
+        exitTexture = new Texture(pixmap);
+
+        pixmap.dispose();
+
+        circle = new Circle(0,0,20);
 
         for (int i = 0; i < level[0].length; i++) {
             for (int j = 0; j < level.length; j++) {
-                if(i == 0 || j == 0 || i == level[0].length-1 || j == level.length-1) {
-                    pixmap.fillRectangle(i* blockSize,j* blockSize, blockSize, blockSize);
-                }
-                else if(level[i][j].getContent() == 'a'){
-                    pixmap.fillRectangle(i* blockSize,j* blockSize, blockSize, blockSize);
+                if (i == 0 || j == 0 || i == level[0].length - 1 || j == level.length - 1) {
+                    list.add(new CellMap(((level.length-1)-i) * blockSize, j * blockSize));
+                } else if (level[i][j].getContent() == 'a') {
+                    list.add(new CellMap(((level.length-1)-i) * blockSize, j * blockSize));
                 }
             }
         }
-
-        texture = new Texture( pixmap );
-        pixmap.dispose();
     }
 
-    public void render(float playerX, float playerZ){
+    public void render(float playerX, float playerZ) {
+
+        float exitPosMapX = (Gdx.graphics.getWidth() - minimapSize-50 ) + minimapSize - ((exitPosition.x / realFloorSize) * minimapSize) - (blockSize);
+        float exitPosMapY = (Gdx.graphics.getHeight() - minimapSize-50 ) + ((exitPosition.z / realFloorSize) * minimapSize);
         spriteBatch.begin();
-        spriteBatch.draw(
-                texture,
-                Gdx.graphics.getWidth()-texture.getWidth()*1.25f,
-                Gdx.graphics.getHeight()-texture.getHeight()*1.25f,
-                texture.getWidth(),
-                texture.getHeight(),
-                0,
-                0,
-                texture.getWidth(),
-                texture.getHeight(),
-                true,
-                true
+        circle.setPosition(
+                (Gdx.graphics.getWidth() - minimapSize-50 ) + minimapSize - ((playerX / realFloorSize) * minimapSize) - (blockSize/2f),
+                (Gdx.graphics.getHeight() - minimapSize-50 ) + ((playerZ / realFloorSize) * minimapSize) + (blockSize/2f)
         );
-        spriteBatch.end();
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.RED);
-        shapeRenderer.circle(
-                (Gdx.graphics.getWidth()-texture.getWidth()*0.25f) - (playerX/floorLength)*(blockSize *4)-(blockSize /2),
-                (Gdx.graphics.getHeight()-texture.getHeight()*1.25f) + (playerZ/floorLength)*(blockSize *4)+(blockSize/2),
-                blockSize/2
-        );
-        shapeRenderer.end();
+        for (CellMap cell : list) {
+            if(circle.contains((Gdx.graphics.getWidth() - minimapSize - 50) + cell.x,(Gdx.graphics.getHeight() - minimapSize - 50) + cell.y))
+                cell.setVisibile();
+            if(cell.isVisibile)
+                spriteBatch.draw(wallTexture, (Gdx.graphics.getWidth() - minimapSize - 50) + cell.x, (Gdx.graphics.getHeight() - minimapSize - 50) + cell.y);
+        }
+
+        if(circle.contains(exitPosMapX, exitPosMapY))
+            exitIsVisible = true;
+
+        if(exitIsVisible)
+            spriteBatch.draw(exitTexture, exitPosMapX, exitPosMapY);
+
+        spriteBatch.draw(playerTexture,circle.x-(blockSize/2f),circle.y-(blockSize/2f));
+        spriteBatch.end();
     }
 
-    public void dispose(){
-        texture.dispose();
+    public void dispose() {
         spriteBatch.dispose();
-        shapeRenderer.dispose();
+    }
+
+    public void clear(){
+        for(CellMap cell : list)
+            cell.isVisibile = false;
     }
 }
+

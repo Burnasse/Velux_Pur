@@ -5,6 +5,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.Assets;
@@ -23,6 +25,9 @@ public class MainMenuScreen implements Screen, StageManager {
     private ScreenViewport viewport = new ScreenViewport();
     private MenuManager menuManager;
     private MainMenu mainMenu;
+
+    private TextureRegion mainBackground;
+    private SpriteBatch batch;
 
     private HealthBar healthBar;
     /**
@@ -48,6 +53,9 @@ public class MainMenuScreen implements Screen, StageManager {
         menuManager.addMenuStage("Audio", new AudioMenu(this, assets));
         menuManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
         menuManager.addMenuStage("Controls", new ControlsMenu(this, assets));
+
+        mainBackground = new TextureRegion(assets.manager.get(Assets.mainBackground), 0, 0, 1789, 1440);
+        batch = new SpriteBatch();
     }
 
     @Override
@@ -65,6 +73,10 @@ public class MainMenuScreen implements Screen, StageManager {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.9f, 0.9f, 0.9f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        batch.begin();
+        batch.draw(mainBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
 
         stage.act(delta);
         stage.draw();
