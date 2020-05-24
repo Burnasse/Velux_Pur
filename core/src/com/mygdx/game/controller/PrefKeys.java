@@ -25,6 +25,8 @@ public class PrefKeys {
     public static int Left = Input.Keys.Q;
     public static int Right = Input.Keys.D;
 
+    public static int Interact = Input.Keys.F;
+
     public static int C = Input.Keys.C;
     public static int LeftClick = Input.Buttons.LEFT;
 
@@ -39,12 +41,13 @@ public class PrefKeys {
         Down = pref.getInteger("Down", Down);
         Left = pref.getInteger("Left", Left);
         Right = pref.getInteger("Right", Right);
+        Interact = pref.getInteger("Interact", Interact);
 
         keyMap.put("Up", Up);
         keyMap.put("Down", Down);
         keyMap.put("Left", Left);
         keyMap.put("Right", Right);
-
+        keyMap.put("Interact", Interact);
     }
 
     /**

@@ -1,10 +1,7 @@
 package com.mygdx.game.Entity;
 
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.utils.UBJsonReader;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.utils.EntityPosition;
 
 /**
@@ -15,11 +12,13 @@ public class PlayerFactory {
     /**
      * Create entity player.
      *
+     * @param assets the assets
      * @param position the position
      * @return the entity player
      */
-    public static EntityPlayer create(EntityPosition position) {
+    public static EntityPlayer create(EntityPosition position, Assets assets) {
         EntityPlayer player;
+
 
         UBJsonReader jsonReader = new UBJsonReader();
         G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
@@ -56,16 +55,6 @@ public class PlayerFactory {
         player.getEntity().copyAnimation(macarenaModel.animations.get(0));
         player.getEntity().copyAnimation(shuffleModel.animations.get(0));
         player.getEntity().copyAnimation(thrillerModel.animations.get(0));
-
-        runningModel.dispose();
-        walkModel.dispose();
-        jumpModel.dispose();
-        dodgeModel.dispose();
-        danceModel.dispose();
-        chickenModel.dispose();
-        macarenaModel.dispose();
-        shuffleModel.dispose();
-        thrillerModel.dispose();
 
         return player;
     }

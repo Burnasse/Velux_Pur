@@ -1,0 +1,101 @@
+{
+BitmapFont: {
+	font: {
+		file: AnyConv.com__Quicksand_Book.fnt
+	}
+}
+Color: {
+	dark: {
+		r: 0.14666666
+		g: 0.14666666
+		b: 0.14666666
+		a: 1
+	}
+	white: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+}
+ButtonStyle: {
+	default: {
+		up: buttonNormal
+		down: buttonSelect
+		over: buttonSelect
+		focused: buttonSelect
+		checked: buttonSelect
+		checkedOver: buttonNormal
+		checkedFocused: buttonSelect
+		disabled: buttonSelect
+	}
+}
+CheckBoxStyle: {
+	default: {
+		checkboxOn: checkon
+		checkboxOff: checkoff
+		font: font
+		fontColor: dark
+	}
+}
+LabelStyle: {
+	default: {
+		font: font
+		fontColor: dark
+	}
+}
+ListStyle: {
+	default: {
+		font: font
+		fontColorSelected: white
+		fontColorUnselected: white
+		selection: buttonSelect
+	}
+}
+ScrollPaneStyle: {
+	default: {
+		background: buttonNormal
+	}
+}
+SelectBoxStyle: {
+	default: {
+		font: font
+		fontColor: white
+		background: selectselect
+		scrollStyle: default
+		listStyle: default
+	}
+}
+SliderStyle: {
+	default-horizontal: {
+		background: slider
+		knob: knob
+	}
+}
+TextButtonStyle: {
+	default: {
+		font: font
+		fontColor: white
+		up: buttonNormal
+		down: buttonSelect
+		over: buttonSelect
+		focused: buttonSelect
+		checked: buttonSelect
+		checkedOver: buttonSelect
+		checkedFocused: buttonSelect
+		disabled: buttonSelect
+	}
+}
+TextTooltipStyle: {
+	default: {
+		label: default
+	}
+}
+WindowStyle: {
+	default: {
+		background: buttonTransparent
+		titleFont: font
+		titleFontColor: white
+	}
+}
+}

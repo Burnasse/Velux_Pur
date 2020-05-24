@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.controller.ButtonStageController;
 import com.mygdx.game.scene.menu.*;
@@ -29,7 +29,7 @@ public class GameScreen implements Screen, StageManager {
     /**
      * Used to display properly the menu
      */
-    private Viewport viewport = new ScreenViewport();
+    private ScreenViewport viewport = new ScreenViewport();
 
     /**
      * Used to display all elements of the menu
@@ -38,6 +38,7 @@ public class GameScreen implements Screen, StageManager {
     private Boolean isInMenu = false;
 
     private VeluxPurGame manager;
+    private Assets assets;
 
     /**
      * Instantiates a new GameScreen.
@@ -45,8 +46,12 @@ public class GameScreen implements Screen, StageManager {
      *
      * @param manager the main class who manage all screen
      */
-    public GameScreen(VeluxPurGame manager) {
+    public GameScreen(VeluxPurGame manager, Assets assets) {
         this.manager = manager;
+        this.assets = assets;
+        assets.loadGame();
+        assets.loadVillage();
+        assets.manager.finishLoading();
     }
 
     @Override
@@ -63,7 +68,7 @@ public class GameScreen implements Screen, StageManager {
                 village.setController();
                 isInMenu = false;
             } else {
-                stage = stageManager.getStageByName("Main");
+                stage = stageManager.getStageByName("Main").getStage();
                 Controllers.clearListeners();
                 Controllers.addListener((ButtonStageController)menu.getStage());
                 Gdx.input.setInputProcessor(stage);
@@ -80,6 +85,8 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void resize(int width, int height) {
+        village.resize(width,height);
+        viewport.update(width,height,true);
     }
 
     @Override
@@ -111,20 +118,25 @@ public class GameScreen implements Screen, StageManager {
 
     @Override
     public void initScreen() {
-
-        village = new GenerateVillage(this,true);
+        village = new GenerateVillage(this,assets,false);
         village.create();
 
-        menu = new MainMenu(this, viewport, true);
+        menu = new MainMenu(this, viewport, true, assets);
         stageManager = new MenuManager();
-        stageManager.addStage("Main", menu.getStage());
-        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
-        stageManager.addStage("Audio", new AudioMenu(this).getStage());
-        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+        stageManager.addMenuStage("Main", menu);
+        stageManager.addMenuStage("Settings", new SettingsMenu(this, assets));
+        stageManager.addMenuStage("Audio", new AudioMenu(this, assets));
+        stageManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
+        stageManager.addMenuStage("Controls", new ControlsMenu(this, assets));
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return viewport;
     }
 
     public void goToLevel(){
-        manager.changeScreen(new LevelScreen(manager));
+        assets.unloadVillage();
+        manager.changeScreen(new LevelScreen(manager, assets));
     }
 }

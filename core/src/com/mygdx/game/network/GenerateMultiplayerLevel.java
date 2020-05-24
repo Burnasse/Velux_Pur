@@ -131,10 +131,11 @@ public class GenerateMultiplayerLevel implements Screen {
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         camController = new CameraInputController(cam);
-
+      
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player,animationController);
+        playerController = new PlayerController(player,animationController,cam);
+
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);

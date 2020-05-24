@@ -7,12 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.mygdx.game.Assets;
 import com.mygdx.game.PreferencesManager;
+import com.mygdx.game.controller.ButtonStageController;
+import com.mygdx.game.controller.DisplayButtonHandler;
 import com.mygdx.game.controller.KeyBindingController;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.screen.StageManager;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -20,21 +24,21 @@ import java.util.Map;
  */
 public class ControlsMenu implements MenuStage {
 
-    private Stage stage;
+    private ButtonStageController stage;
 
     /**
      * Instantiates a new Controls menu.
      *
      * @param manager the manager
      */
-    public ControlsMenu(final StageManager manager) {
-        stage = new Stage();
+    public ControlsMenu(final StageManager manager, Assets assets) {
 
-        Table table = createListKey();
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        LinkedList<TextButton> buttons = new LinkedList<>();
+
+        Table table = createListKey(skin,buttons);
 
         TextButton buttonApply = new TextButton("Apply", skin);
 
@@ -57,25 +61,26 @@ public class ControlsMenu implements MenuStage {
         table.add(buttonApply).colspan(1).space(10);
         table.add(buttonBack).colspan(2).space(10);
 
-
         Container<Table> container = new Container<>();
         container.setFillParent(true);
         container.setActor(table);
 
+        stage = new ButtonStageController(manager.getViewport(), new DisplayButtonHandler(buttons));
+
         stage.addActor(container);
         stage.act();
+
+        buttons.add(buttonApply);
+        buttons.add(buttonBack);
+
     }
 
-    private Table createListKey() {
+    private Table createListKey(Skin skin, LinkedList<TextButton> buttons) {
         PreferencesManager pref = new PreferencesManager();
         final KeyBindingController controller = new KeyBindingController(pref);
 
         final HashMap<String, Integer> keyMap = PrefKeys.getKeyMap();
         System.out.println(keyMap.size());
-
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
 
         Table table = new Table();
 
@@ -96,6 +101,8 @@ public class ControlsMenu implements MenuStage {
             table.add(label).colspan(1).space(10);
             table.add(textButton).colspan(2).space(10);
             table.row();
+
+            buttons.add(textButton);
         }
 
         return table;
@@ -103,5 +110,9 @@ public class ControlsMenu implements MenuStage {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public void dispose(){
+        stage.dispose();
     }
 }

@@ -22,7 +22,11 @@ public class VeluxPurGame extends Game {
         pref.initializePrefs();
         PrefKeys.initKeys(pref.getPreferences());
 
-        menuScreen = new MainMenuScreen(this);
+        Assets assets = new Assets();
+        assets.loadMenu();
+        assets.manager.finishLoading();
+
+        menuScreen = new MainMenuScreen(this, assets);
         backToMenu();
     }
 
@@ -42,7 +46,6 @@ public class VeluxPurGame extends Game {
                     previousScreen.dispose();
                 }
             });
-
         }
     }
 

@@ -9,8 +9,10 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.screen.StageManager;
 
@@ -26,16 +28,15 @@ public class AdvancedMenu implements MenuStage {
      *
      * @param manager the manager
      */
-    public AdvancedMenu(final StageManager manager) {
+    public AdvancedMenu(final StageManager manager, Assets assets) {
         final PreferencesManager prefs = new PreferencesManager();
 
         stage = new Stage(new ScreenViewport());
 
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
-        CheckBox checkBox = new CheckBox("Fullscreen", skin);
+        CheckBox checkBox = new CheckBox(" Fullscreen", skin);
 
         if (prefs.getPreferences().getBoolean("isFullscreen"))
             checkBox.setChecked(true);
@@ -58,6 +59,7 @@ public class AdvancedMenu implements MenuStage {
         }
 
         selectBox.setItems(list);
+        selectBox.setAlignment(Align.center);
         String select = prefs.getPreferences().getInteger("width") + "x" + prefs.getPreferences().getInteger("height");
         selectBox.setSelected(select);
 
@@ -82,6 +84,7 @@ public class AdvancedMenu implements MenuStage {
         group.addActor(checkBox);
         group.addActor(selectBox);
         group.addActor(backButton);
+        group.space(10);
 
         Container<VerticalGroup> container = new Container<>();
         container.setActor(group);
@@ -93,5 +96,10 @@ public class AdvancedMenu implements MenuStage {
 
     public Stage getStage() {
         return stage;
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 }

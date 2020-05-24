@@ -10,7 +10,7 @@ import java.util.LinkedList;
  */
 public class DisplayButtonHandler {
 
-    private LinkedList<TextButton> buttonGroup = new LinkedList<>();
+    private LinkedList<TextButton> buttonGroup;
     private int currentButton = 0;
 
     /**
@@ -19,9 +19,16 @@ public class DisplayButtonHandler {
      * @param buttons the buttons
      */
     public DisplayButtonHandler(TextButton... buttons) {
+        buttonGroup = new LinkedList<>();
         Collections.addAll(buttonGroup, buttons);
         buttonGroup.get(0).setChecked(true);
     }
+
+    public DisplayButtonHandler(LinkedList<TextButton> buttons) {
+        buttonGroup = buttons;
+        buttonGroup.get(0).setChecked(true);
+    }
+
 
     /**
      * Increment currentButton and Select the button on new currentButton index
@@ -63,6 +70,10 @@ public class DisplayButtonHandler {
         for (TextButton currentButton : buttonGroup) {
             currentButton.setChecked(false);
         }
+    }
+
+    public void addButton(TextButton button){
+        buttonGroup.add(button);
     }
 
 }

@@ -3,10 +3,9 @@ package com.mygdx.game.gameGeneration;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -15,6 +14,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -28,16 +28,24 @@ import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
  */
 public class VillageBuilder {
 
+    private Assets assets;
+
     private DynamicWorld world;
     private Array<EntityInstance> objectsInstance;
+    private Array<ModelInstance> boxLightInstance;
+
     private ModelInstance sky;
     private ModelInstance background;
+
+    private Model groundModel;
+    private Model boxLightModel;
 
     /**
      * Instantiates a new Village builder.
      */
-    public VillageBuilder() {
+    public VillageBuilder(Assets assets) {
         world = new DynamicWorld();
+        this.assets = assets;
         init();
     }
 
@@ -46,25 +54,30 @@ public class VillageBuilder {
      *
      * @param debugDrawer the debug drawer
      */
-    public VillageBuilder(DebugDrawer debugDrawer) {
+    public VillageBuilder(Assets assets, DebugDrawer debugDrawer) {
         world = new DynamicWorld(debugDrawer);
+        this.assets = assets;
         init();
     }
 
     private void init() {
         objectsInstance = new Array<>();
+        boxLightInstance = new Array<>();
 
-        AssetManager assetManager = new AssetManager();
-        assetManager.load("skyBox.g3db", Model.class);
-        assetManager.finishLoading();
-        Model skyBox = assetManager.get("skyBox.g3db", Model.class);
+        Model skyBox = assets.manager.get(Assets.skyBoxVillage);
         sky = new ModelInstance(skyBox);
 
-        assetManager.load("groundG3D.g3db", Model.class);
-        assetManager.finishLoading();
-        Model backgroundModel = assetManager.get("groundG3D.g3db", Model.class);
+        Model backgroundModel = assets.manager.get(Assets.groundVillage);
         background = new ModelInstance(backgroundModel);
         background.transform.trn(5, -0.5f, 5);
+
+        ModelBuilder modelBuilder = new ModelBuilder();
+        groundModel = modelBuilder.createBox(10f, .5f, 1f,
+                new Material(ColorAttribute.createDiffuse(Color.GRAY)),
+                VertexAttributes.Usage.Position
+                        | VertexAttributes.Usage.Normal);
+
+        boxLightModel = new ModelBuilder().createBox(0.25f,0.25f,0.25f,new Material(new ColorAttribute(ColorAttribute.Emissive,new Color(0.9f,0.3f,0.3f,1))), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
 
     /**
@@ -85,7 +98,7 @@ public class VillageBuilder {
                 | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE
                 | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         trigger.getEntity().getBody().setContactCallbackFlag(TRIGGER_FLAG);
-        world.addRigidBody((btRigidBody) trigger.getEntity().getBody());
+        world.addRigidBody(trigger.getEntity().getBody());
     }
 
     /**
@@ -113,15 +126,14 @@ public class VillageBuilder {
     /**
      * Create ground.
      *
-     * @param model the model
      * @param x     the x
      * @param y     the y
      * @param z     the z
      */
-    public void createGround(Model model, float x, float y, float z) {
+    public void createGround(float x, float y, float z) {
         btBoxShape invisibleWallShape = new btBoxShape(new Vector3(.1f, 1, .5f));
         btBoxShape groundShape = new btBoxShape(new Vector3(5f, .25f, .5f));
-        EntityObjects ground = new EntityObjects("ground", model, groundShape, 0f, new EntityPosition(x, y, z));
+        EntityObjects ground = new EntityObjects("ground", groundModel, groundShape, 0f, new EntityPosition(x, y, z));
         EntityObjects invisibleWallLeft = new EntityObjects("wall", new Model(), invisibleWallShape, 0f, new EntityPosition(x + 5f, y, z));
         EntityObjects invisibleWallRight = new EntityObjects("wall", new Model(), invisibleWallShape, 0f, new EntityPosition(x - 5f, y, z));
 
@@ -130,12 +142,20 @@ public class VillageBuilder {
         addObjectInWorld(invisibleWallRight);
     }
 
+    public void createLightBox(Environment environment, float x, float y, float z, float rotation){
+        ModelInstance cubeLight = new ModelInstance(boxLightModel);
+        cubeLight.transform.trn(new Vector3(x,y,z));
+        if(rotation != 0) cubeLight.transform.rotate(Vector3.Y,rotation);
+        boxLightInstance.add(cubeLight);
+        environment.add(new PointLight().set(new Color(0.9f,0.3f,0.1f,1),new Vector3(x,y,z),10));
+    }
+
     private void addObjectInWorld(EntityObjects obj) {
         objectsInstance.add(obj.getEntity());
         obj.getEntity().getBody().setUserValue(objectsInstance.indexOf(obj.getEntity(), false) + 1);
         obj.getEntity().getBody().setCollisionFlags(obj.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         obj.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
-        world.addRigidBody((btRigidBody) obj.getEntity().getBody());
+        world.addRigidBody(obj.getEntity().getBody());
     }
 
     /**
@@ -154,6 +174,16 @@ public class VillageBuilder {
      */
     public Array<EntityInstance> getObjectsInstance() {
         return objectsInstance;
+    }
+
+
+    /**
+     * Gets box light instance.
+     *
+     * @return the box light instance
+     */
+    public Array<ModelInstance> getBoxLightInstance() {
+        return boxLightInstance;
     }
 
     /**
@@ -182,6 +212,7 @@ public class VillageBuilder {
             world.getDynamicsWorld().removeRigidBody((btRigidBody) instance.getBody());
             instance.dispose();
         }
+
         world.dispose();
     }
 

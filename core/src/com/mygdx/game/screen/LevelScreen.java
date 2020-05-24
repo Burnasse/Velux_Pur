@@ -2,7 +2,7 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.gameGeneration.GenerateLevel;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.scene.menu.*;
@@ -14,16 +14,17 @@ public class LevelScreen implements Screen, StageManager{
     /**
      * Used to manage the menu
      */
-    private MenuManager stageManager;
+    private MenuManager menuManager;
 
     /**
      * Used to display properly the menu
      */
-    private Viewport viewport = new ScreenViewport();
+    private ScreenViewport viewport = new ScreenViewport();
 
     private Boolean isInMenu = false;
 
     private VeluxPurGame manager;
+    private Assets assets;
 
     /**
      * Instantiates a new GameScreen.
@@ -31,8 +32,11 @@ public class LevelScreen implements Screen, StageManager{
      *
      * @param manager the main class who manage all screen
      */
-    public LevelScreen(VeluxPurGame manager) {
+    public LevelScreen(VeluxPurGame manager, Assets assets) {
         this.manager = manager;
+        this.assets = assets;
+        assets.loadLevel();
+        assets.manager.finishLoading();
     }
 
     @Override
@@ -47,50 +51,51 @@ public class LevelScreen implements Screen, StageManager{
 
     @Override
     public void resize(int width, int height) {
-
+        level.resize(width,height);
+        viewport.update(width,height,true);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
         level.dispose();
-        stageManager.dispose();
+        menuManager.dispose();
     }
 
     @Override
     public void displayStage(String stageName) {
-
     }
 
     @Override
     public void startGame() {
-
     }
 
     @Override
     public void initScreen() {
-        level = new GenerateLevel(true);
+        level = new GenerateLevel(assets,false);
         level.create();
 
-        stageManager = new MenuManager();
-        stageManager.addStage("Main", new MainMenu(this, viewport, true).getStage());
-        stageManager.addStage("Settings", new SettingsMenu(this).getStage());
-        stageManager.addStage("Audio", new AudioMenu(this).getStage());
-        stageManager.addStage("Advanced", new AdvancedMenu(this).getStage());
-        stageManager.addStage("Controls", new ControlsMenu(this).getStage());
+        menuManager = new MenuManager();
+        menuManager.addMenuStage("Main", new MainMenu(this, viewport, true, assets));
+        menuManager.addMenuStage("Settings", new SettingsMenu(this, assets));
+        menuManager.addMenuStage("Audio", new AudioMenu(this, assets));
+        menuManager.addMenuStage("Advanced", new AdvancedMenu(this, assets));
+        menuManager.addMenuStage("Controls", new ControlsMenu(this, assets));
+    }
+
+    @Override
+    public ScreenViewport getViewport() {
+        return viewport;
     }
 }

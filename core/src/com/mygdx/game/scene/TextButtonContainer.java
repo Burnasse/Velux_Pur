@@ -1,9 +1,8 @@
 package com.mygdx.game.scene;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 
 /**
  * The type Text button container create multiple button in the VerticalGroup.
@@ -18,10 +17,9 @@ public class TextButtonContainer extends Container<VerticalGroup> {
      *
      * @param names the names of all TextButton
      */
-    public TextButtonContainer(String... names) {
-        Skin skin = new Skin();
-        skin.addRegions(new TextureAtlas(Gdx.files.internal("visui/uiskin.atlas")));
-        skin.load(Gdx.files.internal("visui/uiskin.json"));
+    public TextButtonContainer(Assets assets, String... names) {
+        Skin skin = assets.manager.get(Assets.menuSkin);
+        skin.addRegions(assets.manager.get(Assets.menuTextureAltas));
 
         for (String currentName : names) {
             TextButton currentButton = new TextButton(currentName, skin);
