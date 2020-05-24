@@ -1,6 +1,8 @@
 package com.mygdx.game.gameGeneration;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.*;
@@ -96,6 +98,10 @@ public class GenerateVillage {
      * Create.
      */
     public void create() {
+
+        Music musicVillage = Gdx.audio.newMusic(Gdx.files.internal("musicVillage.mp3"));
+        musicVillage.play();
+        
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
             villageBuilder = new VillageBuilder(assets, debugDrawer);
@@ -109,6 +115,7 @@ public class GenerateVillage {
         camera.near = 0.5f;
         camera.far = 1000f;
         camera.update();
+
 
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 1;
@@ -183,10 +190,10 @@ public class GenerateVillage {
 
         dialogHashMap.put("Trader", traderDialog);
         dialogHashMap.put("Exit", exitDialog);
-
         for(Actor actor : stage.getActors()){
             actor.setVisible(false);
         }
+
 
         interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
         interactLabel.setVisible(false);
