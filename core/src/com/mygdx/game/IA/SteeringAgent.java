@@ -131,7 +131,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
         if (orientation != newOrientation) {
             this.orientation = newOrientation;
-            instance.transform.set(instance.transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  180 - orientation));
+            instance.transform.set(instance.transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  360 - orientation));
         }
     }
 

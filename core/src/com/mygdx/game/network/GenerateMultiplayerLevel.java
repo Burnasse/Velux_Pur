@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.MeshPartBuilder;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -60,7 +61,7 @@ public class GenerateMultiplayerLevel implements Screen {
     private PerspectiveCamera cam;
     private CameraInputController camController;
     private DynamicWorld world;
-
+    private AnimationController animationController;
     private EntityPlayer player;
     private PlayerController playerController;
 
@@ -130,8 +131,14 @@ public class GenerateMultiplayerLevel implements Screen {
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
         camController = new CameraInputController(cam);
+      
+        animationController = new AnimationController(player.getEntity());
+        animationController.animate("idle", -1, 1.0f, null, 0.2f);
+        playerController = new PlayerController(player,animationController,cam);
+
 
         //playerController = new PlayerController(player,cam);
+
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);

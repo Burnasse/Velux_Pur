@@ -30,6 +30,7 @@ public class EnemyRoom extends Room {
             currentMonsterXPosition = ThreadLocalRandom.current().nextInt(x1, x2);
             currentMonsterZPosition = ThreadLocalRandom.current().nextInt(y1, y2); //In libgdx Z is the depth
             enemiesPosition.add(new EntityPosition(currentMonsterXPosition, 4, currentMonsterZPosition));
+
         }
     }
 
