@@ -8,10 +8,13 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.gameGeneration.GenerateLevel;
+import com.mygdx.game.physics.CallbackFlags;
 import com.mygdx.game.physics.DynamicWorld;
 
 
@@ -53,10 +56,11 @@ public class Projectile {
         direction = new Vector3(target.x - initialPosition.x, 0, target.z - initialPosition.z);
         direction = direction.nor();
 
-        instance.getBody().setUserValue(1500);
+        instance.getBody().setUserValue(3000);
         instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        instance.getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         instance.getBody().setContactCallbackFlag(projectile);
-        instance.getBody().setContactCallbackFilter(100);
+        instance.getBody().setContactCallbackFilter(CallbackFlags.PLAYER_FLAG);
 
 
         world.addRigidBody(instance.getBody());

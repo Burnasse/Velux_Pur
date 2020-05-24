@@ -12,4 +12,8 @@ public class CallbackFlags {
 
     final public static short PLAYER_FLAG = 100;
 
+    final public static short WEAPON_FLAG = 1 << 7;
+
+    final public static short ENNEMY_FLAG = 1 << 6;
+
 }

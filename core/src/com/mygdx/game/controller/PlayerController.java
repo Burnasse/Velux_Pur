@@ -73,8 +73,16 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
-        player.attack();
+        if (button == PrefKeys.LeftClick)
+            if (player.cdAttack == 125) {
+                player.attack();
+                if (player.getWeapon() instanceof WeaponCaC)
+                    slash();
+                else if (player.getWeapon() instanceof WeaponDistance)
+                    bow();
+            }
+        if (button == Input.Buttons.RIGHT)
+            System.out.println("OUHOUHOUHOUH");
         return true;
     }
 
@@ -82,7 +90,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
             if (player.cdAttack == 125) {
-
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
                     slash();
