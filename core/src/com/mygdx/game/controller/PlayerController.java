@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 
+import java.util.Random;
+
 /**
  * The type Player controller.
  */
@@ -76,7 +78,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.H) && player.getEntity().getController().onGround()) {
-            dance();
+            Random random = new Random();
+            dance(random.nextInt(5));
         }
         setMovement(speed);
 
@@ -253,8 +256,14 @@ public class PlayerController implements InputProcessor, ControllerListener {
             dodgeAnimate();
         }
     }
-    private void dance(){
-        animation.animate("dance", -1, 1.0f, null, 0.2f);
+    private void dance(int numRand){
+        if(numRand == 0)animation.animate("dance", -1, 1.0f, null, 0.2f);
+        else if(numRand == 1)animation.animate("chicken", -1, 1.0f, null, 0.2f);
+        else if(numRand == 2)animation.animate("macarena", -1, 1.0f, null, 0.2f);
+        else if(numRand == 3)animation.animate("shuffle", -1, 1.0f, null, 0.2f);
+        else if(numRand == 4)animation.animate("thriller", -1, 1.0f, null, 0.2f);
+
+
     }
 
     private void dodgeAnimate() {
