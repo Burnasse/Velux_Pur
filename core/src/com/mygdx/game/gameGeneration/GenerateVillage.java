@@ -127,7 +127,6 @@ public class GenerateVillage {
                 new Material(ColorAttribute.createDiffuse(Color.GRAY)),
                 VertexAttributes.Usage.Position
                         | VertexAttributes.Usage.Normal);
-
         /* Trigger: goToLevel() | index: 1 */
         villageBuilder.createTrigger(new EntityPosition(-4.5f, 0, 0), .5f, 1, .5f);
 
@@ -165,7 +164,6 @@ public class GenerateVillage {
         camera.near = 0.5f;
         camera.far = 1500f;
         camera.update();
-
         player = PlayerFactory.create(new EntityPosition(0, 1f, 0));
 
         animationController = new AnimationController(player.getEntity());
@@ -181,6 +179,7 @@ public class GenerateVillage {
         controller = new VillageController(player, animationController);
 
         Gdx.input.setInputProcessor(controller);
+
     }
 
     private void camFollowPlayer() {

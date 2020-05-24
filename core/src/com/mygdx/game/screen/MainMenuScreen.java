@@ -34,7 +34,6 @@ public class MainMenuScreen implements Screen, StageManager {
         mainMenu = new MainMenu(this,viewport,false);
         Controllers.addListener((ControllerListener) mainMenu.getStage());
         this.stage = mainMenu.getStage();
-
         stageManager = new MenuManager();
         stageManager.addStage("Main", stage);
         stageManager.addStage("Settings", new SettingsMenu(this).getStage());

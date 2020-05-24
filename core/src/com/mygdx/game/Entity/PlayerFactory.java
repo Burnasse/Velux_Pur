@@ -28,11 +28,11 @@ public class PlayerFactory {
         Model walkModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/walkG3D.g3db", Files.FileType.Internal));
         Model jumpModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/jumpG3D.g3db", Files.FileType.Internal));
         Model dodgeModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dodgeG3D.g3db", Files.FileType.Internal));
-        Model danceModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance.g3db", Files.FileType.Internal));
-        Model chickenModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/chicken.g3db", Files.FileType.Internal));
-        Model macarenaModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/macarena.g3db", Files.FileType.Internal));
-        Model shuffleModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/shuffle.g3db", Files.FileType.Internal));
-        Model thrillerModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/thriller.g3db", Files.FileType.Internal));
+        Model danceModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/dance.g3db", Files.FileType.Internal));
+        Model chickenModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/chicken.g3db", Files.FileType.Internal));
+        Model macarenaModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/macarena.g3db", Files.FileType.Internal));
+        Model shuffleModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/shuffle.g3db", Files.FileType.Internal));
+        Model thrillerModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/thriller.g3db", Files.FileType.Internal));
 
         idleModel.animations.get(0).id = "idle";
         runningModel.animations.get(0).id = "running";

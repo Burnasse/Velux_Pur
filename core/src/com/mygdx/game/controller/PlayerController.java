@@ -53,6 +53,11 @@ public class PlayerController implements InputProcessor, ControllerListener {
         this.player = player;
         this.animation = animationController;
     }
+
+    /** Look wich key is pressed by the user and make him move in the choosen direction
+     *
+     *
+     * */
     public boolean keyDown(int keycode) {
 
         speed = 0;
@@ -86,6 +91,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
         return true;
     }
 
+    /** Play a default animation when any key is pressed*/
     @Override
     public boolean keyUp(int keycode) {
         if (!player.getEntity().getController().onGround())
@@ -121,7 +127,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
         return true;
     }
 
-
+/**Make the player move to the left*/
     private void moveLeft() {
         if (lookLeft)
             lookLeft = true;
@@ -151,6 +157,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     }
 
 
+    /**Make the player move to the right*/
     private void moveRight() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 180);
@@ -181,6 +188,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     }
 
 
+    /**Make the player move to the Up*/
     private void moveUp() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), -90);
@@ -209,6 +217,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     }
 
+
+    /**Make the player move to the down*/
     private void moveDown() {
         if (lookLeft)
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
@@ -235,6 +245,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
 
 
+    /**Make the player dodge in the right direction*/
     private void dodge() {
         if(lookRight){
             player.getEntity().getController().jump(new Vector3(-8, 0, 0));
@@ -256,6 +267,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
             dodgeAnimate();
         }
     }
+
+    /**Make the player dance randomly */
     private void dance(int numRand){
         if(numRand == 0)animation.animate("dance", -1, 1.0f, null, 0.2f);
         else if(numRand == 1)animation.animate("chicken", -1, 1.0f, null, 0.2f);
@@ -266,6 +279,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     }
 
+    /**Load and apply the dodge animation to the player*/
     private void dodgeAnimate() {
         animation.animate("dodge", 1, 1.0f, new AnimationController.AnimationListener() {
             @Override
@@ -284,6 +298,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
         }, 0.2f);
     }
 
+
+    /**Load and apply the running animation to the player on the left*/
     private void animationRunLeft(){
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         walkDirection.add(1, 0, 0);
@@ -292,6 +308,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     }
 
+    /**Load and apply the running animation to the player on the right*/
     private void animationRunRight(){
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         walkDirection.add(-1, 0, 0);
@@ -299,6 +316,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
         speed = 3f;
 
     }
+
+    /**Load and apply the running animation to the player up*/
     private void animationRunUp(){
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         walkDirection.add(0, 0, 1);
@@ -306,6 +325,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
         speed = 3f;
 
     }
+
+    /**Load and apply the running animation to the player down*/
     private void animationRunDown(){
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         walkDirection.add(0, 0, -1);
