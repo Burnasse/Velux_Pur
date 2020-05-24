@@ -109,23 +109,20 @@ public class GenerateLevel {
                                       int index1, boolean match1) {
 
             if (match0){
-                System.out.println("contact 0");
-                System.out.println("uservalue0 = " + userValue0);
-                System.out.println("uservalue1 = " + userValue1);
                 /**
                  * check si la colision est faite avec un ennemy, si oui, fait le necessaire
                  * */
-                /*if(player.isAttacking && player.cdColisionWeaponEnnemy >= 125 && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
+                if(player.isAttacking && player.cdColisionWeaponEnnemy >= 125 && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
                     player.cdColisionWeaponEnnemy = player.cdAttack;
                     System.out.println("contact 0");
-                    System.out.println("entite num :" + (userValue0-firstEnnemyUserValue));
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).damage(player.getWeapon());
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    if (floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth() <= 0) {
-                        toDelete = userValue0-firstEnnemyUserValue;
+                    System.out.println("entite num :" + (userValue1-firstEnnemyUserValue));
+                    System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
+                    floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).damage(player.getWeapon());
+                    System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
+                    if (floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth() <= 0) {
+                        toDelete = userValue1-firstEnnemyUserValue;
                     }
-                }*/
+                }
             }
 
             if (match1) {
@@ -167,7 +164,7 @@ public class GenerateLevel {
     }
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
-        this.DEBUG_MODE = true;
+        this.DEBUG_MODE = false;
         this.assets = assets;
     }
 

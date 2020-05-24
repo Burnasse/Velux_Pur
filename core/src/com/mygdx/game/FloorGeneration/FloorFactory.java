@@ -80,7 +80,7 @@ public class FloorFactory {
         Model ground = assets.manager.get(Assets.groundLevel);
 
         btBoxShape wallShape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
-        btBoxShape groundShape = new btBoxShape(new Vector3(blockSize / 2, blockSize / 4, blockSize / 2));
+        btBoxShape groundShape = new btBoxShape(new Vector3(blockSize / 2, blockSize / 6, blockSize / 2));
 
         for (int i = 0; i < sizeOfFloor; i++) {
             for (int j = 0; j < sizeOfFloor; j++) {
