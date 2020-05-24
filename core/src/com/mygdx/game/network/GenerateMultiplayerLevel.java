@@ -137,6 +137,9 @@ public class GenerateMultiplayerLevel implements Screen {
         playerController = new PlayerController(player,animationController,cam);
 
 
+        //playerController = new PlayerController(player,cam);
+
+
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);
         inputMultiplexer.addProcessor(playerController);

@@ -11,7 +11,7 @@ public class MonsterFactory {
     public static EntityMonster create(EntityPosition position, Assets assets, int roomX1, int roomY1, int roomX2, int roomY2){
         EntityMonster monster;
 
-        btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.3f, 0.3f));
+        btBoxShape enemyShape = new btBoxShape(new Vector3(0.3f, 0.6f, 0.3f));
 
         Model enemyModel = assets.manager.get(Assets.enemyModel);
         Model enemyRunModel = assets.manager.get(Assets.enemyRun);
