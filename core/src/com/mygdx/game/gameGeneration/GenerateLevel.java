@@ -334,7 +334,7 @@ public class GenerateLevel {
         floorData.objectsInstances.clear();
         minimap.dispose();
 
-        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
+        floorData = FloorFactory.create("Mixed", 80, 4, 3, 7, assets);
         minimap = floorData.minimap;
         minimap.clear();
         player.getEntity().transform.set(floorData.playerSpawnPosition, new Quaternion());
