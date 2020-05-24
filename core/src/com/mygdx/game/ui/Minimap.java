@@ -48,7 +48,7 @@ public class Minimap {
         realFloorSize = level.length * 5;
         blockSize = minimapSize / level.length;
 
-        Pixmap pixmap = new Pixmap((int)blockSize,(int)blockSize, Pixmap.Format.RGBA8888);
+        Pixmap pixmap = new Pixmap((int)blockSize+1,(int)blockSize+1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
         wallTexture = new Texture(pixmap);

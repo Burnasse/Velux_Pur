@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
@@ -269,6 +270,7 @@ public class GenerateLevel {
         player.getEntity().getGhostObject().getWorldTransform(player.getEntity().transform);
 
         if (interactLabel.isVisible() && Gdx.input.isKeyPressed(PrefKeys.Interact)) {
+            onLoad = true;
             interactLabel.setVisible(false);
             Gdx.app.postRunnable(new Runnable() {
                 @Override
@@ -305,7 +307,7 @@ public class GenerateLevel {
     public void goToNextLevel() {
         onLoad = true;
 
-
+        player.getEntity().getController().setGravity(Vector3.Zero);
         for (EntityInstance obj : floorData.objectsInstances) {
             world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
@@ -323,7 +325,8 @@ public class GenerateLevel {
         floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
         minimap = floorData.minimap;
         minimap.clear();
-        player.getEntity().transform.trn(floorData.playerSpawnPosition);
+        player.getEntity().transform.set(floorData.playerSpawnPosition, new Quaternion());
+        player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
 
         //exitTrigger.getEntity().transform.trn(floorData.exitPositon);
         world.getDynamicsWorld().removeRigidBody(exitTrigger.getEntity().getBody());
@@ -353,10 +356,10 @@ public class GenerateLevel {
         for (EntityInstance instance : floorData.objectsInstances)
             instances.add(instance);
 
-        //temp = new Array<>();
         frustum = new FrustumCulling(instances, environment, cam, modelBatch);
         tempFrustum = new FrustumCulling(temp, environment, cam, modelBatch);
 
+        player.getEntity().getController().setGravity(new Vector3(0,-10,0));
         onLoad = false;
     }
 }

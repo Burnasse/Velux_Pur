@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -9,6 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 public class Assets {
 
     public AssetManager manager = new AssetManager();
+
+    public static final AssetDescriptor<Texture> mainBackground =
+            new AssetDescriptor<Texture>("PhotoMenuVelux.jpeg", Texture.class);
 
     /* Load UI */
     public static final AssetDescriptor<TextureAtlas> menuTextureAltas =
@@ -65,6 +69,7 @@ public class Assets {
      * Load elements specific to the menu
      */
     public void loadMenu(){
+        manager.load(mainBackground);
         manager.load(menuSkin);
         manager.load(menuTextureAltas);
     }
