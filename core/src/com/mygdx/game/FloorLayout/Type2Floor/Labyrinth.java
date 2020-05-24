@@ -19,7 +19,6 @@ public class Labyrinth extends Floor {
      */
 
     public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
-        Random rand = new Random();
 
         this.sizeOfFloor = sizeOfFloor;
         layout = new Position[sizeOfFloor][sizeOfFloor];
@@ -29,6 +28,45 @@ public class Labyrinth extends Floor {
                 layout[i][j] = new Position(i, j, 'a');
             }
         }
+
+        generatePrimLabyrinth();
+        GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
+    }
+
+    /**
+     * checks the point in position x y for walls around it
+     *
+     * @param x     x coordinate of our point
+     * @param y     y coordinate of our point
+     * @param walls the list we will fill with the walls
+     */
+
+    protected void checkForWalls(int x, int y, ArrayList<Position> walls) {
+        int x1 = x - 1;
+        int x2 = x + 2;
+        int y1 = y - 1;
+        int y2 = y + 2;
+
+        if (x == 0)                 // We want to avoid an OutOfBounds exception
+            x1 = x;
+        if (x == sizeOfFloor - 1)
+            x2 = sizeOfFloor;
+        if (y == 0)
+            y1 = y;
+        if (y == sizeOfFloor - 1)
+            y2 = sizeOfFloor;
+
+
+        for (int i = x1; i < x2; i++) {
+            for (int j = y1; j < y2; j++) {
+                if (layout[i][j].getContent() == 'a')
+                    walls.add(layout[i][j]);
+            }
+        }
+    }
+
+    protected void generatePrimLabyrinth() {
+        Random rand = new Random();
 
         int startingCaseX = rand.nextInt(sizeOfFloor);
         int startingCaseY = rand.nextInt(sizeOfFloor);
@@ -86,39 +124,6 @@ public class Labyrinth extends Floor {
                 checkForWalls(x, y + 1, walls);
             }
             walls.remove(currentWall);
-        }
-        GenerateRooms(numberOfRooms, minRoomSize, maxRoomSize);
-    }
-
-    /**
-     * checks the point in position x y for walls around it
-     *
-     * @param x     x coordinate of our point
-     * @param y     y coordinate of our point
-     * @param walls the list we will fill with the walls
-     */
-
-    private void checkForWalls(int x, int y, ArrayList<Position> walls) {
-        int x1 = x - 1;
-        int x2 = x + 2;
-        int y1 = y - 1;
-        int y2 = y + 2;
-
-        if (x == 0)                 // We want to avoid an OutOfBounds exception
-            x1 = x;
-        if (x == sizeOfFloor - 1)
-            x2 = sizeOfFloor;
-        if (y == 0)
-            y1 = y;
-        if (y == sizeOfFloor - 1)
-            y2 = sizeOfFloor;
-
-
-        for (int i = x1; i < x2; i++) {
-            for (int j = y1; j < y2; j++) {
-                if (layout[i][j].getContent() == 'a')
-                    walls.add(layout[i][j]);
-            }
         }
     }
 }

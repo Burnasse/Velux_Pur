@@ -14,6 +14,7 @@ import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
 import com.mygdx.game.FloorLayout.Type1Floor.GenericFloor;
 import com.mygdx.game.FloorLayout.Type2Floor.Labyrinth;
+import com.mygdx.game.FloorLayout.Type3Floor.Mixed;
 import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class FloorFactory {
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
+        if (floorType.equalsIgnoreCase("Mixed"))
+            floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
