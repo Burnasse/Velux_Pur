@@ -215,6 +215,7 @@ public class GenerateVillage {
         listener = new VillageContactListener(this, controller,triggersManager);
 
         Gdx.input.setInputProcessor(controller);
+
     }
 
     private void camFollowPlayer() {
