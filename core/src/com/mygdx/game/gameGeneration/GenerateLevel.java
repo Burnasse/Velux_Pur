@@ -87,7 +87,6 @@ public class GenerateLevel {
 
     private Minimap minimap;
     private HealthBar healthBar;
-    private AnimationController animationController;
     private PointLight followLight;
     private int playerUserValue = 6666;
 
@@ -133,12 +132,15 @@ public class GenerateLevel {
                         toDelete = userValue1-firstEnnemyUserValue;
                     }
                 }
+                if (userValue0 == exitTrigger.getUserValue()) {
+                    interactLabel.setVisible(true);
+                }
             }
 
             if (match1) {
-                /*if (userValue0 == exitTrigger.getUserValue()) {
+                if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
-                }*/
+                }
 
                 /**
                  * check si la colision est faite avec un ennemy, si oui, fait le necessaire
@@ -219,7 +221,7 @@ public class GenerateLevel {
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
         player.getEntity().getBody().setContactCallbackFlag(CallbackFlags.PLAYER_FLAG);
-        player.getEntity().getBody().setContactCallbackFilter(0);
+        player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
