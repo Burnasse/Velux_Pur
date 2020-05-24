@@ -2,6 +2,8 @@ package com.mygdx.game.FloorLayout.RoomTypes;
 
 import com.mygdx.game.FloorLayout.Position;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public abstract class Room {
 
     private int x1;
@@ -32,21 +34,28 @@ public abstract class Room {
         center = new Position((x1 + x2) / 2, (y1 + y2) / 2);
     }
 
+    boolean valueInRange(int value, int min, int max) {
+        return (value >= min) && (value <= max);
+    }
+
+
     /**
      * Checks if this room intersects with the room in parameter
      */
 
     public boolean intersects(Room room) {
+        boolean xOverlap = false;
+        boolean yOverlap = false;
 
-        if (x1 >= room.getX2() || room.getX1() >= x2) {
-            return false;
+        if (valueInRange(getX1(), room.getX1(), room.getX2()) || valueInRange(getX2(), room.getX1(), room.getX2())) {
+            xOverlap = true;
         }
 
-        if (y1 <= room.getY2() || room.getY1() <= y2) {
-            return false;
+        if (valueInRange(getY1(), room.getY1(), room.getY2()) || valueInRange(getY2(), room.getY1(), room.getY2())) {
+            yOverlap = true;
         }
 
-        return true;
+        return xOverlap && yOverlap;
     }
 
     public int getX1() {

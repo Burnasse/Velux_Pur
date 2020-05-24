@@ -153,7 +153,7 @@ public class GenerateLevel {
 
         healthBar = new HealthBar();
 
-        floorData = FloorFactory.create("Labyrinth", 20, 4, 3, 7, assets);
+        floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
         System.out.println(floorData.playerSpawnPosition);
         minimap = floorData.minimap;
 
