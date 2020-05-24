@@ -206,7 +206,7 @@ public class GenerateLevel {
 
         camController = new CameraInputController(cam);
 
-        playerController = new PlayerController(player);
+        playerController = new PlayerController(player,cam);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);

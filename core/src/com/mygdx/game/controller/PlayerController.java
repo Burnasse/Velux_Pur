@@ -6,6 +6,10 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Quaternion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
 
@@ -17,14 +21,16 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private EntityPlayer player;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
+    private PerspectiveCamera camera;
 
     /**
      * Instantiates a new Player controller.
      *
      * @param player the player
      */
-    public PlayerController(EntityPlayer player) {
+    public PlayerController(EntityPlayer player, PerspectiveCamera camera) {
         this.player = player;
+        this.camera = camera;
     }
 
     @Override
@@ -37,6 +43,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
             walkDirection.add(0, 0, 1);
         if (Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR))
             walkDirection.add(0, 0, -1);
+        if (Gdx.input.isKeyPressed(PrefKeys.C))
+            System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
 
         setMovement();
 
@@ -81,7 +89,18 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        return false;
+
+        Vector2 player2DPos = new Vector2(camera.project(player.getPosition()).x, camera.project(player.getPosition()).y);
+
+        Vector2 cursor2DPos = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
+
+        float newOrientation = (float) Math.atan2(-(cursor2DPos.x - player2DPos.x), cursor2DPos.y - player2DPos.y) * MathUtils.radiansToDegrees;
+
+        player.getEntity().transform.set(player.getPosition(), new Quaternion(new Vector3(0, 1, 0), newOrientation));
+
+        player.getEntity().getBody().setWorldTransform(player.getEntity().transform);
+
+        return true;
     }
 
     @Override
