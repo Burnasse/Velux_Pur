@@ -7,11 +7,14 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.item.WeaponCaC;
+import com.mygdx.game.item.WeaponDistance;
 
 /**
  * The type Player controller.
@@ -19,6 +22,7 @@ import com.mygdx.game.Entity.EntityPlayer;
 public class PlayerController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
+    private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
     private PerspectiveCamera camera;
@@ -28,9 +32,10 @@ public class PlayerController implements InputProcessor, ControllerListener {
      *
      * @param player the player
      */
-    public PlayerController(EntityPlayer player, PerspectiveCamera camera) {
+    public PlayerController(EntityPlayer player, PerspectiveCamera camera, AnimationController animation) {
         this.player = player;
         this.camera = camera;
+        this.animation = animation;
     }
 
     @Override
@@ -76,7 +81,14 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
-            System.out.println("AHAHAHAHAH");
+            if (player.cdAttack == 125) {
+
+                player.attack();
+                if (player.getWeapon() instanceof WeaponCaC)
+                    slash();
+                else if (player.getWeapon() instanceof WeaponDistance)
+                    bow();
+            }
         if (button == Input.Buttons.RIGHT)
             System.out.println("OUHOUHOUHOUH");
         return true;
@@ -163,4 +175,30 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     }
 
+    private void slash(){
+        animation.animate("slash", 1, 1.0f, new AnimationController.AnimationListener() {
+            @Override
+            public void onEnd(AnimationController.AnimationDesc anim) {
+                animation.animate("idle", -1, 1.0f, null, 0.2f);
+            }
+
+            @Override
+            public void onLoop(AnimationController.AnimationDesc animation) {
+
+            }
+        }, 0.2f);
+    }
+
+    private void bow(){
+        animation.animate("bow", 1, 1.0f, new AnimationController.AnimationListener() {
+            @Override
+            public void onEnd(AnimationController.AnimationDesc anim) {
+                animation.animate("idle", -1, 1.0f, null, 0.2f);
+            }
+
+            @Override
+            public void onLoop(AnimationController.AnimationDesc animation) {
+            }
+        }, 0.2f);
+    }
 }

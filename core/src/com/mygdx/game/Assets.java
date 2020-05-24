@@ -34,6 +34,12 @@ public class Assets {
     public static final AssetDescriptor<Model> playerJumpModel =
             new AssetDescriptor<Model>("PlayerAssets/jumpG3D.g3db", Model.class);
 
+    public static final AssetDescriptor<Model> playerSlashModel =
+            new AssetDescriptor<Model>("PlayerAssets/slashs.g3db", Model.class);
+
+    /*public static final AssetDescriptor<Model> playerBowModel =
+            new AssetDescriptor<Model>("PlayerAssets/Bow.g3db", Model.class);*/
+
     /* Load npc*/
     public static final AssetDescriptor<Model> npcModel =
             new AssetDescriptor<Model>("npc/npc.g3db", Model.class);
@@ -79,6 +85,8 @@ public class Assets {
         manager.load(playerRunningModel);
         manager.load(playerWalkModel);
         manager.load(playerJumpModel);
+        /*manager.load(playerBowModel);*/
+        manager.load(playerSlashModel);
     }
 
     /**
@@ -129,6 +137,8 @@ public class Assets {
         manager.unload(playerRunningModel.fileName);
         manager.unload(playerWalkModel.fileName);
         manager.unload(playerJumpModel.fileName);
+        /*manager.unload(playerBowModel.fileName);*/
+        manager.unload(playerSlashModel.fileName);
     }
 
     public void dispose(){

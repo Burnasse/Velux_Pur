@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.math.Quaternion;
@@ -40,6 +41,8 @@ import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
 import com.mygdx.game.ui.Minimap;
+
+import java.util.ArrayList;
 
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
 
@@ -102,7 +105,7 @@ public class GenerateLevel {
     private MyContactListener contactListener;
     private Minimap minimap;
     private HealthBar healthBar;
-
+    private AnimationController animationController;
     private PointLight followLight;
 
     private Trigger exitTrigger;
@@ -111,7 +114,15 @@ public class GenerateLevel {
     private Label interactLabel;
 
     private Array<EntityInstance> temp;
-
+    /**
+     * - toutes les Entity Instances a mettre en jeux doivent etre misent la dedans.
+     * - les index des objets correpsondent a UserValue du body de l'objet
+     * - pour trouvé l'entity monster correspondant au constact, il faut faire UserValue-firstEnnemyUserValue
+     */
+    private ArrayList<EntityInstance> instances;
+    private boolean playerPov = true;
+    private int clock;
+    int firstEnnemyUserValue;
     private volatile boolean onLoad = false;
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
@@ -132,6 +143,7 @@ public class GenerateLevel {
 
         contactListener = new MyContactListener();
 
+        instances = new ArrayList<>();
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 2;
         config.numPointLights = 1;
@@ -155,6 +167,8 @@ public class GenerateLevel {
         exitTrigger.addInWorld(world.dynamicsWorld);
 
         player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
+        animationController = new AnimationController(player.getEntity());
+        animationController.animate("idle", -1, 1.0f, null, 0.2f);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
         player.getEntity().getBody().setContactCallbackFlag(GROUND_FLAG);
@@ -206,7 +220,7 @@ public class GenerateLevel {
 
         camController = new CameraInputController(cam);
 
-        playerController = new PlayerController(player,cam);
+        playerController = new PlayerController(player,cam,animationController);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(camController);
@@ -237,6 +251,8 @@ public class GenerateLevel {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         world.getDynamicsWorld().stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 60f);
+
+        animationController.update(Gdx.graphics.getDeltaTime());
 
         camFollowPlayer();
         cam.update();
