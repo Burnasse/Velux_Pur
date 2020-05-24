@@ -1,5 +1,6 @@
 package com.mygdx.game.Entity;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -19,19 +20,16 @@ public class PlayerFactory {
     public static EntityPlayer create(EntityPosition position, Assets assets) {
         EntityPlayer player;
 
-
-        UBJsonReader jsonReader = new UBJsonReader();
-        G3dModelLoader modelLoader = new G3dModelLoader(jsonReader);
-        Model idleModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/idleG3D.g3db", Files.FileType.Internal));
-        Model runningModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/runningG3D.g3db", Files.FileType.Internal));
-        Model walkModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/walkG3D.g3db", Files.FileType.Internal));
-        Model jumpModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/jumpG3D.g3db", Files.FileType.Internal));
-        Model dodgeModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dodgeG3D.g3db", Files.FileType.Internal));
-        Model danceModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/dance.g3db", Files.FileType.Internal));
-        Model chickenModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/chicken.g3db", Files.FileType.Internal));
-        Model macarenaModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/macarena.g3db", Files.FileType.Internal));
-        Model shuffleModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/shuffle.g3db", Files.FileType.Internal));
-        Model thrillerModel = modelLoader.loadModel(Gdx.files.getFileHandle("PlayerAssets/dance/thriller.g3db", Files.FileType.Internal));
+        Model idleModel = assets.manager.get(Assets.playerIdleModel);
+        Model runningModel = assets.manager.get(Assets.playerRunningModel);
+        Model walkModel = assets.manager.get(Assets.playerWalkModel);
+        Model jumpModel = assets.manager.get(Assets.playerJumpModel);
+        Model dodgeModel = assets.manager.get(Assets.playerDodge);
+        Model danceModel = assets.manager.get(Assets.playerDance);
+        Model chickenModel = assets.manager.get(Assets.playerChicken);
+        Model macarenaModel = assets.manager.get(Assets.playerMacarena);
+        Model shuffleModel = assets.manager.get(Assets.playerShuffle);
+        Model thrillerModel = assets.manager.get(Assets.playerThriller);
 
         idleModel.animations.get(0).id = "idle";
         runningModel.animations.get(0).id = "running";
