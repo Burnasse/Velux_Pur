@@ -3,6 +3,7 @@ package com.mygdx.game.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -28,6 +29,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
+    private Sound footStepSound;
+    private Sound dodgeSound;
+    private Sound attackSound;
 
     private float speed = 0;
 
@@ -65,6 +69,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
         this.player = player;
         this.animation = animationController;
         this.camera = camera;
+        footStepSound = Gdx.audio.newSound(Gdx.files.internal("pasRun.wav"));
+        dodgeSound = Gdx.audio.newSound(Gdx.files.internal("dodgeSound.wav"));
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("attackSound.wav"));
 
     }
 
@@ -90,22 +97,31 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
             moveLeft();
+            long soundID = footStepSound.play(0.5f);
+            footStepSound.setLooping(soundID,true);
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
             moveRight();
+            long soundID = footStepSound.play(0.5f);
+            footStepSound.setLooping(soundID,true);
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up))) {
             moveUp();
+            long soundID = footStepSound.play(0.5f);
+            footStepSound.setLooping(soundID,true);
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down))) {
             moveDown();
+           long soundID = footStepSound.play(0.5f);
+            footStepSound.setLooping(soundID,true);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.X) && player.getEntity().getController().onGround()) {
             dodge();
+            dodgeSound.play(0.5f);
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.H) && player.getEntity().getController().onGround()) {
@@ -129,6 +145,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
             walkDirection.set(0, 0, 0);
             animation.animate("idle", -1, 1.0f, null, 0.2f);
             setMovement(0);
+            footStepSound.stop();
         }
         return false;
     }
@@ -147,7 +164,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
-            System.out.println("AHAHAHAHAH");
+            attackSound.play(0.3f);
         if (button == Input.Buttons.RIGHT)
             System.out.println("OUHOUHOUHOUH");
         return true;
@@ -331,6 +348,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
         walkDirection.add(1, 0, 0);
         animation.animate("running", -1, 1.0f, null, 0.2f);
         speed = 3f;
+        footStepSound.play();
 
     }
 

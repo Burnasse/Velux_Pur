@@ -59,11 +59,10 @@ public class GenerateVillage {
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
     private FrustumCulling frustum;
-
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
-
+    private Music musicVillage;
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
     private Label interactLabel;
@@ -99,7 +98,9 @@ public class GenerateVillage {
      */
     public void create() {
 
-        Music musicVillage = Gdx.audio.newMusic(Gdx.files.internal("musicVillage.mp3"));
+        musicVillage =Gdx.audio.newMusic(Gdx.files.internal("musicVillage.mp3"));
+        musicVillage.setLooping(true);
+        musicVillage.setVolume(0.05f);
         musicVillage.play();
         
         if (DEBUG_MODE) {
@@ -293,6 +294,7 @@ public class GenerateVillage {
         villageBuilder.getWorld().removeCollisionObject(player.getEntity().getGhostObject());
         triggersManager.dispose();
         villageBuilder.dispose();
+        musicVillage.dispose();
         player.dispose();
         if (debugDrawer != null) debugDrawer.dispose();
         Controllers.removeListener(controller);

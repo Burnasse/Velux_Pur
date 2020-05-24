@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.GL20;
@@ -25,7 +26,7 @@ public class MainMenuScreen implements Screen, StageManager {
     private ScreenViewport viewport = new ScreenViewport();
     private MenuManager menuManager;
     private MainMenu mainMenu;
-
+    private Music musicMenu;
     private TextureRegion mainBackground;
     private SpriteBatch batch;
 
@@ -46,7 +47,10 @@ public class MainMenuScreen implements Screen, StageManager {
         this.stage = mainMenu.getStage();
 
         healthBar = new HealthBar();
-
+        musicMenu= Gdx.audio.newMusic(Gdx.files.internal("menuTheme.mp3"));
+        musicMenu.setVolume(0.5f);
+        musicMenu.setLooping(true);
+        musicMenu.play();
         menuManager = new MenuManager();
         menuManager.addMenuStage("Main", mainMenu);
         menuManager.addMenuStage("Settings", new SettingsMenu(this, assets));
@@ -106,6 +110,7 @@ public class MainMenuScreen implements Screen, StageManager {
     @Override
     public void dispose() {
         menuManager.dispose();
+        musicMenu.dispose();
     }
 
     public void displayStage(String stageName) {

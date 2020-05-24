@@ -2,6 +2,7 @@ package com.mygdx.game.gameGeneration;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -104,9 +105,8 @@ public class GenerateLevel {
     private EntityPlayer player;
     private PlayerController playerController;
     private MyContactListener contactListener;
-
     private AnimationController animationController;
-
+    private Music musicLevel;
     private Minimap minimap;
     private HealthBar healthBar;
 
@@ -130,6 +130,11 @@ public class GenerateLevel {
      * Create.
      */
     public void create() {
+
+        musicLevel =Gdx.audio.newMusic(Gdx.files.internal("musicLevel.mp3"));
+        musicLevel.setLooping(true);
+        musicLevel.setVolume(0.05f);
+        musicLevel.play();
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
             world = new DynamicWorld(debugDrawer);
@@ -314,6 +319,7 @@ public class GenerateLevel {
         modelBatch.dispose();
         minimap.dispose();
         healthBar.dispose();
+        musicLevel.dispose();
     }
 
     public void goToNextLevel() {

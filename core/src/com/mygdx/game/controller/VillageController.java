@@ -3,6 +3,7 @@ package com.mygdx.game.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.Controllers;
@@ -22,6 +23,8 @@ public class VillageController implements InputProcessor, ControllerListener {
     private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private float speed = 0;
+    private Sound footStepSound;
+    private Sound jumpSound;
 
     /**
      * This thread is used in script method
@@ -82,6 +85,8 @@ public class VillageController implements InputProcessor, ControllerListener {
         this.animation = animation;
         Controllers.clearListeners();
         Controllers.addListener(this);
+        footStepSound = Gdx.audio.newSound(Gdx.files.internal("pasRun.wav"));
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jumpSound.wav"));
     }
 
     @Override
@@ -91,10 +96,12 @@ public class VillageController implements InputProcessor, ControllerListener {
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
             moveLeft(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            loadFootstepSound();
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
             moveRight(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT));
+            loadFootstepSound();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up)) && player.getEntity().getController().onGround()
@@ -113,6 +120,8 @@ public class VillageController implements InputProcessor, ControllerListener {
 
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && player.getEntity().getController().onGround()) {
             jump();
+            footStepSound.stop();
+            jumpSound.play(0.5f);
         }
 
         setMovement(speed);
@@ -129,6 +138,7 @@ public class VillageController implements InputProcessor, ControllerListener {
             walkDirection.set(0, 0, 0);
             animation.animate("idle", -1, 1.0f, null, 0.2f);
             setMovement(0);
+            footStepSound.stop();
         }
         return false;
     }
@@ -265,15 +275,19 @@ public class VillageController implements InputProcessor, ControllerListener {
         if (moveUp && lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, 1);
+            loadFootstepSound();
         } else if (moveUp) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, 1);
+            loadFootstepSound();
         } else if (lookLeft) {
             player.getEntity().transform.rotate(new Vector3(0, 1, 0), 90);
             walkDirection.set(0, 0, -1);
+            loadFootstepSound();
         } else {
             player.getEntity().transform.rotate(new Vector3(0, -1, 0), 90);
             walkDirection.set(0, 0, -1);
+            loadFootstepSound();
         }
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
         player.getEntity().getController().setGravity(new Vector3());
@@ -403,6 +417,10 @@ public class VillageController implements InputProcessor, ControllerListener {
             public void onLoop(AnimationController.AnimationDesc animation) {
             }
         }, 0.2f);
+    }
+    private void loadFootstepSound(){
+        long soundID = footStepSound.play(0.5f);
+        footStepSound.setLooping(soundID,true);
     }
 
     public void setInteractTrigger(String name){
