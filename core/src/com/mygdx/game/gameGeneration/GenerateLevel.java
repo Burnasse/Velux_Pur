@@ -134,13 +134,13 @@ public class GenerateLevel {
      */
     public void create() {
 
-        musicLevel =Gdx.audio.newMusic(Gdx.files.internal("sound/musicLevel.mp3"));
+        musicLevel = assets.manager.get(Assets.levelTheme);
         musicLevel.setLooping(true);
         musicLevel.setVolume(0.06f);
         musicLevel.play();
 
 
-        ambianceDungeon =Gdx.audio.newMusic(Gdx.files.internal("sound/ambianceDungeon.wav"));
+        ambianceDungeon = assets.manager.get(Assets.levelAmbiance);
         ambianceDungeon.setLooping(true);
         ambianceDungeon.setVolume(0.1f);
         ambianceDungeon.play();
@@ -231,7 +231,7 @@ public class GenerateLevel {
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player,animationController,cam);
+        playerController = new PlayerController(player,animationController,cam,assets);
 
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();

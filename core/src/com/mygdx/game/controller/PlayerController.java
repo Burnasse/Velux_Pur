@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
 
 import java.util.Random;
@@ -27,6 +28,7 @@ import java.util.Random;
 public class PlayerController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
+    private Assets assets;
     private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
@@ -67,13 +69,15 @@ public class PlayerController implements InputProcessor, ControllerListener {
      * @param player the player
      */
 
-    public PlayerController(EntityPlayer player,AnimationController animationController, PerspectiveCamera camera) {
+    public PlayerController(EntityPlayer player, AnimationController animationController, PerspectiveCamera camera, Assets assets) {
         this.player = player;
         this.animation = animationController;
         this.camera = camera;
-        footStepSound = Gdx.audio.newSound(Gdx.files.internal("sound/pasRun.wav"));
-        dodgeSound = Gdx.audio.newSound(Gdx.files.internal("sound/dodgeSound.wav"));
-        attackSound = Gdx.audio.newSound(Gdx.files.internal("sound/attackSound.wav"));
+        this.assets = assets;
+        footStepSound = assets.manager.get(Assets.stepSound);
+        dodgeSound = assets.manager.get(Assets.dodgeSound);
+        attackSound = assets.manager.get(Assets.attackSound);
+        danceMusic = assets.manager.get(Assets.danceMusic);
 
     }
 
@@ -320,28 +324,28 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private void dance(int numRand){
         if(numRand == 0) {
             animation.animate("dance", -1, 1.0f, null, 0.2f);
-            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/danceMusic.wav"));
+            danceMusic = assets.manager.get(Assets.danceMusic);
             danceMusicHandler();
         }
         else if(numRand == 1) {
             animation.animate("chicken", -1, 1.0f, null, 0.2f);
-            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/chickenMusic.wav"));
+            danceMusic = assets.manager.get(Assets.chickenMusic);
             danceMusicHandler();
         }
         else if(numRand == 2) {
             animation.animate("macarena", -1, 1.0f, null, 0.2f);
-            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/macarenaMusic.wav"));
+            danceMusic = assets.manager.get(Assets.macarenaMusic);
             danceMusicHandler();
 
         }
         else if(numRand == 3) {
             animation.animate("shuffle", -1, 1.0f, null, 0.2f);
-            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/shuffleMusic.wav"));
+            danceMusic = assets.manager.get(Assets.shuffleMusic);
             danceMusicHandler();
         }
         else if(numRand == 4) {
             animation.animate("thriller", -1, 1.0f, null, 0.2f);
-            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/thrillerMusic.wav"));
+            danceMusic = assets.manager.get(Assets.thrillerMusic);
             danceMusicHandler();
         }
 

@@ -11,6 +11,7 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.mappings.Xbox;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.gameGeneration.GenerateVillage;
 
@@ -21,6 +22,7 @@ public class VillageController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
     private AnimationController animation;
+    private Assets assets;
     private Vector3 walkDirection = new Vector3();
     private float speed = 0;
     private Sound footStepSound;
@@ -79,14 +81,15 @@ public class VillageController implements InputProcessor, ControllerListener {
      * @param player    the player
      * @param animation the animation
      */
-    public VillageController(GenerateVillage village, EntityPlayer player, AnimationController animation) {
+    public VillageController(GenerateVillage village, EntityPlayer player, AnimationController animation,Assets assets) {
         this.village = village;
         this.player = player;
         this.animation = animation;
+        this.assets = assets;
         Controllers.clearListeners();
         Controllers.addListener(this);
-        footStepSound = Gdx.audio.newSound(Gdx.files.internal("sound/pasRun.wav"));
-        jumpSound = Gdx.audio.newSound(Gdx.files.internal("sound/jumpSound.wav"));
+        footStepSound = assets.manager.get(Assets.stepSound);
+        jumpSound = assets.manager.get(Assets.jumpSound);
     }
 
     @Override

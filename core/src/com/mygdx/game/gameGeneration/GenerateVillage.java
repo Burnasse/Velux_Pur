@@ -101,12 +101,12 @@ public class GenerateVillage {
      */
     public void create() {
 
-        musicVillage =Gdx.audio.newMusic(Gdx.files.internal("sound/musicVillage.mp3"));
+        musicVillage =assets.manager.get(Assets.villageTheme);
         musicVillage.setLooping(true);
         musicVillage.setVolume(0.1f);
         musicVillage.play();
 
-        ambianceVillage =Gdx.audio.newMusic(Gdx.files.internal("sound/ambianceVillage.wav"));
+        ambianceVillage = assets.manager.get(Assets.villageAmbiance);
         ambianceVillage.setLooping(true);
         ambianceVillage.setVolume(0.05f);
         ambianceVillage.play();
@@ -226,7 +226,7 @@ public class GenerateVillage {
         player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
-        controller = new VillageController(this, player, animationController);
+        controller = new VillageController(this, player, animationController,assets);
 
         listener = new VillageContactListener(this, controller,triggersManager);
 

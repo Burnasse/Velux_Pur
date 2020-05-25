@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.instances.EntityInstancePlayer;
@@ -67,7 +68,7 @@ public class GenerateMultiplayerLevel implements Screen {
 
     private boolean playerPov = true;
     private int clock;
-
+    private Assets assets;
     private Array<EntityInstance> entityInstances;
     private HashMap<Integer, EntityPlayer> players;
     private Array<EntityInstancePlayer> entityInstancePlayers;
@@ -134,7 +135,7 @@ public class GenerateMultiplayerLevel implements Screen {
       
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player,animationController,cam);
+        playerController = new PlayerController(player,animationController,cam,assets);
 
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
