@@ -157,11 +157,23 @@ public class Gunner extends SteeringAgent {
     /**
      * the method called when the gunner attacks
      */
+    public float getProjectileDamage(){
+        return projectileDamage;
+    }
+    public ArrayList<Projectile> getProjectilesShot(){
+        return projectilesShot;
+    }
 
+    /**
+     * the method called when the gunner attacks
+     */
     private void checkProjectiles() {
         for (Projectile projectile : projectilesShot) {
-            if (projectile.isDone())
+            if (projectile.isDone()) {
                 doneProjectiles.add(projectile.getInstance());
+                projectile.getInstance().getBody().setContactCallbackFilter(0);
+                projectile.getInstance().getBody().setContactCallbackFlag(55);
+            }
         }
     }
 

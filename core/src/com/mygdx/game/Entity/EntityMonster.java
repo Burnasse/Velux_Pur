@@ -33,7 +33,7 @@ public class EntityMonster implements EntityInterface {
      */
     public EntityMonster(String monsterName, Model model, btCollisionShape shape, float mass, EntityPosition defaultPos, String typeOfMonster, int x1, int y1, int x2, int y2) {
         this.monsterName = monsterName;
-        this.characteristics = new CharacteristicMonster(0, 10);
+        this.characteristics = new CharacteristicMonster(5, 10);
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
         animationController = new AnimationController(entityInstance);
         if (typeOfMonster.equals("Gunner"))
@@ -77,6 +77,9 @@ public class EntityMonster implements EntityInterface {
         return entityInstance;
     }
 
+    public CharacteristicMonster getCharacteristics() {
+        return characteristics;
+    }
 
     @Override
     public void dispose() {

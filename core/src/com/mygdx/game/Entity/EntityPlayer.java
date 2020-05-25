@@ -24,6 +24,8 @@ public class EntityPlayer implements EntityInterface {
     public Weapon equippedWeapon;
     public boolean isAttacking;
     public int cdAttack = 125;
+    public int cdDammagesTaken =60;
+
     public int cdColisionWeaponEnnemy;
 
 
@@ -87,6 +89,9 @@ public class EntityPlayer implements EntityInterface {
         return equippedWeapon.getEntity();
     }
 
+    public void getsAttacked(float dammages){
+        characteristics.getsAttacked(dammages);
+    }
     public void usePotion() {
         inventory.usePotion();
     }

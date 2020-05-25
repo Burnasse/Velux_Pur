@@ -44,6 +44,7 @@ import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
+import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.Trigger;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.controller.PrefKeys;
@@ -55,6 +56,7 @@ import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
 
+import static com.mygdx.game.physics.CallbackFlags.ENNEMY_FLAG;
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
 
 /**
@@ -135,13 +137,30 @@ public class GenerateLevel {
                 if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
+
+                if (player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
+                    player.getsAttacked(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getCharacteristics().getAttackDamage());
+                    player.cdDammagesTaken = 60;
+                }
+                System.out.println("contact0");
+                System.out.println("uservalue0 = " + userValue0);
+                System.out.println("uservalue1 = " + userValue1);
             }
 
             if (match1) {
                 if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
-
+                if(userValue1 == 3000 && player.cdDammagesTaken == 0 && player.getCharacteristics().getHealth() > 0){
+                    Gunner ennemy = (Gunner)floorData.entityMonsters.get(0).getBehavior();
+                    System.out.println(ennemy.getProjectileDamage());
+                    player.getsAttacked(ennemy.getProjectileDamage());
+                    player.cdDammagesTaken = 60;
+                }
+                /*if ( ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
+                    System.out.println("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+                    //player.getsAttacked();
+                }*/
                 /**
                  * check si la colision est faite avec un ennemy, si oui, fait le necessaire
                  * */
@@ -156,8 +175,6 @@ public class GenerateLevel {
                         toDelete = userValue0-firstEnnemyUserValue;
                     }
                 }*/
-
-
                 System.out.println("contact1");
                 System.out.println("uservalue0 = " + userValue0);
                 System.out.println("uservalue1 = " + userValue1);
@@ -221,7 +238,7 @@ public class GenerateLevel {
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
         player.getEntity().getBody().setContactCallbackFlag(CallbackFlags.PLAYER_FLAG);
-        player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
+        player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG | ENNEMY_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
@@ -234,7 +251,7 @@ public class GenerateLevel {
         player.getWeapon().getEntity().transform.setToRotation(new Vector3(0,1,0),180);
         player.getWeapon().getEntity().transform.scale(0.3f,0.3f,0.3f);*/
         player.getWeapon().getEntity().getBody().setUserValue(1001);
-        player.getWeapon().getEntity().getBody().setCollisionFlags(player.getWeapon().getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        player.getWeapon().getEntity().getBody().setCollisionFlags(player.getWeapon().getEntity().getBody().getCollisionFlags() | 55);
         player.getWeapon().getEntity().getBody().setContactCallbackFlag(CallbackFlags.WEAPON_FLAG);
         player.getWeapon().getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
         player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
@@ -252,6 +269,7 @@ public class GenerateLevel {
             world.addRigidBody(obj.getBody());
             instances.add(obj);
         }
+
         firstEnnemyUserValue = instances.size();
 
         /**
@@ -388,12 +406,22 @@ public class GenerateLevel {
             foe.getBehavior().update(Gdx.graphics.getDeltaTime());
             if (foe.getBehavior() instanceof Gunner)
                 ((Gunner) foe.getBehavior()).projectiles().removeAll(((Gunner) foe.getBehavior()).getDoneProjectiles(), true);
-            temp.addAll(((Gunner) foe.getBehavior()).projectiles());
+            for (Projectile projectile:
+                    ((Gunner) foe.getBehavior()).getProjectilesShot()) {
+                if(! projectile.isDone())
+                    temp.add(projectile.getInstance());
+            }
+
         }
+
 
         if (toDelete != -1){
             deleteDeadEntity();
             toDelete = -1;
+        }
+
+        if (player.cdDammagesTaken>0){
+            player.cdDammagesTaken--;
         }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
