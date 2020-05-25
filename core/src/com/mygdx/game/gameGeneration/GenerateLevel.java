@@ -137,8 +137,7 @@ public class GenerateLevel {
                 if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
-
-                if (player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
+                if (player.getCharacteristics().getHealth() > 0 && player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
                     player.getsAttacked(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getCharacteristics().getAttackDamage());
                     player.cdDammagesTaken = 60;
                 }
@@ -157,24 +156,7 @@ public class GenerateLevel {
                     player.getsAttacked(ennemy.getProjectileDamage());
                     player.cdDammagesTaken = 60;
                 }
-                /*if ( ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
-                    System.out.println("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-                    //player.getsAttacked();
-                }*/
-                /**
-                 * check si la colision est faite avec un ennemy, si oui, fait le necessaire
-                 * */
-               /* if(player.isAttacking && player.cdColisionWeaponEnnemy >= 125 && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size())|| (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
-                    player.cdColisionWeaponEnnemy = player.cdAttack;
-                    System.out.println("contact 0");
-                    System.out.println("entite num :" + (userValue0-firstEnnemyUserValue));
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).damage(player.getWeapon());
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    if (floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth() <= 0) {
-                        toDelete = userValue0-firstEnnemyUserValue;
-                    }
-                }*/
+
                 System.out.println("contact1");
                 System.out.println("uservalue0 = " + userValue0);
                 System.out.println("uservalue1 = " + userValue1);

@@ -43,7 +43,7 @@ public class Gunner extends SteeringAgent {
         coolDown = maxCoolDown;
 
         position = object.getEntity().transform.getTranslation(new Vector3());
-        linearVelocity = new Vector3(0, 0, 0);
+        linearVelocity = new Vector3(0, 0f, 0);
 
         orientation = 1;
         maxLinearSpeed = 2f;

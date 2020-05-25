@@ -27,7 +27,7 @@ public class Projectile {
     public EntityInstance instance;
     private Vector3 direction;
     private final float speed;
-    private float remainingTime = 1f;
+    private float remainingTime = 1.5f;
     private boolean isDone = false;
 
     /**
@@ -52,19 +52,17 @@ public class Projectile {
 
         int projectile = 50;
 
-        instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, initialPosition.y + 2, initialPosition.z));
+        instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, initialPosition.y + 1f, initialPosition.z));
         direction = new Vector3(target.x - initialPosition.x, 0, target.z - initialPosition.z);
         direction = direction.nor();
 
         instance.getBody().setUserValue(3000);
-        instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        instance.getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
         instance.getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         instance.getBody().setContactCallbackFlag(projectile);
         instance.getBody().setContactCallbackFilter(CallbackFlags.PLAYER_FLAG);
 
-
         world.addRigidBody(instance.getBody());
-
 
         this.speed = speed;
     }
