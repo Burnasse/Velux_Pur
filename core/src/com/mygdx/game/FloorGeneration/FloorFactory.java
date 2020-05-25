@@ -37,8 +37,7 @@ public class FloorFactory {
      * @param maxRoomSize   the max room size
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets) {
-
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets){
         Floor floor;
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
@@ -47,6 +46,15 @@ public class FloorFactory {
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
+
+        return buildFloor(floor,assets);
+    }
+
+    public static FloorData create(Floor floor, Assets assets){
+        return buildFloor(floor,assets);
+    }
+
+    private static FloorData buildFloor(Floor floor, Assets assets) {
 
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
@@ -85,11 +93,11 @@ public class FloorFactory {
         btBoxShape wallShape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
         btBoxShape groundShape = new btBoxShape(new Vector3(blockSize / 2, blockSize / 6, blockSize / 2));
 
-        for (int i = 0; i < sizeOfFloor; i++) {
-            for (int j = 0; j < sizeOfFloor; j++) {
+        for (int i = 0; i < floor.getSizeOfFloor(); i++) {
+            for (int j = 0; j < floor.getSizeOfFloor(); j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition(x, y + blockSize / 2, z)).getEntity());
-                    if (i == 0 || j == 0 || i == sizeOfFloor - 1 || j == sizeOfFloor - 1) {
+                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor() - 1) {
                         EntityObjects s = new EntityObjects("box", wallModel, wallShape, 0f, new EntityPosition(x, y + blockSize, z));
                         objectsInstances.add(s.getEntity());
                     } else {

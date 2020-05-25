@@ -13,6 +13,11 @@ public abstract class Floor {
     protected int sizeOfFloor;
     protected ArrayList<Room> rooms = new ArrayList<>();
 
+    public Floor(){
+        layout = new Position[100][100];
+        sizeOfFloor = 100;
+    }
+
     /**
      * to print the floor layout in the console
      */

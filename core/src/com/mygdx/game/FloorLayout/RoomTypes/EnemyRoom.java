@@ -34,6 +34,10 @@ public class EnemyRoom extends Room {
         }
     }
 
+    public EnemyRoom(){
+        super(0,0,0,0);
+    }
+
     public ArrayList<EntityPosition> getEnemies() {
         return enemiesPosition;
     }
