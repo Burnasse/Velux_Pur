@@ -79,7 +79,7 @@ public class FloorFactory {
                 if(exitPosition == null){
                     exitPosition = new EntityPosition(
                             ThreadLocalRandom.current().nextInt(room.getX1()+1, room.getX2()-1)*blockSize,
-                            blockSize,
+                            0,
                             ThreadLocalRandom.current().nextInt(room.getY1()+1, room.getY2()-1)*blockSize);
                 }
             }

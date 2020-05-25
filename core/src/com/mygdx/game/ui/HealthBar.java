@@ -4,6 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+/**
+ * Display the Healthbar.
+ */
 public class HealthBar {
 
     private final ShapeRenderer shapeRenderer;
@@ -12,6 +15,9 @@ public class HealthBar {
     private final Color MidHealthColor;
     private final Color LowHealthColor;
 
+    /**
+     * Instantiates a new Health bar.
+     */
     public HealthBar(){
         shapeRenderer = new ShapeRenderer();
         backgroundColor = new Color(0.8f, 0.8f, 0.8f, 1f);
@@ -20,6 +26,13 @@ public class HealthBar {
         LowHealthColor = new Color(1f,0.1f,0f,0.8f);
     }
 
+    /**
+     * Render the healthBar.
+     * The player's life is scale by this function : (playerLife/playerMaxLife)*HealthBarSize
+     *
+     * @param playerMaxLife the player max life
+     * @param playerLife    the player life
+     */
     public void render(float playerMaxLife, float playerLife){
         float life = (playerLife/playerMaxLife)*200;
         System.out.println(life);
@@ -36,6 +49,9 @@ public class HealthBar {
         shapeRenderer.end();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose(){
         shapeRenderer.dispose();
     }

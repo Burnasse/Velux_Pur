@@ -5,12 +5,15 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.g3d.utils.*;
 
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
@@ -18,8 +21,6 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
 
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -487,7 +488,9 @@ public class GenerateLevel {
     }
 
     private void initFloorObjects() {
-        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
+        Model exitModel = new ModelBuilder().createBox(5,7,5, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal);
+        exitTrigger = new Trigger(exitModel, 2.5f, 4, 2.5f, floorData.exitPositon);
         exitTrigger.addInWorld(world.dynamicsWorld);
 
         /**
