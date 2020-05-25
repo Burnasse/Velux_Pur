@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -267,7 +268,6 @@ public class GenerateLevel {
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getBehavior().Surroundings(player, world);
             instances.add(monster.getEntity());
-
         }
 
         stage = new Stage();
@@ -342,7 +342,14 @@ public class GenerateLevel {
         if (player.cdAttack == 125){
             swordPlayerPos = new Vector3(0.75f,-0.15f,0.15f);
         }
-        if(player.cdAttack == 2) {
+
+        float newOrientation = (float) Math.atan2(-(player.cursor2DPos.x - player.player2DPos.x), player.cursor2DPos.y - player.player2DPos.y) * MathUtils.radiansToDegrees;
+        //player.getWeapon().getEntity().getBody().
+        System.out.println(newOrientation);
+        player.getWeapon().getEntity().transform.set(player.getPosition(), new Quaternion(new Vector3(0, 1, 0), newOrientation));
+
+        player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
+       /* if(player.cdAttack == 2) {
             swordPlayerPos = new Vector3(0.50f,0.2f,0.35f);
         }
         if (player.cdAttack > 10 && player.cdAttack < 30 ){
@@ -365,7 +372,7 @@ public class GenerateLevel {
             swordPlayerPos.x -= 0.1;
             swordPlayerPos.y += 0.0;
             swordPlayerPos.z -= 0.07;
-        }/*
+        }*/
         if(player.cdAttack == 2) {
             swordPlayerPos = new Vector3(1.3f,0.2f,0.35f);
         }
@@ -373,7 +380,7 @@ public class GenerateLevel {
             swordPlayerPos.x -= 0.0;
             swordPlayerPos.y += 0.0;
             swordPlayerPos.z -= 0.04;
-        }*/
+        }
         player.getWeapon().getEntity().move(new EntityPosition(playerpos.x+swordPlayerPos.x,playerpos.y+swordPlayerPos.y,playerpos.z+swordPlayerPos.z));
     }
     /**

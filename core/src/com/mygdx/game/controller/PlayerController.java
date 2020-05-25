@@ -391,11 +391,11 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
 
-        Vector2 player2DPos = new Vector2(camera.project(player.getPosition()).x, camera.project(player.getPosition()).y);
+        player.player2DPos = new Vector2(camera.project(player.getPosition()).x, camera.project(player.getPosition()).y);
 
-        Vector2 cursor2DPos = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
+        player.cursor2DPos = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 
-        float newOrientation = (float) Math.atan2(-(cursor2DPos.x - player2DPos.x), cursor2DPos.y - player2DPos.y) * MathUtils.radiansToDegrees;
+        float newOrientation = (float) Math.atan2(-(player.cursor2DPos.x - player.player2DPos.x), player.cursor2DPos.y - player.player2DPos.y) * MathUtils.radiansToDegrees;
 
         player.getEntity().transform.set(player.getPosition(), new Quaternion(new Vector3(0, 1, 0), newOrientation));
 
