@@ -52,7 +52,7 @@ public class Projectile {
 
         int projectile = 50;
 
-        instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, initialPosition.y, initialPosition.z));
+        instance = new EntityInstance(model, btBoxShape, 0.1f, new EntityPosition(initialPosition.x, initialPosition.y + 2, initialPosition.z));
         direction = new Vector3(target.x - initialPosition.x, 0, target.z - initialPosition.z);
         direction = direction.nor();
 

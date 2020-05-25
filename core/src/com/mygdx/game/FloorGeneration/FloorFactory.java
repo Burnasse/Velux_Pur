@@ -43,7 +43,7 @@ public class FloorFactory {
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
-        if (floorType.equalsIgnoreCase("Mixed"))
+        else if (floorType.equalsIgnoreCase("Mixed"))
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
@@ -62,17 +62,17 @@ public class FloorFactory {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(),room.getY1(),room.getX2(),room.getY2());
+                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(), room.getY1(), room.getX2(), room.getY2());
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
                 }
 
-                if(exitPosition == null){
+                if (exitPosition == null) {
                     exitPosition = new EntityPosition(
-                            ThreadLocalRandom.current().nextInt(room.getX1(), room.getX2())*blockSize,
+                            ThreadLocalRandom.current().nextInt(room.getX1(), room.getX2()) * blockSize,
                             blockSize,
-                            ThreadLocalRandom.current().nextInt(room.getY1(), room.getY2())*blockSize);
+                            ThreadLocalRandom.current().nextInt(room.getY1(), room.getY2()) * blockSize);
                 }
             }
         }

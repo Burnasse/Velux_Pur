@@ -21,7 +21,7 @@ public class EntityMonster implements EntityInterface {
     private EntityInstance entityInstance;
     private SteeringAgent behavior;
     private AnimationController animationController;
-
+//A
     /**
      * Instantiates a new Entity monster. with a model as entry
      *
@@ -37,8 +37,8 @@ public class EntityMonster implements EntityInterface {
         entityInstance = new EntityInstance(model, shape, mass, defaultPos);
         animationController = new AnimationController(entityInstance);
         if (typeOfMonster.equals("Gunner"))
-            behavior = new Gunner(entityInstance, x1, y1, x2, y2);
-        else behavior = new Zombie(entityInstance, x1, y1, x2, y2);
+            behavior = new Gunner(this, x1, y1, x2, y2);
+        else behavior = new Zombie(this, x1, y1, x2, y2);
         behavior.setAnimationController(animationController);
     }
 
