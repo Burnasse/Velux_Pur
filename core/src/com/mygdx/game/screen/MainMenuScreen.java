@@ -47,7 +47,7 @@ public class MainMenuScreen implements Screen, StageManager {
         this.stage = mainMenu.getStage();
 
         healthBar = new HealthBar();
-        musicMenu= Gdx.audio.newMusic(Gdx.files.internal("menuTheme.mp3"));
+        musicMenu= Gdx.audio.newMusic(Gdx.files.internal("sound/menuTheme.mp3"));
         musicMenu.setVolume(0.5f);
         musicMenu.setLooping(true);
         musicMenu.play();

@@ -3,6 +3,7 @@ package com.mygdx.game.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -32,6 +33,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     private Sound footStepSound;
     private Sound dodgeSound;
     private Sound attackSound;
+    private Music danceMusic;
 
     private float speed = 0;
 
@@ -69,9 +71,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
         this.player = player;
         this.animation = animationController;
         this.camera = camera;
-        footStepSound = Gdx.audio.newSound(Gdx.files.internal("pasRun.wav"));
-        dodgeSound = Gdx.audio.newSound(Gdx.files.internal("dodgeSound.wav"));
-        attackSound = Gdx.audio.newSound(Gdx.files.internal("attackSound.wav"));
+        footStepSound = Gdx.audio.newSound(Gdx.files.internal("sound/pasRun.wav"));
+        dodgeSound = Gdx.audio.newSound(Gdx.files.internal("sound/dodgeSound.wav"));
+        attackSound = Gdx.audio.newSound(Gdx.files.internal("sound/attackSound.wav"));
 
     }
 
@@ -97,36 +99,38 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
             moveLeft();
-            long soundID = footStepSound.play(0.5f);
-            footStepSound.setLooping(soundID,true);
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
             moveRight();
-            long soundID = footStepSound.play(0.5f);
-            footStepSound.setLooping(soundID,true);
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up))) {
             moveUp();
-            long soundID = footStepSound.play(0.5f);
-            footStepSound.setLooping(soundID,true);
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down))) {
             moveDown();
-           long soundID = footStepSound.play(0.5f);
-            footStepSound.setLooping(soundID,true);
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.X) && player.getEntity().getController().onGround()) {
             dodge();
             dodgeSound.play(0.5f);
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.H) && player.getEntity().getController().onGround()) {
             Random random = new Random();
             dance(random.nextInt(5));
+            danceMusic.play();
         }
         setMovement(speed);
 
@@ -146,6 +150,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
             animation.animate("idle", -1, 1.0f, null, 0.2f);
             setMovement(0);
             footStepSound.stop();
+            danceMusic.stop();
         }
         return false;
     }
@@ -313,12 +318,32 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     /**Make the player dance randomly */
     private void dance(int numRand){
-        if(numRand == 0)animation.animate("dance", -1, 1.0f, null, 0.2f);
-        else if(numRand == 1)animation.animate("chicken", -1, 1.0f, null, 0.2f);
-        else if(numRand == 2)animation.animate("macarena", -1, 1.0f, null, 0.2f);
-        else if(numRand == 3)animation.animate("shuffle", -1, 1.0f, null, 0.2f);
-        else if(numRand == 4)animation.animate("thriller", -1, 1.0f, null, 0.2f);
+        if(numRand == 0) {
+            animation.animate("dance", -1, 1.0f, null, 0.2f);
+            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/danceMusic.wav"));
+            danceMusicHandler();
+        }
+        else if(numRand == 1) {
+            animation.animate("chicken", -1, 1.0f, null, 0.2f);
+            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/chickenMusic.wav"));
+            danceMusicHandler();
+        }
+        else if(numRand == 2) {
+            animation.animate("macarena", -1, 1.0f, null, 0.2f);
+            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/macarenaMusic.wav"));
+            danceMusicHandler();
 
+        }
+        else if(numRand == 3) {
+            animation.animate("shuffle", -1, 1.0f, null, 0.2f);
+            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/shuffleMusic.wav"));
+            danceMusicHandler();
+        }
+        else if(numRand == 4) {
+            animation.animate("thriller", -1, 1.0f, null, 0.2f);
+            danceMusic = Gdx.audio.newMusic(Gdx.files.internal("sound/danceMusic/thrillerMusic.wav"));
+            danceMusicHandler();
+        }
 
     }
 
@@ -377,6 +402,15 @@ public class PlayerController implements InputProcessor, ControllerListener {
         animation.animate("running", -1, 1.0f, null, 0.2f);
         speed = 3f;
 
+    }
+
+    private void danceMusicHandler(){
+        danceMusic.setLooping(true);
+        danceMusic.setVolume(0.1f);
+        danceMusic.play();
+    }
+    public boolean danceMusicIsPlaying(){
+        return danceMusic.isPlaying();
     }
 
     @Override
@@ -451,6 +485,10 @@ public class PlayerController implements InputProcessor, ControllerListener {
         return false;
     }
 
+    private void loadFootstepSound(){
+        long soundID = footStepSound.play(0.5f);
+        footStepSound.setLooping(soundID,true);
+    }
     /**
      * Set movement
      */

@@ -134,12 +134,13 @@ public class GenerateLevel {
      */
     public void create() {
 
-        musicLevel =Gdx.audio.newMusic(Gdx.files.internal("musicLevel.mp3"));
+        musicLevel =Gdx.audio.newMusic(Gdx.files.internal("sound/musicLevel.mp3"));
         musicLevel.setLooping(true);
         musicLevel.setVolume(0.06f);
         musicLevel.play();
 
-        ambianceDungeon =Gdx.audio.newMusic(Gdx.files.internal("ambianceDungeon.wav"));
+
+        ambianceDungeon =Gdx.audio.newMusic(Gdx.files.internal("sound/ambianceDungeon.wav"));
         ambianceDungeon.setLooping(true);
         ambianceDungeon.setVolume(0.1f);
         ambianceDungeon.play();

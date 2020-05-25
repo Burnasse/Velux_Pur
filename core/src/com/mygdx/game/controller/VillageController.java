@@ -85,8 +85,8 @@ public class VillageController implements InputProcessor, ControllerListener {
         this.animation = animation;
         Controllers.clearListeners();
         Controllers.addListener(this);
-        footStepSound = Gdx.audio.newSound(Gdx.files.internal("pasRun.wav"));
-        jumpSound = Gdx.audio.newSound(Gdx.files.internal("jumpSound.wav"));
+        footStepSound = Gdx.audio.newSound(Gdx.files.internal("sound/pasRun.wav"));
+        jumpSound = Gdx.audio.newSound(Gdx.files.internal("sound/jumpSound.wav"));
     }
 
     @Override

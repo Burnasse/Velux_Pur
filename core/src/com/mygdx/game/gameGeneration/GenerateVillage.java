@@ -101,12 +101,12 @@ public class GenerateVillage {
      */
     public void create() {
 
-        musicVillage =Gdx.audio.newMusic(Gdx.files.internal("musicVillage.mp3"));
+        musicVillage =Gdx.audio.newMusic(Gdx.files.internal("sound/musicVillage.mp3"));
         musicVillage.setLooping(true);
         musicVillage.setVolume(0.1f);
         musicVillage.play();
 
-        ambianceVillage =Gdx.audio.newMusic(Gdx.files.internal("ambianceVillage.wav"));
+        ambianceVillage =Gdx.audio.newMusic(Gdx.files.internal("sound/ambianceVillage.wav"));
         ambianceVillage.setLooping(true);
         ambianceVillage.setVolume(0.05f);
         ambianceVillage.play();
