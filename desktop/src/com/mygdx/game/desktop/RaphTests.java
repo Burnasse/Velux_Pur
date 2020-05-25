@@ -215,6 +215,7 @@ public class RaphTests extends ApplicationAdapter {
 
 
 
+
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(playerController);
         /**

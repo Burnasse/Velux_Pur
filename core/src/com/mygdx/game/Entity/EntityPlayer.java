@@ -22,7 +22,12 @@ public class EntityPlayer implements EntityInterface {
     private Inventory inventory;
 
     public Weapon equippedWeapon;
-    private boolean isAttacking;
+    public boolean isAttacking;
+    public int cdAttack = 125;
+    public int cdDammagesTaken =60;
+
+    public int cdColisionWeaponEnnemy;
+
 
     /**
      * Instantiates a new Entity player. with a file as entry
@@ -84,6 +89,9 @@ public class EntityPlayer implements EntityInterface {
         return equippedWeapon.getEntity();
     }
 
+    public void getsAttacked(float dammages){
+        characteristics.getsAttacked(dammages);
+    }
     public void usePotion() {
         inventory.usePotion();
     }
@@ -109,6 +117,7 @@ public class EntityPlayer implements EntityInterface {
 
     public void attack() {
         this.isAttacking = true;
+        cdAttack = 0;
     }
 
     public boolean getIsAttacking() {
