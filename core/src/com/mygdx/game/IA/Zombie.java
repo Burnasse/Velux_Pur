@@ -74,6 +74,7 @@ public class Zombie extends SteeringAgent {
 
     @Override
     public void update(float delta) {
+        //A
         if (monster.getHealth() > 0) {
             coolDown = coolDown + delta;
 

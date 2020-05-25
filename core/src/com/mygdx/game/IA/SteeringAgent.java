@@ -119,7 +119,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
         monster.getEntity().transform.trn(new EntityPosition(linearVelocity.x * time, 0, linearVelocity.z * time));
         position = monster.getEntity().transform.getTranslation(new Vector3());
         linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
-    }
+    }//A
 
     /**
      * faces the target

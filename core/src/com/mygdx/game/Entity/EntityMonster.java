@@ -21,7 +21,7 @@ public class EntityMonster implements EntityInterface {
     private EntityInstance entityInstance;
     private SteeringAgent behavior;
     private AnimationController animationController;
-
+//A
     /**
      * Instantiates a new Entity monster. with a model as entry
      *

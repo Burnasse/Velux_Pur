@@ -93,6 +93,7 @@ public class Gunner extends SteeringAgent {
 
     @Override
     public void update(final float delta) {
+        //a
         if (monster.getHealth()>0) {
             checkProjectiles();
             coolDown = coolDown + delta;
