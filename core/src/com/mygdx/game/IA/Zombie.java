@@ -3,7 +3,7 @@ package com.mygdx.game.IA;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.EntityMonster;
 
 import java.util.TimerTask;
 
@@ -21,12 +21,12 @@ public class Zombie extends SteeringAgent {
      * @param z2       the wandering limit
      */
 
-    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2) {
+    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2) {
         super(instance, x1, z1, x2, z2);
         maxCoolDown = 1;
         coolDown = maxCoolDown;
 
-        position = instance.transform.getTranslation(new Vector3());
+        position = instance.getEntity().transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(10, 10, 10);
 
         orientation = 1;
@@ -47,13 +47,13 @@ public class Zombie extends SteeringAgent {
      * @param damage   the damage caused by the zombie
      */
 
-    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage) {
+    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage) {
         super(instance, x1, z1, x2, z2, maxCoolDown);
 
         maxCoolDown = 1;
         coolDown = maxCoolDown;
 
-        position = instance.transform.getTranslation(new Vector3());
+        position = instance.getEntity().transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(10, 10, 10);
 
         orientation = 1;
@@ -74,53 +74,55 @@ public class Zombie extends SteeringAgent {
 
     @Override
     public void update(float delta) {
-        coolDown = coolDown + delta;
+        if (monster.getHealth() > 0) {
+            coolDown = coolDown + delta;
 
-        if (playerInRoom()) {
+            if (playerInRoom()) {
 
-            target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
-            setMaxLinearSpeed(4);
-            setMaxLinearAcceleration(10);
-            behavior = new Pursue<>(this, target, 0);
+                target.setVector(player.getEntity().transform.getTranslation(new Vector3()));
+                setMaxLinearSpeed(4);
+                setMaxLinearAcceleration(10);
+                behavior = new Pursue<>(this, target, 0);
 
-            if ((isAround(position, target.vector, weaponRange * 3f)))
-                behavior = new Arrive<>(this, target);
-        } else {
-            if (behavior instanceof Pursue) {
-                setMaxLinearAcceleration(3);
-                generateRandomTarget();
-                behavior = new Arrive<>(behavior.getOwner(), target);
-                setMaxLinearSpeed(3);
-            } else if ((isAround(position, target.vector, 1)) && behavior.isEnabled()) {
+                if ((isAround(position, target.vector, weaponRange * 3f)))
+                    behavior = new Arrive<>(this, target);
+            } else {
+                if (behavior instanceof Pursue) {
+                    setMaxLinearAcceleration(3);
+                    generateRandomTarget();
+                    behavior = new Arrive<>(behavior.getOwner(), target);
+                    setMaxLinearSpeed(3);
+                } else if ((isAround(position, target.vector, 1)) && behavior.isEnabled()) {
 
-                behavior.setEnabled(false);
-                setMaxLinearSpeed(0);
-                timer.schedule(new TimerTask() {
+                    behavior.setEnabled(false);
+                    setMaxLinearSpeed(0);
+                    timer.schedule(new TimerTask() {
 
-                    @Override
-                    public void run() {
-                        generateRandomTarget();
-                        setMaxLinearAcceleration(3);
-                        setMaxLinearSpeed(3);
-                        behavior.setEnabled(true);
-                        behavior = new Arrive<>(behavior.getOwner(), target);
-                    }
-                }, 800);
+                        @Override
+                        public void run() {
+                            generateRandomTarget();
+                            setMaxLinearAcceleration(3);
+                            setMaxLinearSpeed(3);
+                            behavior.setEnabled(true);
+                            behavior = new Arrive<>(behavior.getOwner(), target);
+                        }
+                    }, 800);
+                }
             }
+
+            behavior.calculateSteering(steeringOutput);
+
+            Turn();
+
+            if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
+                if (coolDown >= maxCoolDown) {
+                    attack();
+                    coolDown = 0;
+                }
+            } else Move(delta);
+
+            monster.getEntity().getBody().proceedToTransform(monster.getEntity().transform);
         }
-
-        behavior.calculateSteering(steeringOutput);
-
-        Turn();
-
-        if ((isAround(position, target.vector, weaponRange) && playerInRoom())) {
-            if (coolDown >= maxCoolDown) {
-                attack();
-                coolDown = 0;
-            }
-        } else Move(delta);
-
-        instance.getBody().proceedToTransform(instance.transform);
     }
 
     /**

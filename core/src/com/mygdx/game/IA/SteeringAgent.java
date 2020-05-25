@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Quaternion;
 
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
@@ -27,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class SteeringAgent implements Steerable<Vector3> {
 
     protected EntityPlayer player;
-    protected EntityInstance instance;
+    protected EntityMonster monster;
     private DynamicWorld world = null;
     private AnimationController controller;
 
@@ -72,8 +73,8 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      * @param z2 the wandering limit
      */
 
-    public SteeringAgent(EntityInstance instance, int x1, int z1, int x2, int z2) {
-        this.instance = instance;
+    public SteeringAgent(EntityMonster monster, int x1, int z1, int x2, int z2) {
+        this.monster = monster;
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
@@ -90,8 +91,8 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      * @param maxCoolDown the coolDown of the attack
      */
 
-    public SteeringAgent(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown) {
-        this.instance = instance;
+    public SteeringAgent(EntityMonster monster, int x1, int z1, int x2, int z2, float maxCoolDown) {
+        this.monster = monster;
         this.x1 = x1;
         this.x2 = x2;
         this.z1 = z1;
@@ -115,8 +116,8 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
      */
 
     void Move(float time) {
-        instance.transform.trn(new EntityPosition(linearVelocity.x * time, 0, linearVelocity.z * time));
-        position = instance.transform.getTranslation(new Vector3());
+        monster.getEntity().transform.trn(new EntityPosition(linearVelocity.x * time, 0, linearVelocity.z * time));
+        position = monster.getEntity().transform.getTranslation(new Vector3());
         linearVelocity.mulAdd(SteeringAgent.steeringOutput.linear, time).limit(this.getMaxLinearSpeed());
     }
 
@@ -131,7 +132,7 @@ public abstract class SteeringAgent implements Steerable<Vector3> {
 
         if (orientation != newOrientation) {
             this.orientation = newOrientation;
-            instance.transform.set(instance.transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  360 - orientation));
+            monster.getEntity().transform.set(monster.getEntity().transform.getTranslation(new Vector3()), new Quaternion(new Vector3(0, 1, 0),  360 - orientation));
         }
     }
 
