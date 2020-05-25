@@ -132,7 +132,7 @@ public class GenerateLevel {
                         toDelete = userValue1-firstEnnemyUserValue;
                     }
                 }
-                if (userValue0 == exitTrigger.getUserValue()) {
+                if (userValue1 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
             }
@@ -176,7 +176,7 @@ public class GenerateLevel {
     }
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
-        this.DEBUG_MODE = false;
+        this.DEBUG_MODE = DEBUG_MODE;
         this.assets = assets;
     }
 
@@ -209,12 +209,7 @@ public class GenerateLevel {
         healthBar = new HealthBar();
 
         floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
-        System.out.println(floorData.playerSpawnPosition);
         minimap = floorData.minimap;
-
-
-        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
-        exitTrigger.addInWorld(world.dynamicsWorld);
 
         player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
         player.getEntity().getBody().setUserValue(playerUserValue);
@@ -238,8 +233,11 @@ public class GenerateLevel {
         player.getWeapon().getEntity().getBody().setContactCallbackFlag(CallbackFlags.WEAPON_FLAG);
         player.getWeapon().getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
         player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
-        instances.add(player.getWeapon().getEntity());
+        //instances.add(player.getWeapon().getEntity());
         world.addRigidBody(player.getWeapon().getEntity().getBody());
+
+        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
+        exitTrigger.addInWorld(world.dynamicsWorld);
 
         /**
          * ajoute le sol et murs
@@ -421,7 +419,7 @@ public class GenerateLevel {
         tempFrustum.render();
         modelBatch.render(exitTrigger.getEntity());
         modelBatch.render(player.getEntity(), environment);
-        modelBatch.render(instances,environment);
+        modelBatch.render(player.getEntityWeapon(),environment);
         modelBatch.end();
 
         stage.act();
@@ -487,38 +485,60 @@ public class GenerateLevel {
             obj.dispose();
         }
 
+        world.dispose();
+        debugDrawer = new DebugDrawer();
+        world = new DynamicWorld(debugDrawer);
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+
+        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+        world.getDynamicsWorld().addAction(player.getEntity().getController());
+
+        world.addRigidBody(player.getEntityWeapon().getBody());
+
+        instances.clear();
         temp.clear();
         floorData.objectsInstances.clear();
         minimap.dispose();
 
-        floorData = FloorFactory.create("Mixed", 80, 4, 3, 7, assets);
+        floorData = FloorFactory.create("Mixed", 50, 4, 3, 7, assets);
         minimap = floorData.minimap;
         minimap.clear();
         player.getEntity().transform.set(floorData.playerSpawnPosition, new Quaternion());
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
 
         //exitTrigger.getEntity().transform.trn(floorData.exitPositon);
-        world.getDynamicsWorld().removeRigidBody(exitTrigger.getEntity().getBody());
+
         exitTrigger.dispose();
         exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
         exitTrigger.addInWorld(world.dynamicsWorld);
 
-        for (EntityInstance obj : floorData.objectsInstances) {
-            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
+        /**
+         * ajoute le sol et murs
+         */
+        for(EntityInstance obj : floorData.objectsInstances){
+            obj.getBody().setUserValue(instances.size());
             obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             obj.getBody().setContactCallbackFlag(CallbackFlags.GROUND_FLAG);
             obj.getBody().setContactCallbackFilter(0);
             world.addRigidBody(obj.getBody());
+            instances.add(obj);
         }
+        firstEnnemyUserValue = instances.size();
 
-        for (EntityMonster monster : floorData.entityMonsters) {
+        /**
+         * ajoute les mobs
+         */
+        for(EntityMonster monster : floorData.entityMonsters){
+            monster.getEntity().getBody().setUserValue(instances.size());
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
-            world.addRigidBody(monster.getEntity().getBody());
-            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-            monster.getEntity().getBody().setContactCallbackFilter(0);
+            monster.getEntity().getBody().setContactCallbackFlag(CallbackFlags.ENNEMY_FLAG);
+            monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.WEAPON_FLAG);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+            world.addRigidBody(monster.getEntity().getBody());
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getBehavior().Surroundings(player, world);
+            instances.add(monster.getEntity());
+
         }
 
         Array<EntityInstance> instances = new Array<>();

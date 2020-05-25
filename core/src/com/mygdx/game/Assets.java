@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+/**
+ * Load all game assets and provide method to load and unload specific assets according to the game state
+ */
 public class Assets {
 
     public AssetManager manager = new AssetManager();
