@@ -322,66 +322,49 @@ public class GenerateLevel {
     }
 
     private void swordAnimation(){
-        if (player.cdAttack<=30) {
+        if (player.cdAttack <= 30) {
             player.cdAttack++;
             player.getWeapon().getEntity().getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             player.cdColisionWeaponEnnemy++;
         }
-        if (player.cdAttack<125 && player.cdAttack>30){
+        if (player.cdAttack < 125 && player.cdAttack > 30) {
             player.getWeapon().getEntity().getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             player.cdAttack++;
             player.cdColisionWeaponEnnemy++;
         }
 
-        if (player.cdAttack == 125){
+        if (player.cdAttack == 125) {
             player.getWeapon().getEntity().getBody().setCollisionFlags(55);
             player.isAttacking = false;
         }
 
-        Vector3 playerpos = player.getPosition();
-        if (player.cdAttack == 125){
-            swordPlayerPos = new Vector3(0.75f,-0.15f,0.15f);
+
+        if (player.cdAttack == 125) {
+            swordPlayerPos = new Vector3(0.75f, -0.15f, 0.15f);
         }
 
-        float newOrientation = (float) Math.atan2(-(player.cursor2DPos.x - player.player2DPos.x), player.cursor2DPos.y - player.player2DPos.y) * MathUtils.radiansToDegrees;
-        //player.getWeapon().getEntity().getBody().
-        System.out.println(newOrientation);
-        player.getWeapon().getEntity().transform.set(player.getPosition(), new Quaternion(new Vector3(0, 1, 0), newOrientation));
+        float newOrientation = player.getEntity().transform.getRotation(new Quaternion()).getAngleAround(new Vector3(0, 1, 0)) + 235;
 
-        player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
-       /* if(player.cdAttack == 2) {
-            swordPlayerPos = new Vector3(0.50f,0.2f,0.35f);
-        }
-        if (player.cdAttack > 10 && player.cdAttack < 30 ){
-            swordPlayerPos.x += 0.001;
-            swordPlayerPos.y += 0.01;
-            swordPlayerPos.z += 0;
-        }
-        if (player.cdAttack > 30 && player.cdAttack < 50 ){
-            swordPlayerPos.x += 0.05;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z += 0;
-        }
-        if (player.cdAttack > 50 && player.cdAttack < 60 ){
-            swordPlayerPos.x += 0.008;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z -= 0.06;
-        }
+        Vector3 direction = new Vector3();
 
-        if (player.cdAttack > 60 && player.cdAttack < 70 ){
-            swordPlayerPos.x -= 0.1;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z -= 0.07;
-        }*/
-        if(player.cdAttack == 2) {
-            swordPlayerPos = new Vector3(1.3f,0.2f,0.35f);
+        direction.x = -(float) Math.sin(newOrientation);
+        direction.z = (float) Math.tan(newOrientation);
+
+        Vector3 swordPos = player.getEntity().transform.getTranslation(new Vector3());
+
+        player.getWeapon().getEntity().transform.set(swordPos, new Quaternion(new Vector3(0, 1, 0), newOrientation));
+
+
+        if (player.cdAttack == 2) {
+            swordPlayerPos = new Vector3(1.3f, 0.2f, 0.35f);
         }
-        if (player.cdAttack > 2 && player.cdAttack < 25 ) {
+        if (player.cdAttack > 2 && player.cdAttack < 25) {
             swordPlayerPos.x -= 0.0;
             swordPlayerPos.y += 0.0;
             swordPlayerPos.z -= 0.04;
         }
-        player.getWeapon().getEntity().move(new EntityPosition(playerpos.x+swordPlayerPos.x,playerpos.y+swordPlayerPos.y,playerpos.z+swordPlayerPos.z));
+
+        player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
     }
     /**
      * Render.
