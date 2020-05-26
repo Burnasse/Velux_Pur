@@ -11,18 +11,42 @@ import com.mygdx.game.FloorLayout.Position;
 
 import java.util.ArrayList;
 
+/**
+ * The type Minimap.
+ */
 public class Minimap {
 
+    /**
+     * The type Cell map.
+     */
     static class CellMap{
+        /**
+         * The X.
+         */
         public float x;
+        /**
+         * The Y.
+         */
         public float y;
+        /**
+         * If the celle is visibile.
+         */
         public boolean isVisibile = false;
 
+        /**
+         * Instantiates a new Cell map.
+         *
+         * @param x the x
+         * @param y the y
+         */
         public CellMap(float x, float y) {
             this.x = x;
             this.y = y;
         }
 
+        /**
+         * Set visibile.
+         */
         public void setVisibile(){
             isVisibile = true;
         }
@@ -40,8 +64,14 @@ public class Minimap {
     private EntityPosition exitPosition;
     private boolean exitIsVisible = false;
 
-    ArrayList<CellMap> list = new ArrayList<>();
+    private ArrayList<CellMap> list = new ArrayList<>();
 
+    /**
+     * Instantiates a new Minimap.
+     *
+     * @param level        the level
+     * @param exitPosition the exit position
+     */
     public Minimap(Position[][] level, EntityPosition exitPosition) {
         this.exitPosition = exitPosition;
         spriteBatch = new SpriteBatch();
@@ -78,6 +108,12 @@ public class Minimap {
         }
     }
 
+    /**
+     * Render the minimap.
+     *
+     * @param playerX the player x
+     * @param playerZ the player z
+     */
     public void render(float playerX, float playerZ) {
 
         float exitPosMapX = (Gdx.graphics.getWidth() - minimapSize-50 ) + minimapSize - ((exitPosition.x / realFloorSize) * minimapSize) - (blockSize);
@@ -105,10 +141,16 @@ public class Minimap {
         spriteBatch.end();
     }
 
+    /**
+     * Dispose.
+     */
     public void dispose() {
         spriteBatch.dispose();
     }
 
+    /**
+     * Clear.
+     */
     public void clear(){
         for(CellMap cell : list)
             cell.isVisibile = false;

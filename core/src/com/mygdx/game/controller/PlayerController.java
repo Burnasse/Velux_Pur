@@ -20,6 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.item.WeaponCaC;
 import com.mygdx.game.item.WeaponDistance;
 
@@ -103,7 +104,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
         if (Gdx.input.isKeyPressed(PrefKeys.C))
             System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
 
-
         speed = 0;
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
@@ -173,7 +173,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (button == PrefKeys.LeftClick)
-            if (player.cdAttack == 125) {
+            if (player.cdAttack == SwordAnimation.animationduration) {
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
                     slash();
@@ -189,8 +189,9 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
+
             attackSound.play(0.3f);
-            if (player.cdAttack == 125) {
+            if (player.cdAttack == SwordAnimation.animationduration) {
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
                     slash();
@@ -448,11 +449,11 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
 
-        Vector2 player2DPos = new Vector2(camera.project(player.getPosition()).x, camera.project(player.getPosition()).y);
+        player.player2DPos = new Vector2(camera.project(player.getPosition()).x, camera.project(player.getPosition()).y);
 
-        Vector2 cursor2DPos = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
+        player.cursor2DPos = new Vector2(screenX, Gdx.graphics.getHeight() - screenY);
 
-        float newOrientation = (float) Math.atan2(-(cursor2DPos.x - player2DPos.x), cursor2DPos.y - player2DPos.y) * MathUtils.radiansToDegrees;
+        float newOrientation = (float) Math.atan2(-(player.cursor2DPos.x - player.player2DPos.x), player.cursor2DPos.y - player.player2DPos.y) * MathUtils.radiansToDegrees;
 
         player.getEntity().transform.set(player.getPosition(), new Quaternion(new Vector3(0, 1, 0), newOrientation));
 

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.*;
@@ -139,10 +140,12 @@ public class GenerateVillage {
 
         frustum = new FrustumCulling(villageBuilder.getObjectsInstance(),environment,camera,modelBatch,shadowBatch);
 
+        Model exitModel = new ModelBuilder().createBox(1,0.8f,1, new Material(ColorAttribute.createDiffuse(Color.WHITE)),VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal);
+
         triggersManager = new TriggersManager(villageBuilder.getWorld());
-        triggersManager.add("goToLevel",new Trigger(.5f, 1, .5f,new EntityPosition(-4.5f, 0, 0)));
+        triggersManager.add("goToLevel",new Trigger(exitModel,0.5f, 1f, .5f,new EntityPosition(-4.5f, 0, 0)));
         triggersManager.add("trader",new Trigger(.5f, 1, .5f,new EntityPosition(-0, 0, 0)));
-        triggersManager.add("smith",new Trigger(.5f, 1, .5f,new EntityPosition(-5.5f, 0, 0)));
         triggersManager.add("changeLayout1",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 0)));
         triggersManager.add("changeLayout2",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 3f)));
         triggersManager.add("changeLayout3",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(8f, 0.25f, 3)));
@@ -158,8 +161,8 @@ public class GenerateVillage {
         villageBuilder.createHouse(11, 4.5f, 2.5f, 4, 2);
         villageBuilder.createHouse(8, 7.5f, 5, 6, 2);
 
-        villageBuilder.createLightBox(environment, 4.75f,0.4f,0.25f,10);
-        villageBuilder.createLightBox(environment, -4.25f, 0.4f, 0.25f,-30);
+        villageBuilder.createLightBox(environment, 4.75f,0.5f,0.25f,10);
+        villageBuilder.createLightBox(environment, -3.75f, 0.4f, 0.25f,-30);
         villageBuilder.createLightBox(environment, 2.5f,0.4f,3.25f,10);
         villageBuilder.createLightBox(environment, 4f,0.4f,6.25f,10);
 
@@ -170,7 +173,7 @@ public class GenerateVillage {
 
         dialogHashMap = new HashMap<>();
         stage = new Stage();
-        UIDialog traderDialog = new UIDialog("Trader", "ACHETE MA MERDE", assets);
+        UIDialog traderDialog = new UIDialog("Trader", "Buy", assets);
         UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?", assets);
 
         traderDialog.getNoButton().addListener(new InputListener() {
@@ -267,6 +270,7 @@ public class GenerateVillage {
 
         modelBatch.begin(camera);
         frustum.render();
+        modelBatch.render(triggersManager.getTrigger("goToLevel").getEntity());
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(villageBuilder.getSky());
         modelBatch.render(villageBuilder.getBackground(), environment);

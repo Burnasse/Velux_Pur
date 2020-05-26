@@ -2,8 +2,6 @@ package com.mygdx.game.FloorLayout.RoomTypes;
 
 import com.mygdx.game.FloorLayout.Position;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public abstract class Room {
 
     private int x1;
@@ -56,6 +54,10 @@ public abstract class Room {
         }
 
         return xOverlap && yOverlap;
+    }
+
+    public boolean contains(int x, int y){
+        return (getX1()-1<=x && getX2()+1>= x && getY1()-1<=y && getY2()+1>=y);
     }
 
     public int getX1() {
