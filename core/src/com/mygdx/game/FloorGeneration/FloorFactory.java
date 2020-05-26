@@ -42,7 +42,7 @@ public class FloorFactory {
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
-        if (floorType.equalsIgnoreCase("Mixed"))
+        else if (floorType.equalsIgnoreCase("Mixed"))
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
@@ -64,8 +64,13 @@ public class FloorFactory {
         int z = 0;
 
         EntityPosition exitPosition = null;
+        ObjectFactory factory = new ObjectFactory();
 
         for (Room room : floor.getRooms()) {
+            int rand = ThreadLocalRandom.current().nextInt(1,room.getX2()-room.getX1());
+            for (int i = 0; i < rand*3; i++) {
+                objectsInstances.add(factory.createRandom(room.getX1(),room.getY1(),room.getX2(),room.getY2(),blockSize).getEntity());
+            }
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
