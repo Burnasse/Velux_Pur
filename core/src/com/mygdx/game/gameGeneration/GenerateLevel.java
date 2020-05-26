@@ -311,6 +311,7 @@ public class GenerateLevel {
         deathDialog = new UIDialog("", "You are dead\n Exit to village ?\n (Press no to exit the game)", assets);
         deathDialog.getYesButton().addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                ambianceDungeon.stop();
                 screen.changeGameState();
                 return true;
             }
@@ -473,12 +474,12 @@ public class GenerateLevel {
 
     private void disposeFloorObject() {
         for (EntityInstance obj : floorData.objectsInstances) {
-            world.getDynamicsWorld().removeRigidBody(obj.getBody());
+            //world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
         }
 
         for (EntityInstance obj : temp) {
-            world.getDynamicsWorld().removeRigidBody(obj.getBody());
+            //world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
         }
         world.dispose();
