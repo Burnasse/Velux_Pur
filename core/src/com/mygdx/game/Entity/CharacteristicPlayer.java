@@ -26,4 +26,8 @@ public class CharacteristicPlayer implements Characteristic {
     public int getHealth() {
         return health;
     }
+
+    public void getsAttacked(float dammage){
+        this.health -= dammage;
+    }
 }

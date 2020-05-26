@@ -12,15 +12,12 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-
 import com.badlogic.gdx.graphics.g3d.utils.*;
-
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-
-
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
@@ -28,7 +25,6 @@ import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -46,10 +42,10 @@ import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
 import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
+import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.Trigger;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.controller.PrefKeys;
-import com.mygdx.game.item.CreatedItems;
 import com.mygdx.game.physics.CallbackFlags;
 import com.mygdx.game.physics.DynamicWorld;
 import com.mygdx.game.ui.HealthBar;
@@ -58,6 +54,7 @@ import com.mygdx.game.ui.Minimap;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.mygdx.game.physics.CallbackFlags.ENNEMY_FLAG;
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
 
 /**
@@ -137,28 +134,25 @@ public class GenerateLevel {
                 if (userValue1 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
+                if (player.getCharacteristics().getHealth() > 0 && player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size())) && (userValue1 == 6666 || userValue0 == 6666)) {
+                    player.getsAttacked(floorData.entityMonsters.get(userValue1 - firstEnnemyUserValue).getCharacteristics().getAttackDamage());
+                    player.cdDammagesTaken = 60;
+                }
+                System.out.println("contact0");
+                System.out.println("uservalue0 = " + userValue0);
+                System.out.println("uservalue1 = " + userValue1);
             }
 
             if (match1) {
                 if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                 }
-
-                /**
-                 * check si la colision est faite avec un ennemy, si oui, fait le necessaire
-                 * */
-               /* if(player.isAttacking && player.cdColisionWeaponEnnemy >= 125 && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size())|| (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
-                    player.cdColisionWeaponEnnemy = player.cdAttack;
-                    System.out.println("contact 0");
-                    System.out.println("entite num :" + (userValue0-firstEnnemyUserValue));
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).damage(player.getWeapon());
-                    System.out.println(floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth());
-                    if (floorData.entityMonsters.get(userValue0-firstEnnemyUserValue).getHealth() <= 0) {
-                        toDelete = userValue0-firstEnnemyUserValue;
-                    }
-                }*/
-
+                if (userValue1 == 3000 && player.cdDammagesTaken == 0 && player.getCharacteristics().getHealth() > 0) {
+                    Gunner ennemy = (Gunner) floorData.entityMonsters.get(0).getBehavior();
+                    System.out.println(ennemy.getProjectileDamage());
+                    player.getsAttacked(ennemy.getProjectileDamage());
+                    player.cdDammagesTaken = 60;
+                }
 
                 System.out.println("contact1");
                 System.out.println("uservalue0 = " + userValue0);
@@ -221,6 +215,7 @@ public class GenerateLevel {
         healthBar = new HealthBar();
 
         if(floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
+
         minimap = floorData.minimap;
 
         player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
@@ -228,7 +223,7 @@ public class GenerateLevel {
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
         player.getEntity().getBody().setContactCallbackFlag(CallbackFlags.PLAYER_FLAG);
-        player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
+        player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG | ENNEMY_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
         world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
         world.getDynamicsWorld().addAction(player.getEntity().getController());
@@ -241,7 +236,7 @@ public class GenerateLevel {
         player.getWeapon().getEntity().transform.setToRotation(new Vector3(0,1,0),180);
         player.getWeapon().getEntity().transform.scale(0.3f,0.3f,0.3f);*/
         player.getWeapon().getEntity().getBody().setUserValue(1001);
-        player.getWeapon().getEntity().getBody().setCollisionFlags(player.getWeapon().getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        player.getWeapon().getEntity().getBody().setCollisionFlags(player.getWeapon().getEntity().getBody().getCollisionFlags() | 55);
         player.getWeapon().getEntity().getBody().setContactCallbackFlag(CallbackFlags.WEAPON_FLAG);
         player.getWeapon().getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
         player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
@@ -305,43 +300,35 @@ public class GenerateLevel {
             player.isAttacking = false;
         }
 
-        Vector3 playerpos = player.getPosition();
         if (player.cdAttack == 125) {
             swordPlayerPos = new Vector3(0.75f, -0.15f, 0.15f);
         }
-        if (player.cdAttack == 2) {
-            swordPlayerPos = new Vector3(0.50f, 0.2f, 0.35f);
-        }
-        if (player.cdAttack > 10 && player.cdAttack < 30) {
-            swordPlayerPos.x += 0.001;
-            swordPlayerPos.y += 0.01;
-            swordPlayerPos.z += 0;
-        }
-        if (player.cdAttack > 30 && player.cdAttack < 50) {
-            swordPlayerPos.x += 0.05;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z += 0;
-        }
-        if (player.cdAttack > 50 && player.cdAttack < 60) {
-            swordPlayerPos.x += 0.008;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z -= 0.06;
-        }
 
-        if (player.cdAttack > 60 && player.cdAttack < 70) {
-            swordPlayerPos.x -= 0.1;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z -= 0.07;
-        }/*
-        if(player.cdAttack == 2) {
-            swordPlayerPos = new Vector3(1.3f,0.2f,0.35f);
+        float newOrientation = player.getEntity().transform.getRotation(new Quaternion()).getAngleAround(new Vector3(0, 1, 0)) + 235;
+
+        Vector3 direction = new Vector3();
+
+        direction.x = -(float) Math.sin(newOrientation);
+        direction.z = (float) Math.tan(newOrientation);
+
+        Vector3 swordPos = player.getEntity().transform.getTranslation(new Vector3());
+
+        player.getWeapon().getEntity().transform.set(swordPos, new Quaternion(new Vector3(0, 1, 0), newOrientation));
+
+
+        if (player.cdAttack == 2) {
+            swordPlayerPos = new Vector3(1.3f, 0.2f, 0.35f);
+
         }
-        if (player.cdAttack > 2 && player.cdAttack < 25 ) {
+        if (player.cdAttack > 2 && player.cdAttack < 25) {
             swordPlayerPos.x -= 0.0;
             swordPlayerPos.y += 0.0;
             swordPlayerPos.z -= 0.04;
-        }*/
-        player.getWeapon().getEntity().move(new EntityPosition(playerpos.x + swordPlayerPos.x, playerpos.y + swordPlayerPos.y, playerpos.z + swordPlayerPos.z));
+
+        }
+
+        player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
+        
     }
 
     /**
@@ -356,12 +343,21 @@ public class GenerateLevel {
             foe.getBehavior().update(Gdx.graphics.getDeltaTime());
             if (foe.getBehavior() instanceof Gunner)
                 ((Gunner) foe.getBehavior()).projectiles().removeAll(((Gunner) foe.getBehavior()).getDoneProjectiles(), true);
-            temp.addAll(((Gunner) foe.getBehavior()).projectiles());
+            for (Projectile projectile :
+                    ((Gunner) foe.getBehavior()).getProjectilesShot()) {
+                if (!projectile.isDone())
+                    temp.add(projectile.getInstance());
+            }
+
         }
 
         if (toDelete != -1) {
             deleteDeadEntity();
             toDelete = -1;
+        }
+
+        if (player.cdDammagesTaken > 0) {
+            player.cdDammagesTaken--;
         }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -391,6 +387,7 @@ public class GenerateLevel {
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(player.getEntityWeapon(), environment);
         if(players != null) modelBatch.render(players.values(),environment);
+
         modelBatch.end();
 
         stage.act();
@@ -532,5 +529,6 @@ public class GenerateLevel {
 
     public EntityPlayer getPlayer() {
         return player;
+
     }
 }

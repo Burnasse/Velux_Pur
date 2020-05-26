@@ -91,7 +91,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
         if (Gdx.input.isKeyPressed(PrefKeys.C))
             System.out.println(Gdx.input.getX() + " " + Gdx.input.getY());
 
-
         speed = 0;
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {

@@ -9,6 +9,7 @@ import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.MonsterFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorLayout.BossFloor.BossFloor;
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
@@ -44,7 +45,10 @@ public class FloorFactory {
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else if (floorType.equalsIgnoreCase("Mixed"))
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
-        else
+        else if (floorType.equalsIgnoreCase("BossFloor")) {
+            floor = new BossFloor();
+            sizeOfFloor = floor.getSizeOfFloor();
+        } else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
         return buildFloor(floor,assets);
@@ -75,13 +79,13 @@ public class FloorFactory {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(),room.getY1(),room.getX2(),room.getY2());
+                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(), room.getY1(), room.getX2(), room.getY2());
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
                 }
 
-                if(exitPosition == null){
+                if (exitPosition == null) {
                     exitPosition = new EntityPosition(
                             ThreadLocalRandom.current().nextInt(room.getX1()+1, room.getX2()-1)*blockSize,
                             0,

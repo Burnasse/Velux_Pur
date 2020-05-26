@@ -19,6 +19,10 @@ public class CharacteristicMonster implements Characteristic {
         this.health = health;
     }
 
+    public int getAttackDamage() {
+        return attackDamage;
+    }
+
     public int getHealth() {
         return health;
     }

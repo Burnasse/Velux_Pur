@@ -2,6 +2,7 @@ package com.mygdx.game.FloorLayout.Type2Floor;
 
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.Position;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,10 +70,31 @@ public class Labyrinth extends Floor {
     }
 
     protected void generatePrimLabyrinth() {
+
         Random rand = new Random();
 
         int startingCaseX = rand.nextInt(sizeOfFloor);
         int startingCaseY = rand.nextInt(sizeOfFloor);
+
+        if (!rooms.isEmpty()) {
+            boolean contains;
+            for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                contains = false;
+                for (Room room : rooms) {
+                    if (room.contains(startingCaseX, startingCaseY)) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    break;
+                } else {
+                    startingCaseX = rand.nextInt(sizeOfFloor);
+                    startingCaseY = rand.nextInt(sizeOfFloor);
+                }
+            }
+        }
+
 
         layout[startingCaseX][startingCaseY].setContent(' ');
 
