@@ -146,7 +146,7 @@ public class GenerateLevel {
                     }
                     /*TODO mettre le bruit de degat des mobs*/
                 }
-                if (userValue0 == exitTrigger.getUserValue()) {
+                if (userValue1 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
                     /*TODO mettre bruit de changement d'etage*/
                 }
@@ -233,13 +233,9 @@ public class GenerateLevel {
 
         healthBar = new HealthBar();
 
-        floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
-        System.out.println(floorData.playerSpawnPosition);
+        if(floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
+
         minimap = floorData.minimap;
-
-
-        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
-        exitTrigger.addInWorld(world.dynamicsWorld);
 
         player = PlayerFactory.create(floorData.playerSpawnPosition, assets);
         player.getEntity().getBody().setUserValue(playerUserValue);
@@ -265,34 +261,14 @@ public class GenerateLevel {
         player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
         world.addRigidBody(player.getWeapon().getEntity().getBody());
 
-        /**
-         * ajoute le sol et murs
-         */
-        for(EntityInstance obj : floorData.objectsInstances){
-            obj.getBody().setUserValue(instances.size());
-            obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            obj.getBody().setContactCallbackFlag(CallbackFlags.GROUND_FLAG);
-            obj.getBody().setContactCallbackFilter(0);
-            world.addRigidBody(obj.getBody());
-            instances.add(obj);
-        }
+        cam = new PerspectiveCamera(80, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.position.set(player.getEntity().transform.getValues()[12], 15, player.getEntity().transform.getValues()[14] - 1);
+        cam.lookAt(player.getEntity().transform.getValues()[12], player.getEntity().transform.getValues()[13], player.getEntity().transform.getValues()[14] + 1);
+        cam.near = 3f;
+        cam.far = 300f;
+        cam.update();
 
-        firstEnnemyUserValue = instances.size();
-
-        /**
-         * ajoute les mobs
-         */
-        for(EntityMonster monster : floorData.entityMonsters){
-            monster.getEntity().getBody().setUserValue(instances.size());
-            monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            monster.getEntity().getBody().setContactCallbackFlag(CallbackFlags.ENNEMY_FLAG);
-            monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.WEAPON_FLAG);
-            monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
-            world.addRigidBody(monster.getEntity().getBody());
-            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-            monster.getBehavior().Surroundings(player, world);
-            instances.add(monster.getEntity());
-        }
+        initFloorObjects();
 
         stage = new Stage();
         interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
@@ -325,7 +301,7 @@ public class GenerateLevel {
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player,animationController,cam);
+        playerController = new PlayerController(player, animationController, cam);
 
         swordAnimation = new SwordAnimation(player,swordPlayerPos);
 
@@ -339,9 +315,9 @@ public class GenerateLevel {
         cam.position.set(player.getEntity().transform.getValues()[12], cam.position.y, player.getEntity().transform.getValues()[14] - 1);
     }
 
-    private void deleteDeadEntity(){
+    private void deleteDeadEntity() {
         floorData.objectsInstances.get(toDelete).getBody().setCollisionFlags(55);
-        floorData.objectsInstances.get(toDelete).move(new EntityPosition(-50,-50,-50));
+        floorData.objectsInstances.get(toDelete).move(new EntityPosition(-50, -50, -50));
         toDelete = -1;
     }
 
@@ -357,19 +333,19 @@ public class GenerateLevel {
             foe.getBehavior().update(Gdx.graphics.getDeltaTime());
             if (foe.getBehavior() instanceof Gunner)
                 ((Gunner) foe.getBehavior()).projectiles().removeAll(((Gunner) foe.getBehavior()).getDoneProjectiles(), true);
-            for (Projectile projectile:
+            for (Projectile projectile :
                     ((Gunner) foe.getBehavior()).getProjectilesShot()) {
-                if(! projectile.isDone())
+                if (!projectile.isDone())
                     temp.add(projectile.getInstance());
             }
         }
 
-        if (toDelete != -1){
+        if (toDelete != -1) {
             deleteDeadEntity();
             toDelete = -1;
         }
 
-        if (player.cdDammagesTaken>0){
+        if (player.cdDammagesTaken > 0) {
             player.cdDammagesTaken--;
         }
 
@@ -402,6 +378,8 @@ public class GenerateLevel {
         modelBatch.render(instances,environment);
         if(player.isAttacking)
             modelBatch.render(player.getEntityWeapon(),environment);
+        if(players != null)
+            modelBatch.render(players.values(),environment);
         modelBatch.end();
 
         stage.act();
@@ -445,16 +423,13 @@ public class GenerateLevel {
      * Dispose.
      */
     public void dispose() {
-        for (Entity obj : floorData.objectsInstances)
-            obj.dispose();
+        disposeFloorObject();
 
         instances.clear();
         temp.clear();
         floorData.objectsInstances.clear();
-
-        world.dispose();
+        minimap.dispose();
         contactListener.dispose();
-
         modelBatch.dispose();
         minimap.dispose();
         healthBar.dispose();
@@ -467,7 +442,7 @@ public class GenerateLevel {
             obj.dispose();
         }
 
-        for(EntityInstance obj : temp){
+        for (EntityInstance obj : temp) {
             world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
         }
@@ -521,16 +496,24 @@ public class GenerateLevel {
             obj.getBody().setContactCallbackFlag(CallbackFlags.GROUND_FLAG);
             obj.getBody().setContactCallbackFilter(0);
             world.addRigidBody(obj.getBody());
+            instances.add(obj);
         }
+        firstEnnemyUserValue = instances.size();
 
+        /**
+         * ajoute les mobs
+         */
         for (EntityMonster monster : floorData.entityMonsters) {
+            monster.getEntity().getBody().setUserValue(instances.size());
             monster.getEntity().getBody().setCollisionFlags(monster.getEntity().getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
-            world.addRigidBody(monster.getEntity().getBody());
-            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-            monster.getEntity().getBody().setContactCallbackFilter(0);
+            monster.getEntity().getBody().setContactCallbackFlag(CallbackFlags.ENNEMY_FLAG);
+            monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.WEAPON_FLAG);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
+            world.addRigidBody(monster.getEntity().getBody());
+            world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(),(short)btBroadphaseProxy.CollisionFilterGroups.CharacterFilter,(short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
             monster.getBehavior().Surroundings(player, world);
+            instances.add(monster.getEntity());
+
         }
 
         Array<EntityInstance> instances = new Array<>();
