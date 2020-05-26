@@ -422,7 +422,7 @@ public class VillageController implements InputProcessor, ControllerListener {
         }, 0.2f);
     }
     private void loadFootstepSound(){
-        long soundID = footStepSound.play(0.5f);
+        long soundID = footStepSound.play(0.2f);
         footStepSound.setLooping(soundID,true);
     }
 

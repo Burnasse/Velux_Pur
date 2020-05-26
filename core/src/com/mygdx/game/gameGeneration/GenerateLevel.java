@@ -3,6 +3,7 @@ package com.mygdx.game.gameGeneration;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -88,6 +89,9 @@ public class GenerateLevel {
     private MyContactListener contactListener;
     private AnimationController animationController;
 
+    private Sound hitSound;
+    private Sound playerHurtSound;
+
     public ArrayMap<Integer, EntityInstancePlayer> players;
 
     private UIDialog deathDialog;
@@ -151,16 +155,15 @@ public class GenerateLevel {
                         toDelete = userValue1 - firstEnnemyUserValue;
 
                     }
-                    /*TODO mettre le bruit de degat des mobs*/
+                    hitSound.play(0.5f);
                 }
                 if (userValue1 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
-                    /*TODO mettre bruit de changement d'etage*/
                 }
                 if (player.getCharacteristics().getHealth() > 0 && player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size())) && (userValue1 == 6666 || userValue0 == 6666)) {
                     player.getsAttacked(floorData.entityMonsters.get(userValue1 - firstEnnemyUserValue).getCharacteristics().getAttackDamage());
                     player.cdDammagesTaken = 60;
-                    /*TODO mettre bruit de degats du player ou faire ecran qui devient rouge */
+                    playerHurtSound.play(0.3f);
                 }
                 System.out.println("contact0");
                 System.out.println("uservalue0 = " + userValue0);
@@ -176,7 +179,7 @@ public class GenerateLevel {
                     System.out.println(ennemy.getProjectileDamage());
                     player.getsAttacked(ennemy.getProjectileDamage());
                     player.cdDammagesTaken = 60;
-                    /*TODO mettre bruit de degats du player ou faire ecran qui devient rouge */
+                    playerHurtSound.play(0.3f);
                 }
 
                 System.out.println("contact1");
@@ -218,6 +221,9 @@ public class GenerateLevel {
      * Create.
      */
     public void create() {
+        hitSound= assets.manager.get(Assets.hitSound);
+        playerHurtSound = assets.manager.get(Assets.playerHurtSound);
+
         musicLevel = assets.manager.get(Assets.levelTheme);
         musicLevel.setLooping(true);
         musicLevel.setVolume(0.06f);

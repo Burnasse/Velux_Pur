@@ -171,7 +171,7 @@ public class GenerateVillage {
 
         dialogHashMap = new HashMap<>();
         stage = new Stage();
-        UIDialog traderDialog = new UIDialog("Trader", "Buy", assets);
+        UIDialog traderDialog = new UIDialog("Trader", "I don't have anything \n to sell for the moment.\n Please comeback later stranger.", assets);
         UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?", assets);
 
         traderDialog.getNoButton().addListener(new InputListener() {

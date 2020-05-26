@@ -143,6 +143,10 @@ public class Assets {
             new AssetDescriptor<>("sound/pasRun.wav",Sound.class);
     public static final AssetDescriptor<Sound> zombieAttackSound =
             new AssetDescriptor<>("sound/zombieAttackSound.wav",Sound.class);
+    public static final AssetDescriptor<Sound> hitSound =
+            new AssetDescriptor<>("sound/hitSound.mp3",Sound.class);
+    public static final AssetDescriptor<Sound> playerHurtSound =
+            new AssetDescriptor<>("sound/playerHurtSound.wav",Sound.class);
 
     /**
      * Load elements specific to the menu
@@ -208,6 +212,8 @@ public class Assets {
         manager.load(jumpSound);
         manager.load(stepSound);
         manager.load(zombieAttackSound);
+        manager.load(hitSound);
+        manager.load(playerHurtSound);
     }
 
 

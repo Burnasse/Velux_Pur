@@ -401,7 +401,6 @@ public class PlayerController implements InputProcessor, ControllerListener {
         walkDirection.add(1, 0, 0);
         animation.animate("running", -1, 1.0f, null, 0.2f);
         speed = 3f;
-        footStepSound.play();
 
     }
 
