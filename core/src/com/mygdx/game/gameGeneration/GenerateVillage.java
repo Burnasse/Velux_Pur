@@ -131,7 +131,6 @@ public class GenerateVillage {
         triggersManager = new TriggersManager(villageBuilder.getWorld());
         triggersManager.add("goToLevel",new Trigger(exitModel,0.5f, 1f, .5f,new EntityPosition(-4.5f, 0, 0)));
         triggersManager.add("trader",new Trigger(.5f, 1, .5f,new EntityPosition(-0, 0, 0)));
-        triggersManager.add("smith",new Trigger(.5f, 1, .5f,new EntityPosition(-5.5f, 0, 0)));
         triggersManager.add("changeLayout1",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 0)));
         triggersManager.add("changeLayout2",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(4.0f, 0.25f, 3f)));
         triggersManager.add("changeLayout3",new Trigger(0.5f, 0.25f, .5f,new EntityPosition(8f, 0.25f, 3)));

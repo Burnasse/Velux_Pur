@@ -68,13 +68,9 @@ public class FloorFactory {
         int z = 0;
 
         EntityPosition exitPosition = null;
-        ObjectFactory factory = new ObjectFactory();
 
         for (Room room : floor.getRooms()) {
-            int rand = ThreadLocalRandom.current().nextInt(1,room.getX2()-room.getX1());
-            for (int i = 0; i < rand*3; i++) {
-                objectsInstances.add(factory.createRandom(room.getX1(),room.getY1(),room.getX2(),room.getY2(),blockSize).getEntity());
-            }
+
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;

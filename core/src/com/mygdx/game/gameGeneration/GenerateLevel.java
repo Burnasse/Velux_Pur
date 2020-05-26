@@ -180,7 +180,7 @@ public class GenerateLevel {
      * Create level with floorData as argument
      * Mainly used in multiplayer
      */
-    public void create(FloorData floorData, ArrayMap<Integer, EntityInstancePlayer> players){
+    public void create(FloorData floorData, ArrayMap<Integer, EntityInstancePlayer> players) {
         this.floorData = floorData;
         this.players = players;
         create();
@@ -214,7 +214,7 @@ public class GenerateLevel {
 
         healthBar = new HealthBar();
 
-        if(floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
+        if (floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
 
         minimap = floorData.minimap;
 
@@ -328,7 +328,7 @@ public class GenerateLevel {
         }
 
         player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
-        
+
     }
 
     /**
@@ -386,7 +386,7 @@ public class GenerateLevel {
         modelBatch.render(exitTrigger.getEntity());
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(player.getEntityWeapon(), environment);
-        if(players != null) modelBatch.render(players.values(),environment);
+        if (players != null) modelBatch.render(players.values(), environment);
 
         modelBatch.end();
 
@@ -407,13 +407,7 @@ public class GenerateLevel {
         if (interactLabel.isVisible() && Gdx.input.isKeyPressed(PrefKeys.Interact)) {
             onLoad = true;
             interactLabel.setVisible(false);
-            Gdx.app.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    goToNextLevel();
-                }
-            });
-
+            goToNextLevel();
         }
     }
 
@@ -485,7 +479,7 @@ public class GenerateLevel {
     }
 
     private void initFloorObjects() {
-        Model exitModel = new ModelBuilder().createBox(5,7,5, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position
+        Model exitModel = new ModelBuilder().createBox(5, 7, 5, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position
                 | VertexAttributes.Usage.Normal);
         exitTrigger = new Trigger(exitModel, 2.5f, 4, 2.5f, floorData.exitPositon);
         exitTrigger.addInWorld(world.dynamicsWorld);
