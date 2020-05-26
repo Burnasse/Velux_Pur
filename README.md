@@ -4,8 +4,11 @@ Principe du jeu :
 Le joueur apparaît dans un village qui fait office de HUB et se fera téléporter dans un donjon généré procéduralement quand il sortira du village.
 
 Menu Principal :
+
   Play : Lancer le jeu en solo.
+  
   Multiplayer : Jouer en multijoueur (il faudra lancer ServerVelux qui est dans le package network au préalable).
+  
   Settings : Changer les touches, le son et la résolution du jeu.
 
 
