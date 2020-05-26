@@ -2,6 +2,7 @@ package com.mygdx.game.gameGeneration;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
@@ -91,6 +92,11 @@ public class GenerateLevel {
     private int playerUserValue = 6666;
     private int currentFloor = 1;
 
+
+    private Music musicLevel;
+    private Music ambianceDungeon;
+
+
     private Trigger exitTrigger;
 
     private Stage stage;
@@ -110,9 +116,7 @@ public class GenerateLevel {
     private Vector3 swordPlayerPos = new Vector3();
 
     private volatile boolean onLoad = false;
-
     private SwordAnimation swordAnimation;
-
 
     /**
      * The type My contact listener is called when there is a collision.
@@ -126,6 +130,7 @@ public class GenerateLevel {
                 /**
                  * check si la colision est faite avec un ennemy, si oui, fait le necessaire
                  * */
+
 
                 if(player.isAttacking && player.cdColisionWeaponEnnemy >= SwordAnimation.animationduration && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
                     player.cdColisionWeaponEnnemy = player.cdAttack;
@@ -207,6 +212,17 @@ public class GenerateLevel {
      * Create.
      */
     public void create() {
+        musicLevel = assets.manager.get(Assets.levelTheme);
+        musicLevel.setLooping(true);
+        musicLevel.setVolume(0.06f);
+        musicLevel.play();
+
+
+        ambianceDungeon = assets.manager.get(Assets.levelAmbiance);
+        ambianceDungeon.setLooping(true);
+        ambianceDungeon.setVolume(0.1f);
+        ambianceDungeon.play();
+
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
             world = new DynamicWorld(debugDrawer);
@@ -231,6 +247,7 @@ public class GenerateLevel {
         environment.add(followLight);
 
         healthBar = new HealthBar();
+
 
 
         if(floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
@@ -285,9 +302,8 @@ public class GenerateLevel {
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player, animationController, cam);
 
-
+        playerController = new PlayerController(player, animationController, cam,assets);
         swordAnimation = new SwordAnimation(player,swordPlayerPos);
 
 
@@ -306,7 +322,6 @@ public class GenerateLevel {
         floorData.objectsInstances.get(toDelete).move(new EntityPosition(-50, -50, -50));
         toDelete = -1;
     }
-
 
     /**
      * Render.
@@ -363,11 +378,13 @@ public class GenerateLevel {
         modelBatch.render(exitTrigger.getEntity());
         modelBatch.render(player.getEntity(), environment);
 
+
         modelBatch.render(instances,environment);
         if(player.isAttacking)
             modelBatch.render(player.getEntityWeapon(),environment);
         if(players != null)
             modelBatch.render(players.values(),environment);
+
 
         modelBatch.end();
 
@@ -389,10 +406,12 @@ public class GenerateLevel {
             onLoad = true;
             interactLabel.setVisible(false);
             goToNextLevel();
+
         }
 
         if(player.getCharacteristics().getHealth() <= 0){
             /*TODO mettre un ecran disant que tu est mort puis renvoyer au  village, en sauvegardant dans le fichier config le currentFloor*/
+
         }
 
     }
@@ -515,3 +534,5 @@ public class GenerateLevel {
 
     }
 }
+
+

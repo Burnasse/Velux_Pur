@@ -24,6 +24,7 @@ public class VeluxPurGame extends Game {
 
         Assets assets = new Assets();
         assets.loadMenu();
+        assets.loadAudio();
         assets.manager.finishLoading();
 
         menuScreen = new MainMenuScreen(this, assets);

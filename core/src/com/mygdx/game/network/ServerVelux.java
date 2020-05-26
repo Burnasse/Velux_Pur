@@ -51,6 +51,7 @@ public class ServerVelux {
                 for(DataPlayer player : players.values())
                     connection.sendTCP(player);
 
+
                 DataPlayer newDataPlayer = new DataPlayer(new DataPlayerPosition(connection.getID()),connection.getID());
 
                 players.putIfAbsent(connection.getID(), newDataPlayer);
@@ -97,5 +98,3 @@ public class ServerVelux {
         new ServerVelux();
     }
 }
-
-

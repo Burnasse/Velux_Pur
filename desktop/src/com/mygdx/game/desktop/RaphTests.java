@@ -211,7 +211,7 @@ public class RaphTests extends ApplicationAdapter {
 
         animationController = new AnimationController(player.getEntity());
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
-        playerController = new PlayerController(player,animationController,cam);
+        playerController = new PlayerController(player,animationController,cam,assets);
 
 
 

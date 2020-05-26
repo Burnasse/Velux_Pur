@@ -1,5 +1,6 @@
 package com.mygdx.game.gameGeneration;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controllers;
@@ -59,10 +60,12 @@ public class GenerateVillage {
     private ModelBatch modelBatch;
     private PerspectiveCamera camera;
     private FrustumCulling frustum;
-
     private AnimationController animationController;
     private VillageController controller;
     private EntityPlayer player;
+
+    private Music musicVillage;
+    private Music ambianceVillage;
 
     private Stage stage;
     private HashMap<String, UIDialog> dialogHashMap;
@@ -98,6 +101,17 @@ public class GenerateVillage {
      * Create.
      */
     public void create() {
+
+        musicVillage =assets.manager.get(Assets.villageTheme);
+        musicVillage.setLooping(true);
+        musicVillage.setVolume(0.1f);
+        musicVillage.play();
+
+        ambianceVillage = assets.manager.get(Assets.villageAmbiance);
+        ambianceVillage.setLooping(true);
+        ambianceVillage.setVolume(0.05f);
+        ambianceVillage.play();
+        
         if (DEBUG_MODE) {
             debugDrawer = new DebugDrawer();
             villageBuilder = new VillageBuilder(assets, debugDrawer);
@@ -111,6 +125,7 @@ public class GenerateVillage {
         camera.near = 0.5f;
         camera.far = 1000f;
         camera.update();
+
 
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 1;
@@ -187,10 +202,10 @@ public class GenerateVillage {
 
         dialogHashMap.put("Trader", traderDialog);
         dialogHashMap.put("Exit", exitDialog);
-
         for(Actor actor : stage.getActors()){
             actor.setVisible(false);
         }
+
 
         interactLabel = new Label("Press F to interact", assets.manager.get(Assets.menuSkin));
         interactLabel.setVisible(false);
@@ -214,7 +229,7 @@ public class GenerateVillage {
         player.getEntity().getBody().setContactCallbackFilter(TRIGGER_FLAG);
         player.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
 
-        controller = new VillageController(this, player, animationController);
+        controller = new VillageController(this, player, animationController,assets);
 
         listener = new VillageContactListener(this, controller,triggersManager);
 
@@ -291,6 +306,8 @@ public class GenerateVillage {
         villageBuilder.getWorld().removeCollisionObject(player.getEntity().getGhostObject());
         triggersManager.dispose();
         villageBuilder.dispose();
+        musicVillage.dispose();
+        ambianceVillage.dispose();
         player.dispose();
         if (debugDrawer != null) debugDrawer.dispose();
         Controllers.removeListener(controller);

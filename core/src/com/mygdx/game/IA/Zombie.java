@@ -2,7 +2,9 @@ package com.mygdx.game.IA;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 
 import java.util.TimerTask;
@@ -10,7 +12,8 @@ import java.util.TimerTask;
 public class Zombie extends SteeringAgent {
 
     float damage;
-
+    private Sound attackSound;
+    Assets assets;
     /**
      * Instantiates a new zombie.
      *
@@ -21,11 +24,11 @@ public class Zombie extends SteeringAgent {
      * @param z2       the wandering limit
      */
 
-    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2) {
+    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2,Assets assets) {
         super(instance, x1, z1, x2, z2);
         maxCoolDown = 1;
         coolDown = maxCoolDown;
-
+        this.assets = assets;
         position = instance.getEntity().transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(10, 10, 10);
 
@@ -34,6 +37,7 @@ public class Zombie extends SteeringAgent {
         maxLinearAcceleration = 3f;
         weaponRange = 0.5f;
         damage = 1;
+        attackSound = assets.manager.get(Assets.zombieAttackSound);
     }
 
     /**
@@ -61,9 +65,9 @@ public class Zombie extends SteeringAgent {
         maxLinearAcceleration = 3f;
         weaponRange = 0.8f;
         this.damage = damage;
-
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
+        attackSound = assets.manager.get(Assets.zombieAttackSound);
     }
 
     /**
@@ -133,5 +137,6 @@ public class Zombie extends SteeringAgent {
     @Override
     protected void attack() {
         System.out.println("Tu prends " + damage + "dégats");
+        attackSound.play(0.5f);
     }
 }

@@ -50,7 +50,6 @@ public class GenerateMultiplayerLevel{
         this.client = client;
         players = new ArrayMap<>();
 
-        System.out.println("HELLO");
 
         synchronized (this){
             while(client.getFloor() == null){

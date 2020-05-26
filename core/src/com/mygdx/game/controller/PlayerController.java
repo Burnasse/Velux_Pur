@@ -3,6 +3,8 @@ package com.mygdx.game.controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.PovDirection;
@@ -16,6 +18,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.item.WeaponCaC;
@@ -29,9 +32,14 @@ import java.util.Random;
 public class PlayerController implements InputProcessor, ControllerListener {
 
     private EntityPlayer player;
+    private Assets assets;
     private AnimationController animation;
     private Vector3 walkDirection = new Vector3();
     private boolean playerPov;
+    private Sound footStepSound;
+    private Sound dodgeSound;
+    private Sound attackSound;
+    private Music danceMusic;
 
     private float speed = 0;
 
@@ -65,14 +73,18 @@ public class PlayerController implements InputProcessor, ControllerListener {
      * @param player the player
      */
 
-    
 
-
-    public PlayerController(EntityPlayer player,AnimationController animationController, PerspectiveCamera camera) {
-
+    public PlayerController(EntityPlayer player, AnimationController animationController, PerspectiveCamera camera, Assets assets) {
         this.player = player;
         this.animation = animationController;
         this.camera = camera;
+        this.assets = assets;
+        footStepSound = assets.manager.get(Assets.stepSound);
+        dodgeSound = assets.manager.get(Assets.dodgeSound);
+        attackSound = assets.manager.get(Assets.attackSound);
+        danceMusic = assets.manager.get(Assets.danceMusic);
+
+
     }
 
     /** Look wich key is pressed by the user and make him move in the choosen direction
@@ -96,27 +108,38 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
         if (Gdx.input.isKeyPressed(PrefKeys.LEFT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Left)) {
             moveLeft();
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(PrefKeys.RIGHT_ARR) || Gdx.input.isKeyPressed(PrefKeys.Right)) {
             moveRight();
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.UP_ARR) || Gdx.input.isKeyPressed(PrefKeys.Up))) {
             moveUp();
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if ((Gdx.input.isKeyPressed(PrefKeys.DOWN_ARR) || Gdx.input.isKeyPressed(PrefKeys.Down))) {
             moveDown();
+            loadFootstepSound();
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.X) && player.getEntity().getController().onGround()) {
             dodge();
+            dodgeSound.play(0.5f);
+            danceMusic.stop();
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.H) && player.getEntity().getController().onGround()) {
             Random random = new Random();
             dance(random.nextInt(5));
+            danceMusic.play();
         }
         setMovement(speed);
 
@@ -135,6 +158,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
             walkDirection.set(0, 0, 0);
             animation.animate("idle", -1, 1.0f, null, 0.2f);
             setMovement(0);
+            footStepSound.stop();
+            danceMusic.stop();
         }
         return false;
     }
@@ -164,6 +189,8 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
+
+            attackSound.play(0.3f);
             if (player.cdAttack == SwordAnimation.animationduration) {
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
@@ -319,12 +346,32 @@ public class PlayerController implements InputProcessor, ControllerListener {
 
     /**Make the player dance randomly */
     private void dance(int numRand){
-        if(numRand == 0)animation.animate("dance", -1, 1.0f, null, 0.2f);
-        else if(numRand == 1)animation.animate("chicken", -1, 1.0f, null, 0.2f);
-        else if(numRand == 2)animation.animate("macarena", -1, 1.0f, null, 0.2f);
-        else if(numRand == 3)animation.animate("shuffle", -1, 1.0f, null, 0.2f);
-        else if(numRand == 4)animation.animate("thriller", -1, 1.0f, null, 0.2f);
+        if(numRand == 0) {
+            animation.animate("dance", -1, 1.0f, null, 0.2f);
+            danceMusic = assets.manager.get(Assets.danceMusic);
+            danceMusicHandler();
+        }
+        else if(numRand == 1) {
+            animation.animate("chicken", -1, 1.0f, null, 0.2f);
+            danceMusic = assets.manager.get(Assets.chickenMusic);
+            danceMusicHandler();
+        }
+        else if(numRand == 2) {
+            animation.animate("macarena", -1, 1.0f, null, 0.2f);
+            danceMusic = assets.manager.get(Assets.macarenaMusic);
+            danceMusicHandler();
 
+        }
+        else if(numRand == 3) {
+            animation.animate("shuffle", -1, 1.0f, null, 0.2f);
+            danceMusic = assets.manager.get(Assets.shuffleMusic);
+            danceMusicHandler();
+        }
+        else if(numRand == 4) {
+            animation.animate("thriller", -1, 1.0f, null, 0.2f);
+            danceMusic = assets.manager.get(Assets.thrillerMusic);
+            danceMusicHandler();
+        }
 
     }
 
@@ -354,6 +401,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
         walkDirection.add(1, 0, 0);
         animation.animate("running", -1, 1.0f, null, 0.2f);
         speed = 3f;
+        footStepSound.play();
 
     }
 
@@ -382,6 +430,15 @@ public class PlayerController implements InputProcessor, ControllerListener {
         animation.animate("running", -1, 1.0f, null, 0.2f);
         speed = 3f;
 
+    }
+
+    private void danceMusicHandler(){
+        danceMusic.setLooping(true);
+        danceMusic.setVolume(0.1f);
+        danceMusic.play();
+    }
+    public boolean danceMusicIsPlaying(){
+        return danceMusic.isPlaying();
     }
 
     @Override
@@ -456,6 +513,10 @@ public class PlayerController implements InputProcessor, ControllerListener {
         return false;
     }
 
+    private void loadFootstepSound(){
+        long soundID = footStepSound.play(0.5f);
+        footStepSound.setLooping(soundID,true);
+    }
     /**
      * Set movement
      */

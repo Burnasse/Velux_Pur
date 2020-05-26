@@ -2,8 +2,10 @@ package com.mygdx.game.IA;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.instances.EntityInstance;
 
@@ -13,10 +15,11 @@ import java.util.TimerTask;
 /**
  * The type of enemy that attacks from a certain distance
  */
-
 public class Gunner extends SteeringAgent {
 
     float projectileDamage;
+    private Sound attackSound;
+    Assets assets;
 
     ArrayList<Projectile> projectilesShot = new ArrayList<>();
     Array<EntityInstance> doneProjectiles = new Array<>();
@@ -37,11 +40,11 @@ public class Gunner extends SteeringAgent {
      * @param z2     the wandering limit
      */
 
-    public Gunner(EntityMonster object, int x1, int z1, int x2, int z2) {
+    public Gunner(EntityMonster object, int x1, int z1, int x2, int z2,Assets assets) {
         super(object, x1, z1, x2, z2);
         maxCoolDown = 1f;
         coolDown = maxCoolDown;
-
+        this.assets = assets;
         position = object.getEntity().transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(0, 0f, 0);
 
@@ -50,6 +53,7 @@ public class Gunner extends SteeringAgent {
         maxLinearAcceleration = 2f;
         weaponRange = 3;
         projectileDamage = 1;
+        attackSound = assets.manager.get(Assets.bowSound);
 
     }
 
@@ -155,6 +159,7 @@ public class Gunner extends SteeringAgent {
     protected void attack() {
         Turn();
         projectilesShot.add(new Projectile(player.getPosition(), 5, position, getWorld()));
+        attackSound.play(0.5f);
     }
 
     /**
