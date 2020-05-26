@@ -1,6 +1,5 @@
 package com.mygdx.game.gameGeneration;
 
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controllers;
@@ -125,7 +124,6 @@ public class GenerateVillage {
         camera.near = 0.5f;
         camera.far = 1000f;
         camera.update();
-
 
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 1;
@@ -324,7 +322,7 @@ public class GenerateVillage {
     }
 
     public void exitVillage() {
-        screen.goToLevel();
+        screen.changeGameState();
     }
 
     public void showDialog(String dialogName){

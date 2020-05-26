@@ -29,7 +29,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
     public MultiplayerGameScreen(VeluxPurGame manager, Assets assets) {
         this.assets = assets;
         this.manager = manager;
-        multiplayer = new GenerateMultiplayerLevel(manager,assets);
+        multiplayer = new GenerateMultiplayerLevel(manager,this,assets);
     }
 
     public void initScreen() {
@@ -103,8 +103,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
     }
 
     @Override
-    public void startGame() {
-
+    public void changeGameState() {
     }
 
 }

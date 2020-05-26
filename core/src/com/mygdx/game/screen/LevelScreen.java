@@ -78,12 +78,14 @@ public class LevelScreen implements Screen, StageManager{
     }
 
     @Override
-    public void startGame() {
+    public void changeGameState() {
+        assets.unloadLevel();
+        manager.changeScreen(new GameScreen(manager, assets));
     }
 
     @Override
     public void initScreen() {
-        level = new GenerateLevel(assets,false);
+        level = new GenerateLevel(this, assets,false);
         level.create();
 
         menuManager = new MenuManager();

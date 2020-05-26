@@ -113,7 +113,9 @@ public class GameScreen implements Screen, StageManager {
     }
 
     @Override
-    public void startGame() {
+    public void changeGameState() {
+        assets.unloadVillage();
+        manager.changeScreen(new LevelScreen(manager, assets));
     }
 
     @Override
@@ -133,10 +135,5 @@ public class GameScreen implements Screen, StageManager {
     @Override
     public ScreenViewport getViewport() {
         return viewport;
-    }
-
-    public void goToLevel(){
-        assets.unloadVillage();
-        manager.changeScreen(new LevelScreen(manager, assets));
     }
 }

@@ -117,7 +117,7 @@ public class MainMenuScreen implements Screen, StageManager {
         stage = menuManager.changeStage(stageName, viewport);
     }
 
-    public void startGame() {
+    public void changeGameState() {
         manager.changeScreen(new GameScreen(manager, assets));
     }
 

@@ -1,5 +1,6 @@
 package com.mygdx.game.gameGeneration;
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityPlayer;
@@ -14,6 +15,7 @@ import com.mygdx.game.network.data.DataPlayerPosition;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.network.data.DataPosition;
 import com.mygdx.game.physics.CallbackFlags;
+import com.mygdx.game.screen.StageManager;
 
 import java.util.HashMap;
 
@@ -23,21 +25,20 @@ import java.util.HashMap;
 public class GenerateMultiplayerLevel{
 
     private final Assets assets;
-
     private VeluxPurGame manager;
     private ClientVelux client;
     private GenerateLevel level;
-
+    private StageManager screen;
     private FloorData floorData;
     private ArrayMap<Integer, EntityInstancePlayer> players;
 
     /**
      * Instantiates a new Generate multiplayer.
      *
-     * @param manager the manager
+     * @param screen the screen
      */
-    public GenerateMultiplayerLevel(VeluxPurGame manager, Assets assets) {
-        this.manager = manager;
+    public GenerateMultiplayerLevel(VeluxPurGame manager, StageManager screen, Assets assets) {
+        this.screen = screen;
         this.assets = assets;
     }
 
@@ -65,7 +66,7 @@ public class GenerateMultiplayerLevel{
         System.out.println("AH");
 
         floorData = FloorFactory.create(client.getFloor(),assets);
-        level = new GenerateLevel(assets, false);
+        level = new GenerateLevel(screen, assets, false);
         level.create(floorData,players);
 
     }

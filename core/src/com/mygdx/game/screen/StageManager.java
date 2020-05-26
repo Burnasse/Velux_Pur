@@ -17,7 +17,7 @@ public interface StageManager {
     /**
      * Start game. (unused in the GameScreen)
      */
-    void startGame();
+    void changeGameState();
 
     /**
      * Initialize the screen

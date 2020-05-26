@@ -27,6 +27,8 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btBroadphaseProxy;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
@@ -50,8 +52,11 @@ import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.physics.CallbackFlags;
 import com.mygdx.game.physics.DynamicWorld;
+import com.mygdx.game.screen.LevelScreen;
+import com.mygdx.game.screen.StageManager;
 import com.mygdx.game.ui.HealthBar;
 import com.mygdx.game.ui.Minimap;
+import com.mygdx.game.ui.UIDialog;
 
 import java.util.ArrayList;
 
@@ -66,6 +71,7 @@ public class GenerateLevel {
     private final boolean DEBUG_MODE;
     private DebugDrawer debugDrawer;
 
+    private final StageManager screen;
     private Assets assets;
 
     private ModelBatch modelBatch;
@@ -84,6 +90,7 @@ public class GenerateLevel {
 
     public ArrayMap<Integer, EntityInstancePlayer> players;
 
+    private UIDialog deathDialog;
     private Minimap minimap;
     private HealthBar healthBar;
     private PointLight followLight;
@@ -189,9 +196,10 @@ public class GenerateLevel {
         }
     }
 
-    public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
+    public GenerateLevel(final StageManager screen, Assets assets, boolean DEBUG_MODE) {
         this.DEBUG_MODE = DEBUG_MODE;
         this.assets = assets;
+        this.screen = screen;
     }
 
     /**
@@ -293,6 +301,25 @@ public class GenerateLevel {
 
         interactLabel.setPosition(Gdx.graphics.getWidth() / 2 - interactLabel.getWidth() / 2, interactLabel.getHeight() * 10);
         stage.addActor(interactLabel);
+
+        deathDialog = new UIDialog("", "You are dead\n Exit to village ?\n (Press no to exit the game)", assets);
+        deathDialog.getYesButton().addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                screen.changeGameState();
+                return true;
+            }
+        });
+        deathDialog.getNoButton().addListener(new InputListener() {
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                Gdx.app.exit();
+                return true;
+            }
+        });
+
+
+        deathDialog.getDialog().setVisible(false);
+        stage.addActor(deathDialog.getDialog());
+
         stage.act();
 
         camController = new CameraInputController(cam);
@@ -407,8 +434,8 @@ public class GenerateLevel {
         }
 
         if (player.getCharacteristics().getHealth() <= 0) {
-            /*TODO mettre un ecran disant que tu est mort puis renvoyer au  village, en sauvegardant dans le fichier config le currentFloor*/
-
+            Gdx.input.setInputProcessor(stage);
+            deathDialog.getDialog().setVisible(true);
         }
 
     }
@@ -528,7 +555,6 @@ public class GenerateLevel {
 
     public EntityPlayer getPlayer() {
         return player;
-
     }
 }
 
