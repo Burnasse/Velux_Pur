@@ -15,4 +15,8 @@ public class SpawnRoom extends Room {
         super(x1, y1, x2, y2);
     }
 
+    public SpawnRoom(){
+        super(0,0,0,0);
+    }
+
 }

@@ -10,6 +10,10 @@ import java.util.Random;
 
 public class Labyrinth extends Floor {
 
+    public Labyrinth(){
+        this(50,7,3,8);
+    }
+
     /**
      * generate this floor as a labyrinth made following Prim's algorithm
      *
@@ -18,7 +22,6 @@ public class Labyrinth extends Floor {
      * @param maxRoomSize   the biggest the width/height of the room can get
      * @param minRoomSize   the smallest the width/height of the room can get
      */
-
     public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
