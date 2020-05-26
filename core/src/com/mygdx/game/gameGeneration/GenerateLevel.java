@@ -47,6 +47,7 @@ import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.IA.Zombie;
+import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.Trigger;
 import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.controller.PlayerController;
@@ -123,6 +124,7 @@ public class GenerateLevel {
     int firstEnnemyUserValue;
     private int toDelete = -1;
     private Vector3 swordPlayerPos = new Vector3();
+    private int dammageGunnerProjectile = 2;
 
     private volatile boolean onLoad = false;
     private SwordAnimation swordAnimation;
@@ -175,9 +177,7 @@ public class GenerateLevel {
                     interactLabel.setVisible(true);
                 }
                 if (userValue1 == 3000 && player.cdDammagesTaken == 0 && player.getCharacteristics().getHealth() > 0) {
-                    Gunner ennemy = (Gunner) floorData.entityMonsters.get(0).getBehavior();
-                    System.out.println(ennemy.getProjectileDamage());
-                    player.getsAttacked(ennemy.getProjectileDamage());
+                    player.getsAttacked(dammageGunnerProjectile);
                     player.cdDammagesTaken = 60;
                     playerHurtSound.play(0.3f);
                 }
@@ -441,6 +441,10 @@ public class GenerateLevel {
 
         if (player.getCharacteristics().getHealth() <= 0) {
             Gdx.input.setInputProcessor(stage);
+            PreferencesManager prefs = new PreferencesManager();
+            int bestScore = prefs.getPreferences().getInteger("Score",0);
+            if(currentFloor > bestScore)
+                prefs.getPreferences().putInteger("Score",currentFloor).flush();
             deathDialog.getDialog().setVisible(true);
         }
 
@@ -462,10 +466,9 @@ public class GenerateLevel {
         floorData.objectsInstances.clear();
         minimap.dispose();
         contactListener.dispose();
-        modelBatch.dispose();
-        minimap.dispose();
         healthBar.dispose();
         exitTrigger.dispose();
+        modelBatch.dispose();
     }
 
     private void disposeFloorObject() {
@@ -483,6 +486,8 @@ public class GenerateLevel {
 
     public void goToNextLevel() {
         onLoad = true;
+
+        currentFloor++;
 
         player.getEntity().getController().setGravity(Vector3.Zero);
         disposeFloorObject();
