@@ -158,7 +158,7 @@ public class GenerateVillage {
 
         dialogHashMap = new HashMap<>();
         stage = new Stage();
-        UIDialog traderDialog = new UIDialog("Trader", "ACHETE MA MERDE", assets);
+        UIDialog traderDialog = new UIDialog("Trader", "Buy", assets);
         UIDialog exitDialog = new UIDialog("", "Do you want to exit the village ?", assets);
 
         traderDialog.getNoButton().addListener(new InputListener() {
