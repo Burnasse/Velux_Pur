@@ -34,9 +34,9 @@ public class EnemyRoom extends Room {
         }
     }
 
-    public EnemyRoom(){
-        super(0,0,0,0);
-
+    public EnemyRoom() {
+        super(0, 0, 0, 0);
+    }
     public EnemyRoom(int x1, int y1, int x2, int y2){
         super(x1, y1, x2, y2);
         enemiesPosition.add(new EntityPosition(getCenter().getX(),4,getCenter().getY()));
