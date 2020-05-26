@@ -1,24 +1,19 @@
 package com.mygdx.game.IA;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Assets;
-import com.mygdx.game.Entity.instances.EntityInstance;
-
 import com.mygdx.game.Entity.EntityMonster;
-
 
 import java.util.TimerTask;
 
 public class Zombie extends SteeringAgent {
 
     float damage;
-    private Sound zombieAttackSound;
-    private Assets assets;
-
+    private Sound attackSound;
+    Assets assets;
     /**
      * Instantiates a new zombie.
      *
@@ -29,13 +24,11 @@ public class Zombie extends SteeringAgent {
      * @param z2       the wandering limit
      */
 
-    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2,Assets assets) {
-
+    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2,Assets assets) {
         super(instance, x1, z1, x2, z2);
-        this.assets =assets;
         maxCoolDown = 1;
         coolDown = maxCoolDown;
-
+        this.assets = assets;
         position = instance.getEntity().transform.getTranslation(new Vector3());
         linearVelocity = new Vector3(10, 10, 10);
 
@@ -44,9 +37,7 @@ public class Zombie extends SteeringAgent {
         maxLinearAcceleration = 3f;
         weaponRange = 0.5f;
         damage = 1;
-
-
-        zombieAttackSound = assets.manager.get(Assets.zombieAttackSound);
+        attackSound = assets.manager.get(Assets.zombieAttackSound);
     }
 
     /**
@@ -60,10 +51,9 @@ public class Zombie extends SteeringAgent {
      * @param damage   the damage caused by the zombie
      */
 
-    public Zombie(EntityInstance instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage, Assets assets) {
-
+    public Zombie(EntityMonster instance, int x1, int z1, int x2, int z2, float maxCoolDown, float damage) {
         super(instance, x1, z1, x2, z2, maxCoolDown);
-        this.assets = assets;
+
         maxCoolDown = 1;
         coolDown = maxCoolDown;
 
@@ -75,11 +65,9 @@ public class Zombie extends SteeringAgent {
         maxLinearAcceleration = 3f;
         weaponRange = 0.8f;
         this.damage = damage;
-
         generateRandomTarget();
         behavior = new Arrive<>(this, target);
-
-        zombieAttackSound = assets.manager.get(Assets.zombieAttackSound);
+        attackSound = assets.manager.get(Assets.zombieAttackSound);
     }
 
     /**
@@ -148,8 +136,7 @@ public class Zombie extends SteeringAgent {
 
     @Override
     protected void attack() {
-
         System.out.println("Tu prends " + damage + "dégats");
-        zombieAttackSound.play(0.5f);
+        attackSound.play(0.5f);
     }
 }

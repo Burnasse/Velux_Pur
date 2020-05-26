@@ -20,7 +20,7 @@ public class MonsterFactory {
         enemyRunModel.animations.get(0).id = "run";
         enemyFireModel.animations.get(0).id = "fire";
 
-        monster = new EntityMonster("Monster", enemyModel, enemyShape, 0f, position, "Gunner", roomX1, roomY1, roomX2, roomY2,assets);
+        monster = new EntityMonster("Monster", enemyModel, enemyShape, 0f, position, "Gunner", roomX1, roomY1, roomX2, roomY2,assets );
 
         monster.getEntity().copyAnimation(enemyRunModel.animations.get(0));
         monster.getEntity().copyAnimation(enemyFireModel.animations.get(0));
