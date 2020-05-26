@@ -5,13 +5,14 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-
+import com.badlogic.gdx.graphics.g3d.utils.*;
 import com.badlogic.gdx.graphics.g3d.environment.PointLight;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 
@@ -34,13 +35,14 @@ import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ArrayMap;
 import com.mygdx.game.Assets;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
-import com.mygdx.game.Entity.utils.AttackPosition;
+import com.mygdx.game.Entity.instances.EntityInstancePlayer;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
@@ -58,6 +60,7 @@ import com.mygdx.game.ui.HealthBar;
 import com.mygdx.game.ui.Minimap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static com.mygdx.game.physics.CallbackFlags.ENNEMY_FLAG;
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
@@ -66,9 +69,6 @@ import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
  * The type Generate level.
  */
 public class GenerateLevel {
-
-
-
 
     private final boolean DEBUG_MODE;
     private DebugDrawer debugDrawer;
@@ -89,7 +89,8 @@ public class GenerateLevel {
     private MyContactListener contactListener;
 
     private AnimationController animationController;
-    private SwordAnimation swordAnimation;
+
+    public ArrayMap<Integer, EntityInstancePlayer> players;
 
     private Minimap minimap;
     private HealthBar healthBar;
@@ -116,6 +117,8 @@ public class GenerateLevel {
     private Vector3 swordPlayerPos = new Vector3();
 
     private volatile boolean onLoad = false;
+    private SwordAnimation swordAnimation;
+
     /**
      * The type My contact listener is called when there is a collision.
      */
@@ -187,8 +190,18 @@ public class GenerateLevel {
     }
 
     public GenerateLevel(Assets assets, boolean DEBUG_MODE) {
-        this.DEBUG_MODE = false;
+        this.DEBUG_MODE = DEBUG_MODE;
         this.assets = assets;
+    }
+
+    /**
+     * Create level with floorData as argument
+     * Mainly used in multiplayer
+     */
+    public void create(FloorData floorData, ArrayMap<Integer, EntityInstancePlayer> players){
+        this.floorData = floorData;
+        this.players = players;
+        create();
     }
 
     /**
@@ -202,8 +215,9 @@ public class GenerateLevel {
         } else
             world = new DynamicWorld();
 
+        swordAnimation = new SwordAnimation(player,swordPlayerPos);
         contactListener = new MyContactListener();
-
+        temp = new Array<>();
         instances = new ArrayList<>();
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 2;
@@ -316,7 +330,7 @@ public class GenerateLevel {
         swordAnimation = new SwordAnimation(player,swordPlayerPos);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-
+        inputMultiplexer.addProcessor(camController);
         inputMultiplexer.addProcessor(playerController);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -434,6 +448,8 @@ public class GenerateLevel {
         for (Entity obj : floorData.objectsInstances)
             obj.dispose();
 
+        instances.clear();
+        temp.clear();
         floorData.objectsInstances.clear();
 
         world.dispose();
@@ -442,13 +458,10 @@ public class GenerateLevel {
         modelBatch.dispose();
         minimap.dispose();
         healthBar.dispose();
+        exitTrigger.dispose();
     }
 
-    public void goToNextLevel() {
-        onLoad = true;
-
-        currentFloor++;
-        player.getEntity().getController().setGravity(Vector3.Zero);
+    private void disposeFloorObject() {
         for (EntityInstance obj : floorData.objectsInstances) {
             world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
@@ -458,25 +471,52 @@ public class GenerateLevel {
             world.getDynamicsWorld().removeRigidBody(obj.getBody());
             obj.dispose();
         }
+        world.dispose();
+    }
 
+    public void goToNextLevel() {
+        onLoad = true;
+
+        player.getEntity().getController().setGravity(Vector3.Zero);
+        disposeFloorObject();
+        debugDrawer = new DebugDrawer();
+        world = new DynamicWorld(debugDrawer);
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+
+        world.getDynamicsWorld().addCollisionObject(player.getEntity().getGhostObject(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
+        world.getDynamicsWorld().addAction(player.getEntity().getController());
+
+        world.addRigidBody(player.getEntityWeapon().getBody());
+
+        instances.clear();
         temp.clear();
         floorData.objectsInstances.clear();
         minimap.dispose();
 
-        floorData = FloorFactory.create("Mixed", 80, 4, 3, 7, assets);
+        floorData = FloorFactory.create("Mixed", 50, 4, 3, 7, assets);
         minimap = floorData.minimap;
         minimap.clear();
         player.getEntity().transform.set(floorData.playerSpawnPosition, new Quaternion());
         player.getEntity().getGhostObject().setWorldTransform(player.getEntity().transform);
 
-        //exitTrigger.getEntity().transform.trn(floorData.exitPositon);
-        world.getDynamicsWorld().removeRigidBody(exitTrigger.getEntity().getBody());
         exitTrigger.dispose();
-        exitTrigger = new Trigger(assets.manager.get(Assets.wallLevel), 2.5f, 2.5f, 2.5f, floorData.exitPositon);
+        initFloorObjects();
+
+        player.getEntity().getController().setGravity(new Vector3(0, -10, 0));
+        onLoad = false;
+    }
+
+    private void initFloorObjects() {
+        Model exitModel = new ModelBuilder().createBox(5,7,5, new Material(ColorAttribute.createDiffuse(Color.WHITE)), VertexAttributes.Usage.Position
+                | VertexAttributes.Usage.Normal);
+        exitTrigger = new Trigger(exitModel, 2.5f, 4, 2.5f, floorData.exitPositon);
         exitTrigger.addInWorld(world.dynamicsWorld);
 
+        /**
+         * ajoute le sol et murs
+         */
         for (EntityInstance obj : floorData.objectsInstances) {
-            obj.getBody().setUserValue(floorData.objectsInstances.indexOf(obj));
+            obj.getBody().setUserValue(instances.size());
             obj.getBody().setCollisionFlags(obj.getBody().getCollisionFlags() | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             obj.getBody().setContactCallbackFlag(CallbackFlags.GROUND_FLAG);
             obj.getBody().setContactCallbackFilter(0);
@@ -499,8 +539,10 @@ public class GenerateLevel {
 
         frustum = new FrustumCulling(instances, environment, cam, modelBatch);
         tempFrustum = new FrustumCulling(temp, environment, cam, modelBatch);
+    }
 
-        player.getEntity().getController().setGravity(new Vector3(0,-10,0));
-        onLoad = false;
+    public EntityPlayer getPlayer() {
+        return player;
+
     }
 }

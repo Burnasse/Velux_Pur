@@ -2,12 +2,17 @@ package com.mygdx.game.FloorLayout.Type2Floor;
 
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.Position;
+import com.mygdx.game.FloorLayout.RoomTypes.Room;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
 public class Labyrinth extends Floor {
+
+    public Labyrinth(){
+        this(50,7,3,8);
+    }
 
     /**
      * generate this floor as a labyrinth made following Prim's algorithm
@@ -17,7 +22,6 @@ public class Labyrinth extends Floor {
      * @param maxRoomSize   the biggest the width/height of the room can get
      * @param minRoomSize   the smallest the width/height of the room can get
      */
-
     public Labyrinth(int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize) {
 
         this.sizeOfFloor = sizeOfFloor;
@@ -66,10 +70,31 @@ public class Labyrinth extends Floor {
     }
 
     protected void generatePrimLabyrinth() {
+
         Random rand = new Random();
 
         int startingCaseX = rand.nextInt(sizeOfFloor);
         int startingCaseY = rand.nextInt(sizeOfFloor);
+
+        if (!rooms.isEmpty()) {
+            boolean contains;
+            for (int i = 0; i < Integer.MAX_VALUE; i++) {
+                contains = false;
+                for (Room room : rooms) {
+                    if (room.contains(startingCaseX, startingCaseY)) {
+                        contains = true;
+                        break;
+                    }
+                }
+                if (!contains) {
+                    break;
+                } else {
+                    startingCaseX = rand.nextInt(sizeOfFloor);
+                    startingCaseY = rand.nextInt(sizeOfFloor);
+                }
+            }
+        }
+
 
         layout[startingCaseX][startingCaseY].setContent(' ');
 

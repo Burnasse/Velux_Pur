@@ -58,6 +58,10 @@ public abstract class Room {
         return xOverlap && yOverlap;
     }
 
+    public boolean contains(int x, int y){
+        return (getX1()<=x && getX2()>= x && getY1()<=y && getY2()>=y);
+    }
+
     public int getX1() {
         return x1;
     }

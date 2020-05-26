@@ -42,22 +42,12 @@ public class EntityInstancePlayer extends ModelInstance implements Disposable, E
     }
 
     /**
-     * Instantiates a new Entity instance player with float[] position.
+     * Instantiates a new  empty Entity instance player.
      * Mainly used in multiplayer
      *
-     * @param model           the model
-     * @param defaultPosition the default position
-     */
-    public EntityInstancePlayer(Model model, float[] defaultPosition) {
-        super(model);
-        transform.set(defaultPosition);
-        transform.rotate(Vector3.X, 90);
-        ghostObject = new btPairCachingGhostObject();
-        ghostObject.setWorldTransform(transform);
-        ghostShape = new btCapsuleShape(0.1f, 1f);
-        ghostObject.setCollisionShape(ghostShape);
-        ghostObject.setCollisionFlags(btCollisionObject.CollisionFlags.CF_CHARACTER_OBJECT);
-        controller = new btKinematicCharacterController(ghostObject, ghostShape, .35f);
+     * */
+    public EntityInstancePlayer() {
+        super(new Model());
     }
 
     @Override

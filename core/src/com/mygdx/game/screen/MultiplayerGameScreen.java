@@ -8,7 +8,7 @@ import com.mygdx.game.Assets;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.network.ClientVelux;
 import com.mygdx.game.network.ConnectionState;
-import com.mygdx.game.network.GenerateMultiplayerLevel;
+import com.mygdx.game.gameGeneration.GenerateMultiplayerLevel;
 
 /**
  * The type Multiplayer game screen.
@@ -29,14 +29,27 @@ public class MultiplayerGameScreen implements Screen, StageManager {
     public MultiplayerGameScreen(VeluxPurGame manager, Assets assets) {
         this.assets = assets;
         this.manager = manager;
-        multiplayer = new GenerateMultiplayerLevel(manager);
+        multiplayer = new GenerateMultiplayerLevel(manager,assets);
     }
 
     public void initScreen() {
+        assets.loadLevel();
+        assets.loadGame();
+        assets.manager.finishLoading();
         client = new ClientVelux(multiplayer);
 
-        if (client.enableConnection())
+        synchronized (this){
+            while(!client.getClient().isConnected()) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            notify();
             multiplayer.initLevel(client);
+        }
+
     }
 
     @Override
@@ -55,7 +68,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
             manager.setScreen(new MainMenuScreen(manager, assets));
         Gdx.gl.glClearColor(0, 1, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        multiplayer.render(delta);
+        multiplayer.render();
     }
 
     @Override

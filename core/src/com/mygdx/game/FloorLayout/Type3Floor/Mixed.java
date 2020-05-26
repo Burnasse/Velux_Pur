@@ -94,8 +94,4 @@ public class Mixed extends Labyrinth {
 
     }
 
-    public static void main(String[] args) {
-        Mixed mixed = new Mixed(30, 8, 3, 5);
-        mixed.printFloor();
-    }
 }
