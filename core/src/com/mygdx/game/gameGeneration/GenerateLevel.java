@@ -46,6 +46,7 @@ import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.IA.Zombie;
+import com.mygdx.game.PreferencesManager;
 import com.mygdx.game.Trigger;
 import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.controller.PlayerController;
@@ -435,6 +436,10 @@ public class GenerateLevel {
 
         if (player.getCharacteristics().getHealth() <= 0) {
             Gdx.input.setInputProcessor(stage);
+            PreferencesManager prefs = new PreferencesManager();
+            int bestScore = prefs.getPreferences().getInteger("Score",0);
+            if(currentFloor > bestScore)
+                prefs.getPreferences().putInteger("Score",currentFloor).flush();
             deathDialog.getDialog().setVisible(true);
         }
 
@@ -456,10 +461,9 @@ public class GenerateLevel {
         floorData.objectsInstances.clear();
         minimap.dispose();
         contactListener.dispose();
-        modelBatch.dispose();
-        minimap.dispose();
         healthBar.dispose();
         exitTrigger.dispose();
+        modelBatch.dispose();
     }
 
     private void disposeFloorObject() {
