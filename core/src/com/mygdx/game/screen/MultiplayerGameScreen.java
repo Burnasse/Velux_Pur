@@ -8,7 +8,7 @@ import com.mygdx.game.Assets;
 import com.mygdx.game.VeluxPurGame;
 import com.mygdx.game.network.ClientVelux;
 import com.mygdx.game.network.ConnectionState;
-import com.mygdx.game.network.GenerateMultiplayerLevel;
+import com.mygdx.game.gameGeneration.GenerateMultiplayerLevel;
 
 /**
  * The type Multiplayer game screen.

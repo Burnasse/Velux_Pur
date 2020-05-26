@@ -1,5 +1,7 @@
 package com.mygdx.game.network.data;
 
+import com.badlogic.gdx.math.Matrix4;
+
 /**
  * The type Data player position.
  * Useful only for distinguish a new player and a new player position when the server or the client send data
@@ -12,7 +14,7 @@ public class DataPlayerPosition {
     /**
      * The Matrix 4 (transform).
      */
-    public float[] matrix4;
+    public Matrix4 matrix4;
 
     /**
      * Instantiates a new Data player position.
@@ -20,7 +22,17 @@ public class DataPlayerPosition {
      */
     public DataPlayerPosition() {
         id = 0;
-        matrix4 = new float[16];
+        matrix4 = new Matrix4();
+    }
+
+    /**
+     * Instantiates a new Data player position.
+     *
+     * @param id      the id
+     */
+    public DataPlayerPosition(int id) {
+        this.id = id;
+        matrix4 = new Matrix4();
     }
 
     /**
@@ -29,7 +41,7 @@ public class DataPlayerPosition {
      * @param id      the id
      * @param matrix4 the matrix 4
      */
-    public DataPlayerPosition(int id, float[] matrix4) {
+    public DataPlayerPosition(int id, Matrix4 matrix4) {
         this.id = id;
         this.matrix4 = matrix4;
     }
@@ -39,7 +51,7 @@ public class DataPlayerPosition {
      *
      * @param matrix4 the matrix 4
      */
-    public void setMatrix4(float[] matrix4) {
+    public void setMatrix4(Matrix4 matrix4) {
         this.matrix4 = matrix4;
     }
 }

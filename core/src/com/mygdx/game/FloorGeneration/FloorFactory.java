@@ -9,6 +9,7 @@ import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.MonsterFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorLayout.BossFloor.BossFloor;
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
@@ -37,16 +38,27 @@ public class FloorFactory {
      * @param maxRoomSize   the max room size
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets) {
-
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets){
         Floor floor;
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else if (floorType.equalsIgnoreCase("Mixed"))
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
-        else
+        else if (floorType.equalsIgnoreCase("BossFloor")) {
+            floor = new BossFloor();
+            sizeOfFloor = floor.getSizeOfFloor();
+        } else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
+
+        return buildFloor(floor,assets);
+    }
+
+    public static FloorData create(Floor floor, Assets assets){
+        return buildFloor(floor,assets);
+    }
+
+    private static FloorData buildFloor(Floor floor, Assets assets) {
 
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
@@ -58,6 +70,7 @@ public class FloorFactory {
         EntityPosition exitPosition = null;
 
         for (Room room : floor.getRooms()) {
+
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
@@ -70,9 +83,9 @@ public class FloorFactory {
 
                 if (exitPosition == null) {
                     exitPosition = new EntityPosition(
-                            ThreadLocalRandom.current().nextInt(room.getX1(), room.getX2()) * blockSize,
-                            blockSize,
-                            ThreadLocalRandom.current().nextInt(room.getY1(), room.getY2()) * blockSize);
+                            ThreadLocalRandom.current().nextInt(room.getX1()+1, room.getX2()-1)*blockSize,
+                            0,
+                            ThreadLocalRandom.current().nextInt(room.getY1()+1, room.getY2()-1)*blockSize);
                 }
             }
         }
@@ -85,11 +98,11 @@ public class FloorFactory {
         btBoxShape wallShape = new btBoxShape(new Vector3(blockSize / 2f, blockSize / 2f, blockSize / 2f));
         btBoxShape groundShape = new btBoxShape(new Vector3(blockSize / 2, blockSize / 6, blockSize / 2));
 
-        for (int i = 0; i < sizeOfFloor; i++) {
-            for (int j = 0; j < sizeOfFloor; j++) {
+        for (int i = 0; i < floor.getSizeOfFloor(); i++) {
+            for (int j = 0; j < floor.getSizeOfFloor(); j++) {
                 if (floor.getLayout()[i][j].getContent() == ' ') {
                     objectsInstances.add(new EntityObjects("box", ground, groundShape, 0f, new EntityPosition(x, y + blockSize / 2, z)).getEntity());
-                    if (i == 0 || j == 0 || i == sizeOfFloor - 1 || j == sizeOfFloor - 1) {
+                    if (i == 0 || j == 0 || i == floor.getSizeOfFloor() - 1 || j == floor.getSizeOfFloor() - 1) {
                         EntityObjects s = new EntityObjects("box", wallModel, wallShape, 0f, new EntityPosition(x, y + blockSize, z));
                         objectsInstances.add(s.getEntity());
                     } else {
