@@ -1,6 +1,5 @@
 package com.mygdx.game.network.data;
 
-
 /**
  * The type Data player.
  * Useful only for distinguish a new player and a new player position when the server or the client send data

@@ -35,8 +35,6 @@ public class VillageContactListener extends ContactListener {
                 controller.setInteractTrigger("Trader");
                 village.showInteract(true);
             }
-            if (userValue0 == triggersManager.getUserValueOf("smith"))
-                System.out.println();
             if (userValue0 == triggersManager.getUserValueOf("changeLayout1") && !controller.waitTrigger)
                 controller.setCanChangeLayout(userValue0, true);
             if (userValue0 == triggersManager.getUserValueOf("changeLayout2") && !controller.waitTrigger)
@@ -55,10 +53,6 @@ public class VillageContactListener extends ContactListener {
             if(userValue0 == triggersManager.getUserValueOf("goToLevel"))
                 village.showInteract(false);
             if (userValue0 == triggersManager.getUserValueOf("trader")) {
-                controller.setInteractTrigger("");
-                village.showInteract(false);
-            }
-            if (userValue0 == triggersManager.getUserValueOf("smith")) {
                 controller.setInteractTrigger("");
                 village.showInteract(false);
             }

@@ -77,28 +77,7 @@ public class VillageBuilder {
                 VertexAttributes.Usage.Position
                         | VertexAttributes.Usage.Normal);
 
-        boxLightModel = new ModelBuilder().createBox(0.25f,0.25f,0.25f,new Material(new ColorAttribute(ColorAttribute.Emissive,new Color(0.9f,0.3f,0.3f,1))), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-    }
-
-    /**
-     * Create trigger.
-     *
-     * @param position the position
-     * @param width    the width
-     * @param height   the height
-     * @param depth    the depth
-     */
-    public void createTrigger(EntityPosition position, float width, float height, float depth) {
-        btBoxShape triggerShape = new btBoxShape(new Vector3(width, height, depth));
-        EntityObjects trigger = new EntityObjects("trigger", new Model(), triggerShape, 0f, position);
-
-        objectsInstance.add(trigger.getEntity());
-        trigger.getEntity().getBody().setUserValue(objectsInstance.indexOf(trigger.getEntity(), false) + 1);
-        trigger.getEntity().getBody().setCollisionFlags(trigger.getEntity().getBody().getCollisionFlags()
-                | btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE
-                | btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-        trigger.getEntity().getBody().setContactCallbackFlag(TRIGGER_FLAG);
-        world.addRigidBody(trigger.getEntity().getBody());
+        boxLightModel = modelBuilder.createBox(0.25f,0.25f,0.25f,new Material(new ColorAttribute(ColorAttribute.Emissive,new Color(0.9f,0.3f,0.3f,1))), VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
     }
 
     /**

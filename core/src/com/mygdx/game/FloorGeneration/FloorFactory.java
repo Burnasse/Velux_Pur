@@ -70,6 +70,7 @@ public class FloorFactory {
         EntityPosition exitPosition = null;
 
         for (Room room : floor.getRooms()) {
+
             if (room instanceof EnemyRoom) {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;

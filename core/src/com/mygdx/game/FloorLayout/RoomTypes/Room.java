@@ -2,8 +2,6 @@ package com.mygdx.game.FloorLayout.RoomTypes;
 
 import com.mygdx.game.FloorLayout.Position;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public abstract class Room {
 
     private int x1;
