@@ -40,6 +40,7 @@ import com.mygdx.game.Entity.EntityPlayer;
 import com.mygdx.game.Entity.PlayerFactory;
 import com.mygdx.game.Entity.instances.Entity;
 import com.mygdx.game.Entity.instances.EntityInstance;
+import com.mygdx.game.Entity.utils.AttackPosition;
 import com.mygdx.game.Entity.utils.EntityPosition;
 import com.mygdx.game.FloorGeneration.FloorData;
 import com.mygdx.game.FloorGeneration.FloorFactory;
@@ -47,6 +48,7 @@ import com.mygdx.game.FrustumCulling;
 import com.mygdx.game.IA.Gunner;
 import com.mygdx.game.IA.Projectile;
 import com.mygdx.game.Trigger;
+import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.controller.PlayerController;
 import com.mygdx.game.controller.PrefKeys;
 import com.mygdx.game.item.CreatedItems;
@@ -87,11 +89,13 @@ public class GenerateLevel {
     private MyContactListener contactListener;
 
     private AnimationController animationController;
+    private SwordAnimation swordAnimation;
 
     private Minimap minimap;
     private HealthBar healthBar;
     private PointLight followLight;
     private int playerUserValue = 6666;
+    private int currentFloor = 1;
 
     private Trigger exitTrigger;
 
@@ -124,23 +128,29 @@ public class GenerateLevel {
                 /**
                  * check si la colision est faite avec un ennemy, si oui, fait le necessaire
                  * */
-                if(player.isAttacking && player.cdColisionWeaponEnnemy >= 125 && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
+                if(player.isAttacking && player.cdColisionWeaponEnnemy >= SwordAnimation.animationduration && ((userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size())) ) {
                     player.cdColisionWeaponEnnemy = player.cdAttack;
                     System.out.println("contact 0");
                     System.out.println("entite num :" + (userValue1-firstEnnemyUserValue));
                     System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
                     floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).damage(player.getWeapon());
                     System.out.println(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth());
+                    /**
+                     * test si un ennemy est mort
+                     * */
                     if (floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getHealth() <= 0) {
                         toDelete = userValue1-firstEnnemyUserValue;
                     }
+                    /*TODO mettre le bruit de degat des mobs*/
                 }
                 if (userValue0 == exitTrigger.getUserValue()) {
                     interactLabel.setVisible(true);
+                    /*TODO mettre bruit de changement d'etage*/
                 }
                 if (player.getCharacteristics().getHealth() > 0 && player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size()))  && (userValue1 == 6666 || userValue0 == 6666)) {
                     player.getsAttacked(floorData.entityMonsters.get(userValue1-firstEnnemyUserValue).getCharacteristics().getAttackDamage());
                     player.cdDammagesTaken = 60;
+                    /*TODO mettre bruit de degats du player ou faire ecran qui devient rouge */
                 }
                 System.out.println("contact0");
                 System.out.println("uservalue0 = " + userValue0);
@@ -156,6 +166,7 @@ public class GenerateLevel {
                     System.out.println(ennemy.getProjectileDamage());
                     player.getsAttacked(ennemy.getProjectileDamage());
                     player.cdDammagesTaken = 60;
+                    /*TODO mettre bruit de degats du player ou faire ecran qui devient rouge */
                 }
 
                 System.out.println("contact1");
@@ -238,7 +249,6 @@ public class GenerateLevel {
         player.getWeapon().getEntity().getBody().setContactCallbackFlag(CallbackFlags.WEAPON_FLAG);
         player.getWeapon().getEntity().getBody().setContactCallbackFilter(CallbackFlags.ENNEMY_FLAG);
         player.getWeapon().getEntity().getBody().setActivationState(Collision.DISABLE_SIMULATION);
-        instances.add(player.getWeapon().getEntity());
         world.addRigidBody(player.getWeapon().getEntity().getBody());
 
         /**
@@ -303,10 +313,10 @@ public class GenerateLevel {
         animationController.animate("idle", -1, 1.0f, null, 0.2f);
         playerController = new PlayerController(player,animationController,cam);
 
-
+        swordAnimation = new SwordAnimation(player,swordPlayerPos);
 
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(camController);
+
         inputMultiplexer.addProcessor(playerController);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -321,51 +331,6 @@ public class GenerateLevel {
         toDelete = -1;
     }
 
-    private void swordAnimation(){
-        if (player.cdAttack <= 30) {
-            player.cdAttack++;
-            player.getWeapon().getEntity().getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            player.cdColisionWeaponEnnemy++;
-        }
-        if (player.cdAttack < 125 && player.cdAttack > 30) {
-            player.getWeapon().getEntity().getBody().setCollisionFlags(btCollisionObject.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            player.cdAttack++;
-            player.cdColisionWeaponEnnemy++;
-        }
-
-        if (player.cdAttack == 125) {
-            player.getWeapon().getEntity().getBody().setCollisionFlags(55);
-            player.isAttacking = false;
-        }
-
-
-        if (player.cdAttack == 125) {
-            swordPlayerPos = new Vector3(0.75f, -0.15f, 0.15f);
-        }
-
-        float newOrientation = player.getEntity().transform.getRotation(new Quaternion()).getAngleAround(new Vector3(0, 1, 0)) + 235;
-
-        Vector3 direction = new Vector3();
-
-        direction.x = -(float) Math.sin(newOrientation);
-        direction.z = (float) Math.tan(newOrientation);
-
-        Vector3 swordPos = player.getEntity().transform.getTranslation(new Vector3());
-
-        player.getWeapon().getEntity().transform.set(swordPos, new Quaternion(new Vector3(0, 1, 0), newOrientation));
-
-
-        if (player.cdAttack == 2) {
-            swordPlayerPos = new Vector3(1.3f, 0.2f, 0.35f);
-        }
-        if (player.cdAttack > 2 && player.cdAttack < 25) {
-            swordPlayerPos.x -= 0.0;
-            swordPlayerPos.y += 0.0;
-            swordPlayerPos.z -= 0.04;
-        }
-
-        player.getWeapon().getEntity().getBody().setWorldTransform(player.getEntity().transform);
-    }
     /**
      * Render.
      */
@@ -383,9 +348,7 @@ public class GenerateLevel {
                 if(! projectile.isDone())
                     temp.add(projectile.getInstance());
             }
-
         }
-
 
         if (toDelete != -1){
             deleteDeadEntity();
@@ -404,10 +367,11 @@ public class GenerateLevel {
 
         animationController.update(Gdx.graphics.getDeltaTime());
 
-        swordAnimation();
+        swordAnimation.swordAnimation();
 
         camFollowPlayer();
         cam.update();
+
 
         for (EntityMonster monster : floorData.entityMonsters)
             monster.getAnimationController().update(Gdx.graphics.getDeltaTime());
@@ -422,6 +386,8 @@ public class GenerateLevel {
         modelBatch.render(exitTrigger.getEntity());
         modelBatch.render(player.getEntity(), environment);
         modelBatch.render(instances,environment);
+        if(player.isAttacking)
+            modelBatch.render(player.getEntityWeapon(),environment);
         modelBatch.end();
 
         stage.act();
@@ -449,6 +415,11 @@ public class GenerateLevel {
             });
 
         }
+
+        if(player.getCharacteristics().getHealth() <= 0){
+            /*TODO mettre un ecran disant que tu est mort puis renvoyer au  village, en sauvegardant dans le fichier config le currentFloor*/
+        }
+
     }
 
     public void resize(int width, int height) {
@@ -476,6 +447,7 @@ public class GenerateLevel {
     public void goToNextLevel() {
         onLoad = true;
 
+        currentFloor++;
         player.getEntity().getController().setGravity(Vector3.Zero);
         for (EntityInstance obj : floorData.objectsInstances) {
             world.getDynamicsWorld().removeRigidBody(obj.getBody());

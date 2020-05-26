@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.EntityPlayer;
+import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.item.WeaponCaC;
 import com.mygdx.game.item.WeaponDistance;
 
@@ -147,7 +148,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 
         if (button == PrefKeys.LeftClick)
-            if (player.cdAttack == 125) {
+            if (player.cdAttack == SwordAnimation.animationduration) {
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
                     slash();
@@ -163,7 +164,7 @@ public class PlayerController implements InputProcessor, ControllerListener {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == PrefKeys.LeftClick)
-            if (player.cdAttack == 125) {
+            if (player.cdAttack == SwordAnimation.animationduration) {
                 player.attack();
                 if (player.getWeapon() instanceof WeaponCaC)
                     slash();

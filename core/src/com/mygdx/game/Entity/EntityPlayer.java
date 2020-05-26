@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.instances.EntityInstancePlayer;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.animation.SwordAnimation;
 import com.mygdx.game.item.CreatedItems;
 import com.mygdx.game.item.Inventory;
 import com.mygdx.game.item.Item;
@@ -24,7 +25,7 @@ public class EntityPlayer implements EntityInterface {
 
     public Weapon equippedWeapon;
     public boolean isAttacking;
-    public int cdAttack = 125;
+    public int cdAttack = SwordAnimation.animationduration;
     public int cdDammagesTaken =60;
     public Vector2 player2DPos = new Vector2(0,0);
     public Vector2 cursor2DPos = new Vector2(0,0);
