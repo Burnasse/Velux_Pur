@@ -120,6 +120,7 @@ public class GenerateLevel {
     int firstEnnemyUserValue;
     private int toDelete = -1;
     private Vector3 swordPlayerPos = new Vector3();
+    private int dammageGunnerProjectile = 2;
 
     private volatile boolean onLoad = false;
     private SwordAnimation swordAnimation;
@@ -173,9 +174,7 @@ public class GenerateLevel {
                     interactLabel.setVisible(true);
                 }
                 if (userValue1 == 3000 && player.cdDammagesTaken == 0 && player.getCharacteristics().getHealth() > 0) {
-                    Gunner ennemy = (Gunner) floorData.entityMonsters.get(0).getBehavior();
-                    System.out.println(ennemy.getProjectileDamage());
-                    player.getsAttacked(ennemy.getProjectileDamage());
+                    player.getsAttacked(dammageGunnerProjectile);
                     player.cdDammagesTaken = 60;
                     /*TODO mettre bruit de degats du player ou faire ecran qui devient rouge */
                 }
@@ -481,6 +480,8 @@ public class GenerateLevel {
 
     public void goToNextLevel() {
         onLoad = true;
+
+        currentFloor++;
 
         player.getEntity().getController().setGravity(Vector3.Zero);
         disposeFloorObject();
