@@ -57,7 +57,7 @@ public abstract class Room {
     }
 
     public boolean contains(int x, int y){
-        return (getX1()<=x && getX2()>= x && getY1()<=y && getY2()>=y);
+        return (getX1()-1<=x && getX2()+1>= x && getY1()-1<=y && getY2()+1>=y);
     }
 
     public int getX1() {
