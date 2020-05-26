@@ -9,6 +9,7 @@ import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.MonsterFactory;
 import com.mygdx.game.Entity.instances.EntityInstance;
 import com.mygdx.game.Entity.utils.EntityPosition;
+import com.mygdx.game.FloorLayout.BossFloor.BossFloor;
 import com.mygdx.game.FloorLayout.Floor;
 import com.mygdx.game.FloorLayout.RoomTypes.EnemyRoom;
 import com.mygdx.game.FloorLayout.RoomTypes.Room;
@@ -45,7 +46,10 @@ public class FloorFactory {
             floor = new Labyrinth(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
         else if (floorType.equalsIgnoreCase("Mixed"))
             floor = new Mixed(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
-        else
+        else if (floorType.equalsIgnoreCase("BossFloor")) {
+            floor = new BossFloor();
+            sizeOfFloor = floor.getSizeOfFloor();
+        } else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
