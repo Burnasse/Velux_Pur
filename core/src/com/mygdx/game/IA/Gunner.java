@@ -159,7 +159,7 @@ public class Gunner extends SteeringAgent {
     protected void attack() {
         Turn();
         projectilesShot.add(new Projectile(player.getPosition(), 5, position, getWorld()));
-        attackSound.play(0.5f);
+        attackSound.play(0.2f);
     }
 
     /**

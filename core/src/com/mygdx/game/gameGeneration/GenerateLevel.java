@@ -165,7 +165,7 @@ public class GenerateLevel {
                 if (player.getCharacteristics().getHealth() > 0 && player.cdDammagesTaken == 0 && ((userValue0 >= firstEnnemyUserValue && userValue0 <= firstEnnemyUserValue + floorData.entityMonsters.size()) || (userValue1 >= firstEnnemyUserValue && userValue1 <= firstEnnemyUserValue + floorData.entityMonsters.size())) && (userValue1 == 6666 || userValue0 == 6666)) {
                     player.getsAttacked(floorData.entityMonsters.get(userValue1 - firstEnnemyUserValue).getCharacteristics().getAttackDamage());
                     player.cdDammagesTaken = 60;
-                    playerHurtSound.play(0.3f);
+                    playerHurtSound.play(0.2f);
                 }
                 System.out.println("contact0");
                 System.out.println("uservalue0 = " + userValue0);
@@ -179,7 +179,7 @@ public class GenerateLevel {
                 if (userValue1 == 3000 && player.cdDammagesTaken == 0 && player.getCharacteristics().getHealth() > 0) {
                     player.getsAttacked(dammageGunnerProjectile);
                     player.cdDammagesTaken = 60;
-                    playerHurtSound.play(0.3f);
+                    playerHurtSound.play(0.2f);
                 }
 
                 System.out.println("contact1");
