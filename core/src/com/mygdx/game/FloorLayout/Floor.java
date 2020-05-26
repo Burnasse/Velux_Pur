@@ -13,6 +13,11 @@ public abstract class Floor {
     protected int sizeOfFloor;
     protected ArrayList<Room> rooms = new ArrayList<>();
 
+    public Floor(){
+        layout = new Position[100][100];
+        sizeOfFloor = 100;
+    }
+
     /**
      * to print the floor layout in the console
      */
@@ -53,8 +58,10 @@ public abstract class Floor {
         int x;
         int y;
         boolean intersect = false;
+        int count;
+        int threshold = 5000;
 
-        for (int count = 0; count < 5000; count++) {
+        for (count = 0; count < Integer.MAX_VALUE; count++) { //We can't use while loop or the project will crash so we had to improvise
             if (rooms.size() < numberOfRooms) {
 
                 width = ThreadLocalRandom.current().nextInt(minRoomSize, maxRoomSize);
@@ -70,21 +77,24 @@ public abstract class Floor {
                             count = count + 1;
                             intersect = true;
                             break;
-                        }
-                        else intersect = false;
+                        } else intersect = false;
                     }
                     if (!intersect) rooms.add(newRoom);
 
                 } else {
                     rooms.add(new SpawnRoom(x, y, x + width, y + height));
                 }
-                if (count == 4800) {
+                if (count == threshold) {
+                    threshold = threshold + 5000;
                     rooms.clear();
-                    count = 0;
                 }
             } else break;
         }
 
+        createRooms();
+    }
+
+    public void createRooms() {
         for (Room room : rooms) {
             for (int i = room.getX1(); i < room.getX2(); i++) {
                 for (int j = room.getY1(); j < room.getY2(); j++)
@@ -93,4 +103,3 @@ public abstract class Floor {
         }
     }
 }
-
