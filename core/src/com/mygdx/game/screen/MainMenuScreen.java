@@ -79,8 +79,9 @@ public class MainMenuScreen implements Screen, StageManager {
         Gdx.gl.glClearColor(0.9f, 0.9f, 0.9f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
-        batch.draw(mainBackground, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(mainBackground, 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
         batch.end();
 
         stage.act(delta);
