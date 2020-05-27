@@ -338,10 +338,7 @@ public class GenerateLevel {
         swordAnimation = new SwordAnimation(player, swordPlayerPos);
 
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(camController);
-        inputMultiplexer.addProcessor(playerController);
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(playerController);
     }
 
     private void camFollowPlayer() {
