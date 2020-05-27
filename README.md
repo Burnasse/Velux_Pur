@@ -19,4 +19,4 @@ COMMANDES :
 
   Au village : flèches/zqsd pour se déplacer, f pour intéragir avec les personnages et commencer à jouer dans un donjon (quand le personnage est sur la case lumineuse que vous ne pouvez pas rater).
 
-  En jeu : toujours les flèches/zqsd pour le déplacement et f pour changer d'étage quand la case lumineuse est atteinte, le personnage attaque dans le sens où le joueur clique et il entame une petite danse quand le joueur appuie sur H.
+  En jeu : toujours les flèches/zqsd pour le déplacement et f pour changer d'étage quand la case lumineuse est atteinte, le personnage attaque dans le sens où le joueur clique,x pour dash la ou le joueur se deplace puis il entame une petite danse quand le joueur appuie sur H.

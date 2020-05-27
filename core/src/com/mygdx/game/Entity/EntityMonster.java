@@ -23,7 +23,7 @@ public class EntityMonster implements EntityInterface {
     private SteeringAgent behavior;
     private AnimationController animationController;
     Assets assets;
-//A
+
     /**
      * Instantiates a new Entity monster. with a model as entry
      *
@@ -45,6 +45,26 @@ public class EntityMonster implements EntityInterface {
         behavior.setAnimationController(animationController);
     }
 
+    /**
+     * Instantiates a new Entity monster. with a model and caracteristics as entry
+     *
+     * @param monsterName the monster name
+     * @param model       the model
+     * @param shape       the shape
+     * @param mass        the mass
+     * @param defaultPos  the position
+     */
+    public EntityMonster(String monsterName,CharacteristicMonster characteristicMonster, Model model, btCollisionShape shape, float mass, EntityPosition defaultPos, String typeOfMonster, int x1, int y1, int x2, int y2,Assets assets) {
+        this.monsterName = monsterName;
+        this.characteristics = new CharacteristicMonster(5, 10);
+        this.assets = assets;
+        entityInstance = new EntityInstance(model, shape, mass, defaultPos);
+        animationController = new AnimationController(entityInstance);
+        if (typeOfMonster.equals("Gunner"))
+            behavior = new Gunner(this, x1, y1, x2, y2,assets);
+        else behavior = new Zombie(this, x1, y1, x2, y2,assets);
+        behavior.setAnimationController(animationController);
+    }
     /**
      * Instantiates a new Entity monster. with a file as entry
      *

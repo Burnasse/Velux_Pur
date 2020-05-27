@@ -28,7 +28,6 @@ public class SwordAnimation {
         Vector3 playerpos = player.getPosition();
 
         float newOrientation = (float) Math.atan2(-(player.cursor2DPos.x - player.player2DPos.x), player.cursor2DPos.y - player.player2DPos.y) * MathUtils.radiansToDegrees;
-        System.out.println(newOrientation);
 
         AttackPosition.AttackDirection attackDirection = AttackPosition.getAttackDirection(newOrientation);
         if (player.cdAttack<=30) {
@@ -52,7 +51,6 @@ public class SwordAnimation {
         }
 
         if (player.cdAttack<SwordAnimation.animationduration) {
-            System.out.println(attackDirection);
             if (attackDirection == AttackPosition.AttackDirection.EAST) {
                 if (player.cdAttack == 1) {
                     swordPlayerPos = new Vector3(-1.6f, 0.2f, -0.5f);

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.mygdx.game.Assets;
+import com.mygdx.game.Entity.CharacteristicMonster;
 import com.mygdx.game.Entity.EntityMonster;
 import com.mygdx.game.Entity.EntityObjects;
 import com.mygdx.game.Entity.MonsterFactory;
@@ -38,7 +39,8 @@ public class FloorFactory {
      * @param maxRoomSize   the max room size
      * @return the floor data
      */
-    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets){
+
+    public static FloorData create(String floorType, int sizeOfFloor, int numberOfRooms, int minRoomSize, int maxRoomSize, Assets assets,int curentFloor){
         Floor floor;
 
         if (floorType.equalsIgnoreCase("Labyrinth"))
@@ -51,14 +53,14 @@ public class FloorFactory {
         } else
             floor = new GenericFloor(sizeOfFloor, numberOfRooms, minRoomSize, maxRoomSize);
 
-        return buildFloor(floor,assets);
+        return buildFloor(floor,assets,curentFloor);
     }
 
     public static FloorData create(Floor floor, Assets assets){
-        return buildFloor(floor,assets);
+        return buildFloor(floor,assets,2);
     }
 
-    private static FloorData buildFloor(Floor floor, Assets assets) {
+    private static FloorData buildFloor(Floor floor, Assets assets,int currentloor) {
 
         ArrayList<EntityInstance> objectsInstances = new ArrayList<>();
         ArrayList<EntityMonster> entityMonsters = new ArrayList<>();
@@ -75,7 +77,7 @@ public class FloorFactory {
                 for (EntityPosition enemyPosition : ((EnemyRoom) room).getEnemies()) {
                     enemyPosition.x *= blockSize;
                     enemyPosition.z *= blockSize;
-                    EntityMonster newMonster = MonsterFactory.create(enemyPosition, assets, room.getX1(), room.getY1(), room.getX2(), room.getY2());
+                    EntityMonster newMonster = MonsterFactory.create(enemyPosition,currentloor, assets, room.getX1(), room.getY1(), room.getX2(), room.getY2());
                     newMonster.getBehavior().adaptToFloor((int) blockSize);
                     entityMonsters.add(newMonster);
                     objectsInstances.add(newMonster.getEntity());
@@ -140,4 +142,6 @@ public class FloorFactory {
         return new FloorData(objectsInstances, entityMonsters, spawnPosition, exitPosition, minimap);
 
     }
+
+
 }

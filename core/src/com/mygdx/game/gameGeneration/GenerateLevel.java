@@ -61,6 +61,7 @@ import com.mygdx.game.ui.Minimap;
 import com.mygdx.game.ui.UIDialog;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import static com.mygdx.game.physics.CallbackFlags.ENNEMY_FLAG;
 import static com.mygdx.game.physics.CallbackFlags.TRIGGER_FLAG;
@@ -89,6 +90,7 @@ public class GenerateLevel {
     private PlayerController playerController;
     private MyContactListener contactListener;
     private AnimationController animationController;
+    private PreferencesManager prefs = new PreferencesManager();
 
     private Sound hitSound;
     private Sound playerHurtSound;
@@ -124,7 +126,7 @@ public class GenerateLevel {
     int firstEnnemyUserValue;
     private int toDelete = -1;
     private Vector3 swordPlayerPos = new Vector3();
-    private int dammageGunnerProjectile = 2;
+    private float dammageGunnerProjectile = currentFloor * 2;
 
     private volatile boolean onLoad = false;
     private SwordAnimation swordAnimation;
@@ -155,7 +157,6 @@ public class GenerateLevel {
                      * */
                     if (floorData.entityMonsters.get(userValue1 - firstEnnemyUserValue).getHealth() <= 0) {
                         toDelete = userValue1 - firstEnnemyUserValue;
-
                     }
                     hitSound.play(0.5f);
                 }
@@ -167,9 +168,7 @@ public class GenerateLevel {
                     player.cdDammagesTaken = 60;
                     playerHurtSound.play(0.2f);
                 }
-                System.out.println("contact0");
-                System.out.println("uservalue0 = " + userValue0);
-                System.out.println("uservalue1 = " + userValue1);
+
             }
 
             if (match1) {
@@ -182,9 +181,6 @@ public class GenerateLevel {
                     playerHurtSound.play(0.2f);
                 }
 
-                System.out.println("contact1");
-                System.out.println("uservalue0 = " + userValue0);
-                System.out.println("uservalue1 = " + userValue1);
             }
             return true;
         }
@@ -230,6 +226,7 @@ public class GenerateLevel {
         musicLevel.play();
 
 
+        System.out.println("score :" + prefs.getScore());
         ambianceDungeon = assets.manager.get(Assets.levelAmbiance);
         ambianceDungeon.setLooping(true);
         ambianceDungeon.setVolume(0.1f);
@@ -261,7 +258,7 @@ public class GenerateLevel {
         healthBar = new HealthBar();
 
 
-        if (floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets);
+        if (floorData == null) floorData = FloorFactory.create("Mixed", 20, 4, 3, 7, assets,currentFloor);
 
 
         minimap = floorData.minimap;
@@ -441,6 +438,7 @@ public class GenerateLevel {
         }
 
         if (player.getCharacteristics().getHealth() <= 0) {
+            musicLevel.stop();
             Gdx.input.setInputProcessor(stage);
             PreferencesManager prefs = new PreferencesManager();
             int bestScore = prefs.getPreferences().getInteger("Score",0);
@@ -506,7 +504,19 @@ public class GenerateLevel {
         floorData.objectsInstances.clear();
         minimap.dispose();
 
-        floorData = FloorFactory.create("Mixed", 50, 4, 3, 7, assets);
+        if (currentFloor % 5 == 0)
+            floorData = FloorFactory.create("BossFloor", 50, 4, 3, 7, assets,currentFloor);
+        else {
+            Random rand = new Random();
+            int tirage = rand.nextInt(2);
+            System.out.println(tirage);
+            if (tirage == 0)
+                floorData = FloorFactory.create("Mixed", 50, 4, 3, 7, assets,currentFloor);
+            else if (tirage == 1)
+                floorData = FloorFactory.create("Labyrinth", 50, 4, 3, 7, assets,currentFloor);
+            else
+                floorData = FloorFactory.create("Generic", 50, 4, 3, 7, assets,currentFloor);
+        }
         minimap = floorData.minimap;
         minimap.clear();
         player.getEntity().transform.set(floorData.playerSpawnPosition, new Quaternion());
@@ -549,9 +559,7 @@ public class GenerateLevel {
             monster.getEntity().getBody().setContactCallbackFilter(CallbackFlags.WEAPON_FLAG);
             monster.getEntity().getBody().setActivationState(Collision.DISABLE_DEACTIVATION);
             world.addRigidBody(monster.getEntity().getBody());
-
             world.getDynamicsWorld().addCollisionObject(monster.getEntity().getBody(), (short) btBroadphaseProxy.CollisionFilterGroups.CharacterFilter, (short) btBroadphaseProxy.CollisionFilterGroups.AllFilter);
-
             monster.getBehavior().Surroundings(player, world);
             instances.add(monster.getEntity());
 

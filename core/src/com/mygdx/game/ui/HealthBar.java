@@ -37,7 +37,6 @@ public class HealthBar {
         float life = (playerLife/playerMaxLife)*200;
         if(life < 0)
             life = 0;
-        System.out.println(life);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(backgroundColor);
         shapeRenderer.rect(50,Gdx.graphics.getHeight()-80,210,30);
