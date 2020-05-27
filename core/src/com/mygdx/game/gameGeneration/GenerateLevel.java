@@ -467,6 +467,8 @@ public class GenerateLevel {
         healthBar.dispose();
         exitTrigger.dispose();
         modelBatch.dispose();
+        musicLevel.dispose();
+        ambianceDungeon.dispose();
     }
 
     private void disposeFloorObject() {
