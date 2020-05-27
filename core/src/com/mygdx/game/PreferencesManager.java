@@ -119,4 +119,8 @@ public class PreferencesManager {
         preferences.putInteger("volume", 100);
         preferences.flush();
     }
+
+    public int getScore(){
+        return preferences.getInteger("score");
+    }
 }

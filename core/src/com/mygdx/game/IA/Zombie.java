@@ -136,7 +136,6 @@ public class Zombie extends SteeringAgent {
 
     @Override
     protected void attack() {
-        System.out.println("Tu prends " + damage + "dégats");
         attackSound.play(0.2f);
     }
 }

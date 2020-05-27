@@ -22,7 +22,7 @@ public class CreatedItems {
         ass.finishLoading();
         Model swordModel = ass.get("sting.g3db",Model.class);
 
-        WeaponCaC sword = new WeaponCaC(5, swordModel, new btBoxShape(new Vector3(0.3f, 0.1f, 0.1f)), new EntityPosition(0, 0, 0));
+        WeaponCaC sword = new WeaponCaC(5, swordModel, new btBoxShape(new Vector3(0.4f, 0.1f, 0.1f)), new EntityPosition(0, 0, 0));
         return sword;
     }
 }
