@@ -39,7 +39,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
         client = new ClientVelux(multiplayer);
 
         synchronized (this){
-            while(!client.getClient().isConnected()) {
+            while(client.state == ConnectionState.WAIT) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -47,7 +47,10 @@ public class MultiplayerGameScreen implements Screen, StageManager {
                 }
             }
             notify();
-            multiplayer.initLevel(client);
+            if(client.state == ConnectionState.LOST)
+                changeGameState();
+            else
+                multiplayer.initLevel(client);
         }
 
     }
@@ -93,7 +96,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
 
     @Override
     public void dispose() {
-        multiplayer.dispose();
+        if(multiplayer.isInit) multiplayer.dispose();
         client.getClient().close();
     }
 
@@ -104,6 +107,7 @@ public class MultiplayerGameScreen implements Screen, StageManager {
 
     @Override
     public void changeGameState() {
+        manager.changeScreen(new MainMenuScreen(manager,assets));
     }
 
 }

@@ -32,6 +32,8 @@ public class GenerateMultiplayerLevel{
     private FloorData floorData;
     private ArrayMap<Integer, EntityInstancePlayer> players;
 
+    public boolean isInit = false;
+
     /**
      * Instantiates a new Generate multiplayer.
      *
@@ -68,7 +70,7 @@ public class GenerateMultiplayerLevel{
         floorData = FloorFactory.create(client.getFloor(),assets);
         level = new GenerateLevel(screen, assets, false);
         level.create(floorData,players);
-
+        isInit = true;
     }
 
     public void render(){
