@@ -335,10 +335,7 @@ public class GenerateLevel {
         swordAnimation = new SwordAnimation(player, swordPlayerPos);
 
 
-        InputMultiplexer inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(camController);
-        inputMultiplexer.addProcessor(playerController);
-        Gdx.input.setInputProcessor(inputMultiplexer);
+        Gdx.input.setInputProcessor(playerController);
     }
 
     private void camFollowPlayer() {
@@ -468,6 +465,8 @@ public class GenerateLevel {
         healthBar.dispose();
         exitTrigger.dispose();
         modelBatch.dispose();
+        musicLevel.dispose();
+        ambianceDungeon.dispose();
     }
 
     private void disposeFloorObject() {
